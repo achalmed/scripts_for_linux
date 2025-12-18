@@ -9,7 +9,7 @@
 | 1 | `count_files_by_extension.sh` | Bash | Analiza recursivamente un directorio y muestra cuántos archivos hay por extensión + tamaño total + Top 5 + estadísticas | Saber qué tipo de archivos dominan tu biblioteca o proyecto |
 | 2 | `create_folders_batch.sh` | Bash | Crea cientos de carpetas de golpe desde una lista predefinida o archivo externo | Preparar la estructura de un curso, proyecto o colección |
 | 3 | `create_hardlinks.py` | Python 3 | Busca archivos con nombre exacto (ej. `_contenido-inicio.qmd`) y los reemplaza por **hard links** al primero encontrado (ahorra espacio y mantiene sincronía) | Proyectos Quarto, Obsidian, MkDocs, etc. con archivos repetidos |
-| 4 | `detect_hardlinks.sh` | Bash | Muestra en forma de árbol todos los enlaces duros existentes en un directorio | Verificar que los hard links se crearon correctamente y gestionarlos |
+| 4 | `detect_hardlinks_tree.sh` | Bash | Muestra en forma de árbol todos los enlaces duros existentes en un directorio | Verificar que los hard links se crearon correctamente y gestionarlos |
 
 ## 1. count_files_by_extension.sh – Analizador de extensiones
 
