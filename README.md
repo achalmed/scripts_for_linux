@@ -2,6 +2,8 @@
 
 ![bash](https://img.shields.io/badge/bash-scripts-green) ![python](https://img.shields.io/badge/python-3.8%2B-blue) ![license](https://img.shields.io/github/license/tu-usuario/file-folder-tools)
 
+#readme
+
 **Cuatro scripts imprescindibles** para gestionar archivos y carpetas en proyectos grandes (bibliotecas digitales, cursos, documentación, código, etc.).
 
 | # | Script | Lenguaje | ¿Qué hace? | Uso típico |

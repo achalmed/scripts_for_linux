@@ -1,0 +1,83 @@
+# Configuración para sincronización de repositorios
+# Archivo: repos-config.yml
+
+# Directorio base donde están los repositorios
+base_directory: ~/Projects
+
+# Lista de repositorios a sincronizar
+repositories:
+  - name: axiomata
+    branch: main
+    enabled: true
+    
+  - name: chaska
+    branch: main
+    enabled: true
+    
+  - name: dialectica-y-mercado
+    branch: main
+    enabled: true
+    
+  - name: epsilon-y-beta
+    branch: main
+    enabled: true
+    
+  - name: methodica
+    branch: main
+    enabled: true
+    
+  - name: numerus-scriptum
+    branch: main
+    enabled: true
+    
+  - name: optimums
+    branch: main
+    enabled: true
+    
+  - name: pecunia-fluxus
+    branch: main
+    enabled: true
+    
+  - name: res-publica
+    branch: main
+    enabled: true
+    
+  - name: website-achalma
+    branch: main
+    enabled: true
+
+# Mensajes de commit por tipo de actualización
+commit_messages:
+  default: "update: sincronización automática de contenidos"
+  metadata: "feat(config): actualizar configuración del sitio web"
+  theme: "mejora: reestructurar configuración de temas y recursos visuales"
+  content: "docs: actualizar contenidos"
+  indices: "docs: actualizar índices automáticos"
+  scripts: "chore: actualizar scripts de automatización"
+
+# Configuración de comportamiento
+settings:
+  auto_pull: true           # Hacer pull antes de push
+  check_branch: true        # Verificar que estés en la rama correcta
+  verbose: false            # Modo verbose por defecto
+  parallel: false           # Procesar repos en paralelo (experimental)
+  max_retries: 3            # Número de reintentos en caso de error
+  
+# Patrones de archivos para auto-detectar tipo de commit
+auto_detect_patterns:
+  metadata:
+    - "_metadata.yml"
+    - "_quarto.yml"
+    - "config.yml"
+  theme:
+    - "styles.css"
+    - "theme.scss"
+    - "_variables.scss"
+  indices:
+    - "index.qmd"
+    - "indice.qmd"
+    - "**/index.qmd"
+  scripts:
+    - "*.sh"
+    - "*.py"
+    - "scripts/**"
