@@ -33,7 +33,7 @@ Este archivo contiene ejemplos reales de cómo usar los scripts en diferentes si
 
 ```bash
 # Actualizar todos los repos antes de trabajar
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in */; do 
     echo "Actualizando $repo..."
     cd "$repo" 
@@ -42,7 +42,7 @@ for repo in */; do
 done
 
 # O con un one-liner
-cd ~/Projects && for d in */; do (cd "$d" && git pull); done
+cd /home/achalmaedison/Documents/publicaciones && for d in */; do (cd "$d" && git pull); done
 ```
 
 ---
@@ -82,11 +82,11 @@ Como `_metadata.yml` es un enlace duro, el cambio se refleja automáticamente en
 
 ```bash
 # Primero, ejecutar tu script de generación de índices
-cd ~/Projects
-python3 generar_indices.py  # O como se llame tu script
+cd /home/achalmaedison/Documents/scripts_for_quarto/script_generador_indice_quarto
+./generar_indices.sh  # O como se llame tu script
 
 # Luego sincronizar con mensaje apropiado
-cd ~/bin/git-sync
+cd /home/achalmaedison/Documents/scripts/scripts_for_linux/script_sync_respos
 ./sync-repos.py -m "docs: regenerar índices automáticos"
 
 # O si quieres ser más específico
@@ -115,7 +115,7 @@ cd ~/bin/git-sync
 
 ```bash
 # Crear rama en todos los repos
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in axiomata chaska methodica; do
     cd "$repo"
     git checkout -b feature/nuevo-diseño
@@ -126,7 +126,7 @@ done
 
 # Sincronizar rama de desarrollo
 # (Modificar repos-config.yml temporalmente o usar git directo)
-cd ~/Projects/axiomata
+cd /home/achalmaedison/Documents/publicaciones/axiomata
 git add -A
 git commit -m "feat: nuevo diseño de header"
 git push -u origin feature/nuevo-diseño
@@ -138,7 +138,7 @@ git push -u origin feature/nuevo-diseño
 
 ```bash
 # Después de hacer merge en GitHub, actualizar local
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in */; do
     cd "$repo"
     git checkout main
@@ -158,7 +158,7 @@ done
 ./repo-status.sh  # Ver qué repo tiene conflictos
 
 # Resolver manualmente
-cd ~/Projects/axiomata
+cd /home/achalmaedison/Documents/publicaciones/axiomata
 git status
 # Editar archivos conflictivos
 git add .
@@ -173,7 +173,7 @@ git push
 
 ```bash
 # Solo si estás seguro y es tu propio repo
-cd ~/Projects/repo-con-problema
+cd /home/achalmaedison/Documents/publicaciones/repo-con-problema
 git add -A
 git commit -m "fix: corrección importante"
 git push --force-with-lease  # Más seguro que --force
@@ -236,7 +236,7 @@ done
 #!/bin/bash
 # sync-today.sh
 
-BASE_DIR="$HOME/Projects"
+BASE_DIR="$HOME/Documents/publicaciones"
 
 for repo in "$BASE_DIR"/*; do
     if [ -d "$repo/.git" ]; then
@@ -315,17 +315,17 @@ echo "Changelog generado en $OUTPUT"
 
 ```bash
 # 1. Crear artículo en uno o más blogs
-cd ~/Projects/pecunia-fluxus/posts
+cd /home/achalmaedison/Documents/publicaciones/pecunia-fluxus/posts
 mkdir 2025-12-19-analisis-inflacion
 cd 2025-12-19-analisis-inflacion
 # ... crear index.qmd ...
 
 # 2. Regenerar índices
-cd ~/Projects
-python3 scripts/generar_indices.py
+cd /home/achalmaedison/Documents/scripts/scripts_for_quarto/script_generador_indice_quarto
+./generar_indices.sh
 
 # 3. Sincronizar
-cd ~/bin/git-sync
+cd /home/achalmaedison/Documents/scripts/scripts_for_linux/script_sync_respos
 ./sync-repos.py -m "feat: nuevo artículo sobre inflación 2025" -v
 ```
 
@@ -333,12 +333,12 @@ cd ~/bin/git-sync
 
 ```bash
 # 1. Modificar _metadata.yml una sola vez (enlace duro)
-cd ~/Projects/axiomata
+cd /home/achalmaedison/Documents/publicaciones/axiomata
 nano _metadata.yml
 # ... hacer cambios ...
 
 # 2. Verificar cambios
-cd ~/bin/git-sync
+cd /home/achalmaedison/Documents/scripts/scripts_for_linux/script_sync_respos
 ./sync-repos.sh -c
 
 # 3. Sincronizar con mensaje descriptivo
@@ -349,7 +349,7 @@ cd ~/bin/git-sync
 
 ```bash
 # 1. Actualizar Quarto en todos los proyectos
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in */; do
     cd "$repo"
     quarto check
@@ -358,7 +358,7 @@ for repo in */; do
 done
 
 # 2. Sincronizar
-cd ~/bin/git-sync
+cd /home/achalmaedison/Documents/scripts/scripts_for_linux/script_sync_respos
 ./sync-repos.sh -m "chore: actualizar a Quarto 1.4"
 ```
 
@@ -426,7 +426,7 @@ tail -n 50 ~/.git-sync-history
 
 ```bash
 # Reset suave - actualizar todo desde remoto
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in */; do
     cd "$repo"
     git fetch origin
@@ -439,7 +439,7 @@ done
 
 ```bash
 # Limpiar archivos ignorados
-cd ~/Projects
+cd /home/achalmaedison/Documents/publicaciones
 for repo in */; do
     cd "$repo"
     git clean -fdx  # CUIDADO: elimina todo no rastreado
@@ -451,7 +451,7 @@ done
 
 ```bash
 # Verificar permisos del token
-cd ~/Projects/axiomata
+cd /home/achalmaedison/Documents/publicaciones/axiomata
 git push -v  # Verbose para ver errores
 
 # Actualizar token si necesario
