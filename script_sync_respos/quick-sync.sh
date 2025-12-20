@@ -4,10 +4,12 @@
 # Uso: ./quick-sync.sh [mensaje]
 
 # Configuración rápida - MODIFICA ESTAS RUTAS
-BASE_DIR="$HOME/Projects"  # Cambia esto a tu directorio
+BASE_DIR="$HOME/Documents/publicaciones"  # Cambia esto a tu directorio
 
 # Repositorios a sincronizar
 REPOS=(
+    "actus-mercator"
+    "aequilibria"
     "axiomata"
     "chaska"
     "dialectica-y-mercado"

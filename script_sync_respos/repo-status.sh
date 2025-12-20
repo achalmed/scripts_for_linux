@@ -4,8 +4,10 @@
 # Útil para verificar qué repos necesitan atención
 
 # Configuración
-BASE_DIR="$HOME/Projects"
+BASE_DIR="$HOME/Documents/publicaciones"
 REPOS=(
+    "actus-mercator"
+    "aequilibria"
     "axiomata"
     "chaska"
     "dialectica-y-mercado"

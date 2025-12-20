@@ -30,10 +30,12 @@ print_error() {
 
 # Directorio base donde están tus repositorios
 # Modifica esta ruta según tu configuración
-BASE_DIR="$HOME/Projects"
+BASE_DIR="$HOME/Documents/publicaciones"
 
 # Lista de repositorios (nombres de carpetas)
 REPOS=(
+    "actus-mercator"
+    "aequilibria"
     "axiomata"
     "chaska"
     "dialectica-y-mercado"

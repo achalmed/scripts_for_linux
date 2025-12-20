@@ -27,6 +27,7 @@ cd ~/bin/git-sync
 chmod +x sync-repos.sh
 chmod +x sync-repos.py
 chmod +x quick-sync.sh
+chmod +x repo-status.sh
 ```
 
 ### 3. Configurar tus repositorios
@@ -36,7 +37,7 @@ Edita el archivo correspondiente y modifica:
 **Para `sync-repos.sh` y `quick-sync.sh`:**
 ```bash
 # Cambiar esta línea con tu directorio real
-BASE_DIR="$HOME/Projects"  # Por ejemplo: /home/edison/mis-blogs
+BASE_DIR="$HOME/Projects"  # Por ejemplo: /home/achalmaedison/mis-blogs
 
 # Y la lista de repos
 REPOS=(
