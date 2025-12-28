@@ -76,7 +76,7 @@ python create_hardlinks.py header.html
 ./detect_hardlinks.sh
 
 # Otro directorio
-./detect_hardlinks.sh "/home/yo/mi-proyecto"
+./detect_hardlinks.sh /home/achalmaedison/Documents/publicaciones/
 ```
 
 Muestra un árbol bonito como este:
