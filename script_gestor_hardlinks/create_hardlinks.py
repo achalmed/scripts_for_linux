@@ -360,10 +360,10 @@ def print_summary(stats: Dict[str, int]) -> None:
     print_header("RESUMEN DE OPERACIONES")
     
     print(f"{Colors.BOLD}{Colors.OKBLUE}╠{'═' * 78}╣{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.OKGREEN}✅ Grupos creados:{Colors.ENDC} {Colors.BOLD}{stats['groups_created']}{Colors.ENDC}" + " " * (67 - len(str(stats['groups_created']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.OKCYAN}📝 Hard links creados:{Colors.ENDC} {Colors.BOLD}{stats['links_created']}{Colors.ENDC}" + " " * (61 - len(str(stats['links_created']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.GRAY}⏭️  Archivos omitidos:{Colors.ENDC} {Colors.BOLD}{stats['files_skipped']}{Colors.ENDC} (ya eran hard links)" + " " * (37 - len(str(stats['files_skipped']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
-    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.WARNING}⚠️  Grupos omitidos:{Colors.ENDC} {Colors.BOLD}{stats['groups_skipped']}{Colors.ENDC}" + " " * (59 - len(str(stats['groups_skipped']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.OKGREEN}✅ Grupos creados:{Colors.ENDC} {Colors.BOLD}{stats['groups_created']}{Colors.ENDC}" + " " * (57 - len(str(stats['groups_created']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.OKCYAN}📝 Hard links creados:{Colors.ENDC} {Colors.BOLD}{stats['links_created']}{Colors.ENDC}" + " " * (53 - len(str(stats['links_created']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.GRAY}⏭️  Archivos omitidos:{Colors.ENDC} {Colors.BOLD}{stats['files_skipped']}{Colors.ENDC} (ya eran hard links)" + " " * (33 - len(str(stats['files_skipped']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
+    print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.WARNING}⚠️  Grupos omitidos:{Colors.ENDC} {Colors.BOLD}{stats['groups_skipped']}{Colors.ENDC}" + " " * (56 - len(str(stats['groups_skipped']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
     if stats['errors'] > 0:
         print(f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}  {Colors.FAIL}❌ Errores:{Colors.ENDC} {Colors.BOLD}{stats['errors']}{Colors.ENDC}" + " " * (67 - len(str(stats['errors']))) + f"{Colors.BOLD}{Colors.OKBLUE}║{Colors.ENDC}")
     print(f"{Colors.BOLD}{Colors.OKBLUE}╚{'═' * 78}╝{Colors.ENDC}")
