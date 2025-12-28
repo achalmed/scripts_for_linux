@@ -3,8 +3,8 @@
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║                  DETECTOR Y VISUALIZADOR DE ENLACES DUROS                    ║
 # ║                                                                              ║
-# ║  Busca archivos con enlaces duros y los muestra en estructura de árbol      ║
-# ║  con información detallada sobre inodos, tamaño y número de enlaces.        ║
+# ║  Busca archivos con enlaces duros y los muestra en estructura de árbol       ║
+# ║  con información detallada sobre inodos, tamaño y número de enlaces.         ║
 # ║                                                                              ║
 # ║  Autor: Edison Achalma                                                       ║
 # ║  Email: achalmaedison@gmail.com                                              ║
@@ -358,10 +358,10 @@ print_separator
 print_header "RESUMEN DE ANÁLISIS"
 
 echo -e "${HEADER}╠$(printf '═%.0s' $(seq 1 78))╣${RESET}"
-echo -e "${HEADER}║${RESET}  ${SUCCESS}📊 Estadísticas de Enlaces:${RESET}$(printf ' %.0s' $(seq 1 48))${HEADER}║${RESET}"
-echo -e "${HEADER}║${RESET}     • Conjuntos encontrados: ${BOLD}${#inodes[@]}${RESET}$(printf ' %.0s' $(seq 1 $((51 - ${#inodes[@]} / 10))))${HEADER}║${RESET}"
-echo -e "${HEADER}║${RESET}     • Espacio en disco usado: ${BOLD}$(format_size $total_space_used)${RESET}$(printf ' %.0s' $(seq 1 $((46 - ${#total_space_used} / 10))))${HEADER}║${RESET}"
-echo -e "${HEADER}║${RESET}     • Espacio ahorrado: ${SUCCESS}${BOLD}$(format_size $total_space_saved)${RESET}$(printf ' %.0s' $(seq 1 $((50 - ${#total_space_saved} / 10))))${HEADER}║${RESET}"
+echo -e "${HEADER}║${RESET}  ${SUCCESS}📊 Estadísticas de Enlaces:${RESET}$(printf ' %.0s' $(seq 1 49))${HEADER}║${RESET}"
+echo -e "${HEADER}║${RESET}     • Conjuntos encontrados: ${BOLD}${#inodes[@]}${RESET}$(printf ' %.0s' $(seq 1 $((47 - ${#inodes[@]} / 10))))${HEADER}║${RESET}"
+echo -e "${HEADER}║${RESET}     • Espacio en disco usado: ${BOLD}$(format_size $total_space_used)${RESET}$(printf ' %.0s' $(seq 1 $((39 - ${#total_space_used} / 10))))${HEADER}║${RESET}"
+echo -e "${HEADER}║${RESET}     • Espacio ahorrado: ${SUCCESS}${BOLD}$(format_size $total_space_saved)${RESET}$(printf ' %.0s' $(seq 1 $((44 - ${#total_space_saved} / 10))))${HEADER}║${RESET}"
 echo -e "${HEADER}╚$(printf '═%.0s' $(seq 1 78))╝${RESET}"
 
 # ============================================
