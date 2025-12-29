@@ -50,7 +50,7 @@ REPOS=(
 **Para `sync-repos.py`:**
 Edita `repos-config.yml`:
 ```yaml
-base_directory: ~/Projects  # Tu directorio real
+base_directory: /home/achalmaedison/Documents/publicaciones # Tu directorio real
 ```
 
 ## 💻 Uso
@@ -76,6 +76,9 @@ base_directory: ~/Projects  # Tu directorio real
 
 # Solo verificar cambios (sin commit/push)
 ./sync-repos.sh -c
+
+# Generar reporte del estado de todos los repositorios
+./repo-status.sh
 
 # Sincronizar solo repos específicos
 ./sync-repos.sh -r "axiomata,chaska"

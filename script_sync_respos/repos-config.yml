@@ -2,7 +2,7 @@
 # Archivo: repos-config.yml
 
 # Directorio base donde están los repositorios
-base_directory: /home/Documents/publicaciones
+base_directory: /home/achalmaedison/Documents/publicaciones
 
 # Lista de repositorios a sincronizar
 repositories:
