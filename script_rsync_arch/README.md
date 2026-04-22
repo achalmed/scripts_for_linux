@@ -1,46 +1,49 @@
-# 📦 backup_arch.sh — Backup Inteligente para Arch Linux
+# backup_arch.sh — Backup Inteligente para Arch Linux
 
 Script de sincronización de backup para respaldar el directorio home de Arch Linux
 hacia un disco externo, con comparación de contenido, interactividad y control total.
 
 ---
 
-## ✨ Características principales
+## Características principales
 
-| Función | Descripción |
-|---|---|
-| 🔍 Comparación por checksum | Detecta cambios reales en el contenido, no solo por fecha |
-| 📊 Barra de progreso | Muestra avance con `pv` (si está instalado) |
-| ❓ Interactivo para cambios | Pregunta antes de sobreescribir archivos modificados |
-| 👁️ Ver diferencias | Muestra el diff del archivo antes de decidir |
-| 🗑️ Control de huérfanos | Lista archivos que ya no están en origen, tú decides si eliminar |
-| 🔗 Preserva metadatos | Conserva permisos, fechas, enlaces simbólicos, subdirectorios |
-| 🚫 Sin duplicados | rsync asegura una copia limpia sin repeticiones |
-| 📝 Log opcional | Guarda registro detallado de cada operación |
-| 🎭 Modo simulación | Previsualiza qué haría sin tocar nada |
+| Función                  | Descripción                                                      |
+| ------------------------ | ---------------------------------------------------------------- |
+| Comparación por checksum | Detecta cambios reales en el contenido, no solo por fecha        |
+| Barra de progreso        | Muestra avance con `pv` (si está instalado)                      |
+| Interactivo para cambios | Pregunta antes de sobreescribir archivos modificados             |
+| Ver diferencias          | Muestra el diff del archivo antes de decidir                     |
+| Control de huérfanos     | Lista archivos que ya no están en origen, tú decides si eliminar |
+| Preserva metadatos       | Conserva permisos, fechas, enlaces simbólicos, subdirectorios    |
+| Sin duplicados           | rsync asegura una copia limpia sin repeticiones                  |
+| Log opcional             | Guarda registro detallado de cada operación                      |
+| Modo simulación          | Previsualiza qué haría sin tocar nada                            |
 
 ---
 
-## 📋 Requisitos
+## Requisitos
 
 ### Obligatorio
+
 ```bash
 sudo pacman -S rsync
 ```
 
 ### Recomendado (barras de progreso visuales)
+
 ```bash
 sudo pacman -S pv
 ```
 
 ### Opcional (diffs con colores)
+
 ```bash
 sudo pacman -S colordiff
 ```
 
 ---
 
-## 🚀 Instalación
+## Instalación
 
 ```bash
 # 1. Clonar o copiar el script a tu home
@@ -59,22 +62,22 @@ backup_arch.sh --simulate
 
 ---
 
-## 💻 Uso
+## Uso
 
 ```
-backup_arch.sh [OPCIONES]
+./backup_arch.sh [OPCIONES]
 ```
 
 ### Opciones disponibles
 
-| Opción | Descripción |
-|---|---|
-| `-h`, `--help` | Muestra la ayuda y sale |
-| `-v`, `--verbose` | Lista cada archivo procesado |
-| `-s`, `--simulate` | Simulación: no realiza cambios reales |
-| `-l`, `--log` | Guarda log en `~/backup_arch.log` |
-| `-f`, `--force` | Sobreescribe modificados sin preguntar |
-| `-d`, `--delete-all` | Elimina huérfanos sin preguntar |
+| Opción               | Descripción                            |
+| -------------------- | -------------------------------------- |
+| `-h`, `--help`       | Muestra la ayuda y sale                |
+| `-v`, `--verbose`    | Lista cada archivo procesado           |
+| `-s`, `--simulate`   | Simulación: no realiza cambios reales  |
+| `-l`, `--log`        | Guarda log en `~/backup_arch.log`      |
+| `-f`, `--force`      | Sobreescribe modificados sin preguntar |
+| `-d`, `--delete-all` | Elimina huérfanos sin preguntar        |
 
 ### Ejemplos de uso
 
@@ -97,7 +100,7 @@ backup_arch.sh [OPCIONES]
 
 ---
 
-## 📁 Carpetas respaldadas
+## Carpetas respaldadas
 
 El script respalda las siguientes carpetas de `/home/achalmaedison/`:
 
@@ -122,7 +125,7 @@ El script respalda las siguientes carpetas de `/home/achalmaedison/`:
 
 ---
 
-## 🔄 Flujo de trabajo
+## Flujo de trabajo
 
 El script sigue este flujo para cada carpeta:
 
@@ -149,7 +152,7 @@ Para cada carpeta en CARPETAS_BACKUP:
 
 ---
 
-## 🗂️ Estructura en el disco externo
+## Estructura en el disco externo
 
 ```
 /run/media/achalmaedison/ARCHDISK/
@@ -172,7 +175,7 @@ Para cada carpeta en CARPETAS_BACKUP:
 
 ---
 
-## 📝 Log
+## Log
 
 Cuando usas `--log`, el archivo de log se guarda en:
 
@@ -183,6 +186,7 @@ Cuando usas `--log`, el archivo de log se guarda en:
 El log se **rota automáticamente** si supera los 10MB (se guarda como `.bak`).
 
 Formato de cada entrada del log:
+
 ```
 [2026-04-22 15:30:01] [OK]     Archivos nuevos copiados: 42
 [2026-04-22 15:30:01] [WARN]   Huérfano encontrado: Documents/viejo.pdf
@@ -191,7 +195,7 @@ Formato de cada entrada del log:
 
 ---
 
-## ⚙️ Configuración personalizada
+## Configuración personalizada
 
 Puedes editar las siguientes variables en el script para adaptarlo:
 
@@ -220,7 +224,7 @@ DISCO_EXTERNO="/run/media/${USUARIO}/ARCHDISK"
 
 ---
 
-## 🤖 Automatización con systemd (opcional)
+## Automatización con systemd (opcional)
 
 Para ejecutar el backup automáticamente cada vez que conectas el disco,
 puedes crear una regla udev + servicio systemd:
@@ -260,7 +264,7 @@ sudo udevadm control --reload-rules
 
 ---
 
-## ❓ Preguntas frecuentes
+## Preguntas frecuentes
 
 **¿Por qué usa checksum y no solo fecha/tamaño?**
 Porque es más confiable. La fecha de modificación puede cambiar al copiar un archivo
@@ -282,21 +286,21 @@ Para backup completo se recomienda ext4 en el disco externo.
 
 ---
 
-## 🐛 Solución de problemas
+## Solución de problemas
 
-| Problema | Solución |
-|---|---|
+| Problema                        | Solución                                                                          |
+| ------------------------------- | --------------------------------------------------------------------------------- |
 | `Disco externo NO está montado` | Conecta el disco y espera, o monta manualmente con `udisksctl mount -b /dev/sda1` |
-| `rsync: command not found` | `sudo pacman -S rsync` |
-| `Permission denied` | No ejecutes como root; usa tu usuario normal |
-| `pv: command not found` | `sudo pacman -S pv` (opcional, el script funciona sin él) |
+| `rsync: command not found`      | `sudo pacman -S rsync`                                                            |
+| `Permission denied`             | No ejecutes como root; usa tu usuario normal                                      |
+| `pv: command not found`         | `sudo pacman -S pv` (opcional, el script funciona sin él)                         |
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Uso libre y personal. Modifica según tus necesidades.
 
 ---
 
-*Generado para Arch Linux — `/home/achalmaedison` → `/run/media/achalmaedison/ARCHDISK`*
+_Generado para Arch Linux — `/home/achalmaedison` → `/run/media/achalmaedison/ARCHDISK`_

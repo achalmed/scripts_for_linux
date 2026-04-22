@@ -48,18 +48,13 @@ HOME_DIR="/home/${USUARIO}"
 CARPETAS_BACKUP=(
     "Desktop"
     "Documents"
-    "dotfiles"
     "Downloads"
-    "gretl"
     "Music"
     "Pictures"
     "Public"
-    "R"
     "Reading_Goal"
-    "sources"
     "Templates"
     "Videos"
-    "Zotero"
 )
 
 # ── Carpetas excluidas explícitamente (miniconda3 y paru son pesadas/regenerables) ──
@@ -68,6 +63,11 @@ CARPETAS_EXCLUIR=(
     "miniconda3"   # ~3GB+, se puede reinstalar fácilmente
     "paru"         # caché de AUR, regenerable
     "pyRenamer"    # app de sistema, no datos del usuario
+    "gretl"
+    "R"
+    "sources"
+    "Zotero"
+    "dotfiles"
 )
 
 # ── Destino: punto de montaje del disco externo ──
@@ -161,7 +161,7 @@ mostrar_ayuda() {
     cat <<EOF
 ${NEGRITA}${AZUL}
 ╔══════════════════════════════════════════════════════════════════╗
-║           BACKUP ARCH LINUX → DISCO EXTERNO (ARCHDISK)          ║
+║           BACKUP ARCH LINUX → DISCO EXTERNO (ARCHDISK)           ║
 ╚══════════════════════════════════════════════════════════════════╝
 ${RESET}
 ${NEGRITA}USO:${RESET}
@@ -822,8 +822,8 @@ main() {
     echo ""
     echo -e "${NEGRITA}${AZUL}"
     echo "  ╔══════════════════════════════════════════════════════════════════╗"
-    echo "  ║         BACKUP ARCH LINUX → ARCHDISK                           ║"
-    echo "  ║         $(date '+%d/%m/%Y %H:%M:%S')                                    ║"
+    echo "  ║         BACKUP ARCH LINUX → ARCHDISK                             ║"
+    echo "  ║         $(date '+%d/%m/%Y %H:%M:%S')                             ║"
     echo "  ╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${RESET}"
     echo ""
