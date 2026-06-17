@@ -1,4 +1,5 @@
 # Gestor de Hard Links
+#readme
 
 Sistema completo para crear y detectar hard links en sistemas Linux, ideal para optimizar espacio en disco cuando tienes archivos idénticos con el mismo nombre en diferentes ubicaciones.
 

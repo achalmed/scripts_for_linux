@@ -1,4 +1,5 @@
 # PDF Compressor v2.0
+#readme 
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Arch Linux](https://img.shields.io/badge/platform-Arch%20Linux-1793d1.svg)

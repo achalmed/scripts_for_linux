@@ -1,5 +1,7 @@
 # 📘 Ejemplos de Uso Detallados - PDF Page Counter
 
+#readme 
+
 Ejemplos prácticos y casos de uso específicos para el análisis de tus blogs académicos.
 
 **Autor:** Edison Achalma  

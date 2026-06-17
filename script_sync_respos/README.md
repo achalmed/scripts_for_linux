@@ -1,4 +1,5 @@
 # Scripts de Sincronización de Repositorios Git
+#readme
 
 Scripts para automatizar la sincronización de múltiples repositorios Git simultáneamente.
 

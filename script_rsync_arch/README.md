@@ -1,5 +1,5 @@
 # backup_arch.sh — Backup Inteligente para Arch Linux
-
+#readme 
 Script de sincronización de backup para respaldar el directorio home de Arch Linux
 hacia un disco externo, con comparación de contenido, interactividad y control total.
 
