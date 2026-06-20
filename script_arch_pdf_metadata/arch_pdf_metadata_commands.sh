@@ -2,6 +2,12 @@
 # ARCH LINUX — Ver Metadatos de PDFs desde el Terminal
 # Edison Achalma | Universidad Nacional de San Cristóbal de Huamanga
 # ══════════════════════════════════════════════════════════════════════════════
+#
+# ADVERTENCIA: este archivo es una REFERENCIA DE COMANDOS, no un script para
+# ejecutar de corrido con `bash arch_pdf_metadata_commands.sh`. Cada bloque es
+# independiente y usa "archivo.pdf" como marcador de posición que debes
+# reemplazar por la ruta real de tu PDF. Copia y pega el comando que necesites.
+# ══════════════════════════════════════════════════════════════════════════════
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -80,25 +86,29 @@ pdfinfo -meta archivo.pdf | grep -A 1000 "Metadata:"
 # 4. QPDF — INSPECCIÓN AVANZADA DE ESTRUCTURA PDF
 # ──────────────────────────────────────────────────────────────────────────────
 
-# Ver información general
-qpdf --show-object=1 archivo.pdf
+# Ver información general (chequeo de validez estructural del PDF)
+qpdf --check archivo.pdf
 
-# Extraer el flujo XMP (si existe) — busca el objeto de metadatos
-qpdf --json archivo.pdf | python3 -m json.tool | grep -i "xmp\|metadata\|title\|author" | head -40
+# Extraer el flujo XMP (si existe) — vía JSON de qpdf + grep
+# (corregido: qpdf no tiene la opción --show-object; --json es la forma
+# correcta de inspeccionar objetos de metadatos)
+qpdf --json=latest archivo.pdf | grep -i "xmp\|metadata\|title\|author" | head -40
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # 5. MUTOOL — VER METADATOS CON MUPDF
 # ──────────────────────────────────────────────────────────────────────────────
 
-# Información del PDF
+# Información del PDF (DocInfo básico: título, autor, fechas)
 mutool info archivo.pdf
 
-# Extraer el XML XMP completo
+# Ver el diccionario Info del trailer (metadatos DocInfo, NO es XMP)
 mutool show archivo.pdf trailer/Info
 
-# Ver objeto de metadatos
-mutool show archivo.pdf
+# Ver el flujo XMP real (si existe) — está en trailer/Root/Metadata,
+# no en trailer/Info (corregido: el comando original mostraba el lugar
+# equivocado para datos XMP)
+mutool show archivo.pdf trailer/Root/Metadata
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -158,6 +168,9 @@ if reader.xmp_metadata:
     print("=" * 50)
     print("  METADATOS XMP")
     print("=" * 50)
+    # Nota: dc_title y dc_description son diccionarios {idioma: texto}
+    # (ej. {'x-default': 'Mi título'}), no strings simples; el resto de
+    # campos dc_* suelen ser listas.
     print(f"  dc:title       : {xmp.dc_title}")
     print(f"  dc:creator     : {xmp.dc_creator}")
     print(f"  dc:description : {xmp.dc_description}")
@@ -181,7 +194,7 @@ find ~/Zotero/storage -name "*.pdf" -exec echo "=== {} ===" \; \
   -exec exiftool -Title -Author -Date -Keywords {} \; 2>/dev/null
 
 # Solo los que SÍ tienen título (procesados por el script de Zotero)
-find ~/Zotero/storage -name "*.pdf" | while read f; do
+find ~/Zotero/storage -name "*.pdf" | while IFS= read -r f; do
   title=$(exiftool -s3 -Title "$f" 2>/dev/null)
   if [ -n "$title" ]; then
     echo "✅ $title"
@@ -190,7 +203,7 @@ find ~/Zotero/storage -name "*.pdf" | while read f; do
 done
 
 # Solo los que NO tienen metadatos (pendientes de procesar)
-find ~/Zotero/storage -name "*.pdf" | while read f; do
+find ~/Zotero/storage -name "*.pdf" | while IFS= read -r f; do
   title=$(exiftool -s3 -Title "$f" 2>/dev/null)
   if [ -z "$title" ]; then
     echo "⚠️  Sin metadatos: $f"
@@ -219,3 +232,7 @@ pdfzotero() {
     | grep -i "$1"
 }
 # Uso: pdfzotero "nombre del artículo"
+# Nota: si necesitas también la ruta del archivo encontrado, usa en su lugar:
+#   find ~/Zotero/storage -name "*.pdf" | while IFS= read -r f; do
+#     exiftool -s3 -Title "$f" | grep -qi "$1" && echo "$f"
+#   done

@@ -1,83 +1,105 @@
-# Configuración para sincronización de repositorios
+# Configuración de sincronización de repositorios Git
+# ---------------------------------------------------------
 # Archivo: repos-config.yml
+#
+# Editado por install.sh automáticamente la primera vez (base_directory).
+# El resto puedes ajustarlo a mano cuando quieras.
 
-# Directorio base donde están los repositorios
-base_directory: /home/achalmaedison/Documents/publicaciones
+# Directorio base donde están todos los repositorios (cada uno en su propia carpeta)
+base_directory: ~/Documents/publicaciones
 
-# Lista de repositorios a sincronizar
+# Lista de repositorios a gestionar.
+# - name: debe coincidir exactamente con el nombre de la carpeta del repo
+# - branch: rama principal de ese repo (normalmente "main")
+# - enabled: true/false — si está en false, sync.sh y status.sh lo ignoran
 repositories:
+  - name: actus-mercator
+    branch: main
+    enabled: true
+
+  - name: aequilibria
+    branch: main
+    enabled: true
+
   - name: axiomata
     branch: main
     enabled: true
-    
+
   - name: chaska
     branch: main
     enabled: true
-    
+
   - name: dialectica-y-mercado
     branch: main
     enabled: true
-    
+
   - name: epsilon-y-beta
     branch: main
     enabled: true
-    
+
   - name: methodica
     branch: main
     enabled: true
-    
+
   - name: numerus-scriptum
     branch: main
     enabled: true
-    
+
   - name: optimums
     branch: main
     enabled: true
-    
+
   - name: pecunia-fluxus
     branch: main
     enabled: true
-    
+
   - name: res-publica
     branch: main
     enabled: true
-    
+
   - name: website-achalma
     branch: main
     enabled: true
 
-# Mensajes de commit por tipo de actualización
-commit_messages:
-  default: "update: sincronización automática de contenidos"
-  metadata: "feat(config): actualizar configuración del sitio web"
-  theme: "mejora: reestructurar configuración de temas y recursos visuales"
-  content: "docs: actualizar contenidos"
-  indices: "docs: actualizar índices automáticos"
-  scripts: "chore: actualizar scripts de automatización"
+  - name: awesome-ai-prompts
+    branch: main
+    enabled: true
 
-# Configuración de comportamiento
-settings:
-  auto_pull: true           # Hacer pull antes de push
-  check_branch: true        # Verificar que estés en la rama correcta
-  verbose: false            # Modo verbose por defecto
-  parallel: false           # Procesar repos en paralelo (experimental)
-  max_retries: 3            # Número de reintentos en caso de error
-  
-# Patrones de archivos para auto-detectar tipo de commit
-auto_detect_patterns:
-  metadata:
-    - "_metadata.yml"
-    - "_quarto.yml"
-    - "config.yml"
-  theme:
-    - "styles.css"
-    - "theme.scss"
-    - "_variables.scss"
-  indices:
-    - "index.qmd"
-    - "indice.qmd"
-    - "**/index.qmd"
-  scripts:
-    - "*.sh"
-    - "*.py"
-    - "scripts/**"
+  - name: scripts_for_zotero
+    branch: main
+    enabled: true
+
+  - name: scripts_for_quarto
+    branch: main
+    enabled: true
+
+  - name: scripts_for_libreoffice
+    branch: main
+    enabled: true
+
+  - name: scripts_for_latex
+    branch: main
+    enabled: true
+
+  - name: scripts_for_linux
+    branch: main
+    enabled: true
+
+  - name: scripts_for_calibre
+    branch: main
+    enabled: true
+
+  - name: Python
+    branch: main
+    enabled: true
+
+  - name: CampusTeX-Research
+    branch: main
+    enabled: true
+
+  - name: CampusTeX-Math
+    branch: main
+    enabled: true
+
+# Mensaje de commit por defecto cuando no se pasa uno con -m
+default_commit_message: "update: sincronización automática de contenidos"

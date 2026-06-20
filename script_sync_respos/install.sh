@@ -1,7 +1,10 @@
 #!/bin/bash
-
-# Script de instalación automática
-# Instala y configura los scripts de sincronización de Git
+#
+# install.sh — Instalador de git-sync (sync.sh + status.sh)
+#
+# Copia los scripts a un directorio de instalación, detecta tus repos
+# existentes para pre-llenar repos-config.yml, y opcionalmente agrega
+# alias a tu shell.
 
 set -e
 
@@ -13,7 +16,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║  Instalador de Scripts de Sincronización Git          ║${NC}"
+echo -e "${BLUE}║         Instalador de git-sync                          ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -22,168 +25,121 @@ ask() {
     local prompt="$1"
     local default="$2"
     local response
-    
-    read -p "$(echo -e ${YELLOW}${prompt}${NC}) [${default}]: " response
+    read -r -p "$(echo -e "${YELLOW}${prompt}${NC}") [${default}]: " response
     echo "${response:-$default}"
 }
 
 # Función para detectar shell
 detect_shell() {
-    if [ -n "$BASH_VERSION" ]; then
-        echo "bash"
-    elif [ -n "$ZSH_VERSION" ]; then
+    if [ -n "${ZSH_VERSION:-}" ]; then
         echo "zsh"
     else
         echo "bash"
     fi
 }
 
-# Paso 1: Configuración inicial
-echo -e "${BLUE}[1/6]${NC} Configuración inicial"
+# ---------- Paso 1: configuración inicial ----------
+echo -e "${BLUE}[1/5]${NC} Configuración inicial"
 echo ""
 
-INSTALL_DIR=$(ask "¿Dónde instalar los scripts?" "$HOME/bin/git-sync")
-REPOS_DIR=$(ask "¿Dónde están tus repositorios?" "$HOME/Projects")
+INSTALL_DIR="$(ask "¿Dónde instalar los scripts?" "$HOME/bin/git-sync")"
+REPOS_DIR="$(ask "¿Dónde están tus repositorios?" "$HOME/Documents/publicaciones")"
 
-# Paso 2: Crear directorio
+# ---------- Paso 2: crear directorio ----------
 echo ""
-echo -e "${BLUE}[2/6]${NC} Creando directorio de instalación..."
+echo -e "${BLUE}[2/5]${NC} Creando directorio de instalación..."
 mkdir -p "$INSTALL_DIR"
 echo -e "${GREEN}✓${NC} Directorio creado: $INSTALL_DIR"
 
-# Paso 3: Copiar archivos
+# ---------- Paso 3: copiar archivos ----------
 echo ""
-echo -e "${BLUE}[3/6]${NC} Copiando archivos..."
+echo -e "${BLUE}[3/5]${NC} Copiando archivos..."
 
-# Verificar que existan los archivos en el directorio actual
-CURRENT_DIR=$(dirname "$0")
+CURRENT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-if [ -f "$CURRENT_DIR/sync-repos.sh" ]; then
-    cp "$CURRENT_DIR/sync-repos.sh" "$INSTALL_DIR/"
-    chmod +x "$INSTALL_DIR/sync-repos.sh"
-    echo -e "${GREEN}✓${NC} sync-repos.sh copiado"
-else
-    echo -e "${RED}✗${NC} sync-repos.sh no encontrado"
-fi
+copy_file() {
+    local filename="$1"
+    local make_exec="$2"
+    if [ -f "$CURRENT_DIR/$filename" ]; then
+        cp "$CURRENT_DIR/$filename" "$INSTALL_DIR/"
+        [ "$make_exec" = "true" ] && chmod +x "$INSTALL_DIR/$filename"
+        echo -e "${GREEN}✓${NC} $filename copiado"
+    else
+        echo -e "${RED}✗${NC} $filename no encontrado junto al instalador, se omite"
+    fi
+}
 
-if [ -f "$CURRENT_DIR/sync-repos.py" ]; then
-    cp "$CURRENT_DIR/sync-repos.py" "$INSTALL_DIR/"
-    chmod +x "$INSTALL_DIR/sync-repos.py"
-    echo -e "${GREEN}✓${NC} sync-repos.py copiado"
-else
-    echo -e "${RED}✗${NC} sync-repos.py no encontrado"
-fi
+copy_file "sync.sh" "true"
+copy_file "status.sh" "true"
+copy_file "README.md" "false"
 
-if [ -f "$CURRENT_DIR/quick-sync.sh" ]; then
-    cp "$CURRENT_DIR/quick-sync.sh" "$INSTALL_DIR/"
-    chmod +x "$INSTALL_DIR/quick-sync.sh"
-    echo -e "${GREEN}✓${NC} quick-sync.sh copiado"
-else
-    echo -e "${RED}✗${NC} quick-sync.sh no encontrado"
-fi
-
-if [ -f "$CURRENT_DIR/repos-config.yml" ]; then
+# repos-config.yml: si ya existe uno instalado, no lo sobrescribimos (para no
+# perder ediciones manuales previas del usuario)
+if [ -f "$INSTALL_DIR/repos-config.yml" ]; then
+    echo -e "${YELLOW}⚠${NC}  Ya existe repos-config.yml en el destino, no se sobrescribe"
+elif [ -f "$CURRENT_DIR/repos-config.yml" ]; then
     cp "$CURRENT_DIR/repos-config.yml" "$INSTALL_DIR/"
     echo -e "${GREEN}✓${NC} repos-config.yml copiado"
 else
     echo -e "${RED}✗${NC} repos-config.yml no encontrado"
 fi
 
-if [ -f "$CURRENT_DIR/README.md" ]; then
-    cp "$CURRENT_DIR/README.md" "$INSTALL_DIR/"
-    echo -e "${GREEN}✓${NC} README.md copiado"
-fi
-
-# Paso 4: Configurar BASE_DIR en los scripts
+# ---------- Paso 4: configurar base_directory en repos-config.yml ----------
 echo ""
-echo -e "${BLUE}[4/6]${NC} Configurando rutas..."
+echo -e "${BLUE}[4/5]${NC} Configurando directorio base..."
 
-# Actualizar BASE_DIR en sync-repos.sh
-if [ -f "$INSTALL_DIR/sync-repos.sh" ]; then
-    sed -i.bak "s|BASE_DIR=\"\$HOME/Projects\"|BASE_DIR=\"$REPOS_DIR\"|g" "$INSTALL_DIR/sync-repos.sh"
-    rm -f "$INSTALL_DIR/sync-repos.sh.bak"
-    echo -e "${GREEN}✓${NC} sync-repos.sh configurado"
+CONFIG_PATH="$INSTALL_DIR/repos-config.yml"
+if [ -f "$CONFIG_PATH" ]; then
+    # Normalizar REPOS_DIR a forma con ~ si corresponde, o ruta absoluta
+    sed -i.bak -E "s|^base_directory:.*|base_directory: ${REPOS_DIR}|" "$CONFIG_PATH"
+    rm -f "${CONFIG_PATH}.bak"
+    echo -e "${GREEN}✓${NC} base_directory configurado: $REPOS_DIR"
 fi
 
-# Actualizar BASE_DIR en quick-sync.sh
-if [ -f "$INSTALL_DIR/quick-sync.sh" ]; then
-    sed -i.bak "s|BASE_DIR=\"\$HOME/Projects\"|BASE_DIR=\"$REPOS_DIR\"|g" "$INSTALL_DIR/quick-sync.sh"
-    rm -f "$INSTALL_DIR/quick-sync.sh.bak"
-    echo -e "${GREEN}✓${NC} quick-sync.sh configurado"
-fi
-
-# Actualizar base_directory en repos-config.yml
-if [ -f "$INSTALL_DIR/repos-config.yml" ]; then
-    sed -i.bak "s|base_directory: ~/Projects|base_directory: $REPOS_DIR|g" "$INSTALL_DIR/repos-config.yml"
-    rm -f "$INSTALL_DIR/repos-config.yml.bak"
-    echo -e "${GREEN}✓${NC} repos-config.yml configurado"
-fi
-
-# Paso 5: Detectar repositorios automáticamente
-echo ""
-echo -e "${BLUE}[5/6]${NC} Detectando repositorios..."
-
+# Detectar repos existentes y avisar si hay diferencias con el config
 if [ -d "$REPOS_DIR" ]; then
-    DETECTED_REPOS=()
+    DETECTED=()
     for dir in "$REPOS_DIR"/*; do
-        if [ -d "$dir/.git" ]; then
-            repo_name=$(basename "$dir")
-            DETECTED_REPOS+=("$repo_name")
-        fi
+        [ -d "$dir/.git" ] && DETECTED+=("$(basename "$dir")")
     done
-    
-    if [ ${#DETECTED_REPOS[@]} -gt 0 ]; then
-        echo -e "${GREEN}✓${NC} Repositorios detectados: ${#DETECTED_REPOS[@]}"
-        for repo in "${DETECTED_REPOS[@]}"; do
-            echo "  - $repo"
+
+    if [ "${#DETECTED[@]}" -gt 0 ]; then
+        echo -e "${GREEN}✓${NC} Repositorios Git detectados en $REPOS_DIR: ${#DETECTED[@]}"
+        for repo in "${DETECTED[@]}"; do
+            if grep -q "name: $repo$" "$CONFIG_PATH" 2>/dev/null; then
+                echo "    - $repo (ya está en repos-config.yml)"
+            else
+                echo -e "    - $repo ${YELLOW}(NO está en repos-config.yml, agrégalo manualmente)${NC}"
+            fi
         done
-        
-        UPDATE_CONFIG=$(ask "¿Actualizar repos-config.yml con estos repositorios?" "s")
-        
-        if [[ "$UPDATE_CONFIG" =~ ^[sS]$ ]]; then
-            # Crear nueva sección de repositorios
-            REPOS_SECTION="repositories:"
-            for repo in "${DETECTED_REPOS[@]}"; do
-                REPOS_SECTION="$REPOS_SECTION
-  - name: $repo
-    branch: main
-    enabled: true"
-            done
-            
-            # Actualizar archivo (esto es simplificado, en producción sería más robusto)
-            echo -e "${YELLOW}⚠${NC}  Actualiza manualmente repos-config.yml con tus repositorios"
-        fi
     else
         echo -e "${YELLOW}⚠${NC}  No se detectaron repositorios Git en $REPOS_DIR"
     fi
 else
-    echo -e "${YELLOW}⚠${NC}  Directorio no encontrado: $REPOS_DIR"
+    echo -e "${YELLOW}⚠${NC}  El directorio $REPOS_DIR no existe todavía"
 fi
 
-# Paso 6: Configurar aliases
+# ---------- Paso 5: aliases opcionales ----------
 echo ""
-echo -e "${BLUE}[6/6]${NC} Configuración de aliases (opcional)"
+echo -e "${BLUE}[5/5]${NC} Configuración de aliases (opcional)"
 echo ""
 
-SHELL_TYPE=$(detect_shell)
+SHELL_TYPE="$(detect_shell)"
 SHELL_RC="$HOME/.${SHELL_TYPE}rc"
 
 if [ -f "$SHELL_RC" ]; then
-    SETUP_ALIASES=$(ask "¿Agregar aliases a $SHELL_RC?" "s")
-    
+    SETUP_ALIASES="$(ask "¿Agregar aliases a $SHELL_RC?" "s")"
+
     if [[ "$SETUP_ALIASES" =~ ^[sS]$ ]]; then
-        # Verificar si los aliases ya existen
-        if ! grep -q "# Git Sync Scripts" "$SHELL_RC"; then
+        if ! grep -q "# git-sync aliases" "$SHELL_RC" 2>/dev/null; then
             cat >> "$SHELL_RC" << EOF
 
-# Git Sync Scripts - Edison Achalma
-alias gsync='$INSTALL_DIR/quick-sync.sh'
-alias gsync-check='$INSTALL_DIR/sync-repos.sh -c'
-alias gsync-all='$INSTALL_DIR/sync-repos.py -v'
+# git-sync aliases - Edison Achalma
+alias gsync='$INSTALL_DIR/sync.sh'
+alias gstatus='$INSTALL_DIR/status.sh'
 gsyncm() {
-    $INSTALL_DIR/quick-sync.sh "\$1"
+    "$INSTALL_DIR/sync.sh" -m "\$1"
 }
-
 EOF
             echo -e "${GREEN}✓${NC} Aliases agregados a $SHELL_RC"
             echo -e "${YELLOW}ℹ${NC}  Ejecuta: source $SHELL_RC"
@@ -193,44 +149,25 @@ EOF
     fi
 fi
 
-# Paso 7: Instalar dependencias de Python (opcional)
-echo ""
-INSTALL_PYTHON=$(ask "¿Instalar dependencias de Python (PyYAML)?" "s")
-
-if [[ "$INSTALL_PYTHON" =~ ^[sS]$ ]]; then
-    if command -v pip &> /dev/null || command -v pip3 &> /dev/null; then
-        PIP_CMD=$(command -v pip3 || command -v pip)
-        echo "Instalando PyYAML..."
-        $PIP_CMD install pyyaml --break-system-packages 2>/dev/null || $PIP_CMD install pyyaml
-        echo -e "${GREEN}✓${NC} PyYAML instalado"
-    else
-        echo -e "${YELLOW}⚠${NC}  pip no encontrado, instala PyYAML manualmente si deseas usar sync-repos.py"
-    fi
-fi
-
-# Resumen final
+# ---------- Resumen ----------
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║           ¡Instalación Completada!                    ║${NC}"
+echo -e "${GREEN}║              ¡Instalación completada!                  ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${BLUE}Ubicación:${NC} $INSTALL_DIR"
 echo ""
 echo -e "${BLUE}Próximos pasos:${NC}"
-echo "  1. Edita $INSTALL_DIR/repos-config.yml con tus repositorios"
-echo "  2. Prueba: cd $INSTALL_DIR && ./quick-sync.sh"
-echo "  3. Si agregaste aliases: source $SHELL_RC"
-echo "  4. Lee el README.md para más información"
+echo "  1. Revisa $INSTALL_DIR/repos-config.yml y ajusta tus repos"
+echo "  2. Prueba:  $INSTALL_DIR/status.sh"
+echo "  3. Sincroniza: $INSTALL_DIR/sync.sh -c    (modo verificación primero)"
+echo "  4. Si agregaste aliases: source $SHELL_RC"
 echo ""
 echo -e "${BLUE}Uso rápido:${NC}"
-echo "  $INSTALL_DIR/quick-sync.sh                    # Sincronización rápida"
-echo "  $INSTALL_DIR/sync-repos.sh -h                 # Ver opciones"
-echo "  $INSTALL_DIR/sync-repos.py -v                 # Python con verbose"
-echo ""
-echo -e "${BLUE}Con aliases (después de source):${NC}"
-echo "  gsync                                          # Sincronización rápida"
-echo "  gsyncm \"tu mensaje\"                           # Con mensaje"
-echo "  gsync-check                                    # Solo verificar"
+echo "  $INSTALL_DIR/status.sh                          # Ver estado de todos los repos"
+echo "  $INSTALL_DIR/sync.sh                             # Sincronizar todos"
+echo "  $INSTALL_DIR/sync.sh -m \"mensaje\"               # Con mensaje personalizado"
+echo "  $INSTALL_DIR/sync.sh -h                          # Ver todas las opciones"
 echo ""
 echo "Documentación completa en: $INSTALL_DIR/README.md"
 echo ""
