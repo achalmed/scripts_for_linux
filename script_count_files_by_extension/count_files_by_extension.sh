@@ -1,4 +1,5 @@
 #!/bin/bash
+set -uo pipefail
 
 ################################################################################
 # Script: count_files_by_extension.sh
@@ -214,7 +215,9 @@ show_top_extensions() {
         percentage=$(awk "BEGIN {printf \"%.1f\", ($count/$total)*100}")
         
         # Crear barra de progreso visual
-        bar_length=$((percentage / 2))
+        # (bar_length se calcula con awk porque percentage es decimal y
+        # la aritmética bash $(( )) no admite números con punto flotante)
+        bar_length=$(awk "BEGIN {printf \"%d\", $percentage/2}")
         bar=$(printf "%${bar_length}s" | tr ' ' '█')
         
         printf "  ${GREEN}%-15s${NC} %5s archivos [${CYAN}%-50s${NC}] ${YELLOW}%5s%%${NC}\n" \

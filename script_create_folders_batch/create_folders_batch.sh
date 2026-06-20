@@ -1,4 +1,5 @@
 #!/bin/bash
+set -uo pipefail
 
 ################################################################################
 # Script: create_folders_batch.sh
@@ -168,13 +169,15 @@ validate_input_file() {
 ################################################################################
 
 # Leer carpetas desde archivo o usar lista predefinida
+# IMPORTANTE: los mensajes de log van a stderr aquí para que NUNCA se mezclen
+# con la lista de carpetas que se imprime en stdout (bug corregido).
 get_folders_list() {
     if [ -n "$INPUT_FILE" ]; then
-        log_info "Leyendo carpetas desde: ${BLUE}$INPUT_FILE${NC}"
+        log_info "Leyendo carpetas desde: ${BLUE}$INPUT_FILE${NC}" >&2
         # Leer archivo, ignorar líneas vacías y comentarios
         grep -v '^\s*$' "$INPUT_FILE" | grep -v '^\s*#'
     else
-        log_info "Usando lista predefinida de carpetas"
+        log_info "Usando lista predefinida de carpetas" >&2
         echo "$PREDEFINED_FOLDERS"
     fi
 }
@@ -229,7 +232,12 @@ create_single_folder() {
 # Mostrar resumen de carpetas a crear
 show_preview() {
     local folders_list="$1"
-    local count=$(echo "$folders_list" | wc -l | tr -d ' ')
+    local count=0
+    while IFS= read -r folder; do
+        folder=$(sanitize_folder_name "$folder")
+        [ -z "$folder" ] && continue
+        ((count++))
+    done <<< "$folders_list"
     
     echo ""
     echo -e "${CYAN}╔════════════════════════════════════════════════════════════════════╗${NC}"
