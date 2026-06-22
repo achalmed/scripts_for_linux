@@ -1,67 +1,74 @@
-# Configuración de sincronización de repositorios Git
-# ---------------------------------------------------------
-# Archivo: repos-config.yml
-#
+# =============================================================================
+# repos-config.yml — Configuración de git-sync
+# =============================================================================
 # Editado por install.sh automáticamente la primera vez (base_directory).
-# El resto puedes ajustarlo a mano cuando quieras.
+# El resto ajústalo a mano cuando necesites agregar/quitar/pausar repos.
+#
+# FORMATO REQUERIDO (el parser es ligero, no es YAML genérico):
+#   - 'name' con exactamente 2 espacios + "- " antes
+#   - 'branch' y 'enabled' con exactamente 4 espacios antes
+#   - No uses comillas, anchors, listas inline ni anidación adicional
+# =============================================================================
 
-# Directorio base donde están todos los repositorios (cada uno en su propia carpeta)
-base_directory: ~/Documents/publicaciones
+# Directorio base donde están todos los repositorios (una carpeta por repo)
+# Acepta ~ al inicio o ruta absoluta
+base_directory: ~/Documents
 
-# Lista de repositorios a gestionar.
-# - name: debe coincidir exactamente con el nombre de la carpeta del repo
-# - branch: rama principal de ese repo (normalmente "main")
-# - enabled: true/false — si está en false, sync.sh y status.sh lo ignoran
+# Lista de repositorios a gestionar
 repositories:
-  - name: actus-mercator
+
+  # ── Blogs de publicación (formato pub_*) ──────────────────────────────────
+  - name: pub_actus-mercator
     branch: main
     enabled: true
 
-  - name: aequilibria
+  - name: pub_aequilibria
     branch: main
     enabled: true
 
-  - name: axiomata
+  - name: pub_axiomata
     branch: main
     enabled: true
 
-  - name: chaska
+  - name: pub_chaska
     branch: main
     enabled: true
 
-  - name: dialectica-y-mercado
+  - name: pub_dialectica-y-mercado
     branch: main
     enabled: true
 
-  - name: epsilon-y-beta
+  - name: pub_epsilon-y-beta
     branch: main
     enabled: true
 
-  - name: methodica
+  - name: pub_methodica
     branch: main
     enabled: true
 
-  - name: numerus-scriptum
+  - name: pub_numerus-scriptum
     branch: main
     enabled: true
 
-  - name: optimums
+  - name: pub_optimums
     branch: main
     enabled: true
 
-  - name: pecunia-fluxus
+  - name: pub_pecunia-fluxus
     branch: main
     enabled: true
 
-  - name: res-publica
+  - name: pub_res-publica
     branch: main
     enabled: true
 
+  # ── Sitio web principal ───────────────────────────────────────────────────
   - name: website-achalma
     branch: main
     enabled: true
 
-  - name: awesome-ai-prompts
+  # ── Scripts y herramientas ────────────────────────────────────────────────
+  - name: scripts_for_quarto
     branch: main
     enabled: true
 
@@ -69,15 +76,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: scripts_for_quarto
-    branch: main
-    enabled: true
-
   - name: scripts_for_libreoffice
-    branch: main
-    enabled: true
-
-  - name: scripts_for_latex
     branch: main
     enabled: true
 
@@ -85,14 +84,24 @@ repositories:
     branch: main
     enabled: true
 
+  - name: scripts_for_latex
+    branch: main
+    enabled: true
+
   - name: scripts_for_calibre
     branch: main
     enabled: true
 
+  # ── Proyectos de código ───────────────────────────────────────────────────
   - name: Python
     branch: main
     enabled: true
 
+  - name: awesome-ai-prompts
+    branch: main
+    enabled: true
+
+  # ── CampusTeX ─────────────────────────────────────────────────────────────
   - name: CampusTeX-Research
     branch: main
     enabled: true
@@ -101,5 +110,5 @@ repositories:
     branch: main
     enabled: true
 
-# Mensaje de commit por defecto cuando no se pasa uno con -m
+# Mensaje de commit por defecto cuando no se pasa -m
 default_commit_message: "update: sincronización automática de contenidos"
