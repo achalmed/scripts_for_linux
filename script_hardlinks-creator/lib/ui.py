@@ -63,10 +63,10 @@ def print_summary(stats: dict) -> None:
     print_header("RESUMEN DE OPERACIONES")
 
     rows = [
-        (C.GREEN,  "✅ Grupos creados",      stats["groups_created"]),
-        (C.CYAN,   "📝 Hard links creados",  stats["links_created"]),
-        (C.GRAY,   "⏭️  Ya enlazados (omit)", stats["files_skipped"]),
-        (C.YELLOW, "⚠️  Grupos omitidos",     stats["groups_skipped"]),
+        (C.GREEN, "✅ Grupos creados", stats["groups_created"]),
+        (C.CYAN, "📝 Hard links creados", stats["links_created"]),
+        (C.GRAY, "⏭️  Ya enlazados (omit)", stats["files_skipped"]),
+        (C.YELLOW, "⚠️  Grupos omitidos", stats["groups_skipped"]),
     ]
     if stats["errors"] > 0:
         rows.append((C.RED, "❌ Errores", stats["errors"]))
@@ -78,7 +78,8 @@ def print_summary(stats: dict) -> None:
         content = f"  {color}{label}:{C.RESET} {C.BOLD}{value}{C.RESET}"
         # Strip ANSI for length calculation
         import re
-        ansi_escape = re.compile(r'\x1b\[[0-9;]*m')
+
+        ansi_escape = re.compile(r"\x1b\[[0-9;]*m")
         visible_len = len(ansi_escape.sub("", content))
         pad = inner_width - visible_len
         print(f"{border}║{C.RESET}{content}{' ' * max(pad, 0)}{border}║{C.RESET}")
@@ -86,9 +87,17 @@ def print_summary(stats: dict) -> None:
 
     if stats["groups_created"] > 0:
         print(f"\n{C.GREEN}{C.BOLD}✨ ¡Proceso completado exitosamente!{C.RESET}")
-        print(f"{C.GRAY}   Usa hardlinks-detector para verificar los enlaces creados.{C.RESET}\n")
+        print(
+            f"{C.GRAY}   Usa hardlinks-detector para verificar los enlaces creados.{C.RESET}\n"
+        )
+        print(
+            f"{C.GRAY}   cd ~/Documents/scripts_for_linux/script_hardlinks-detector.{C.RESET}\n"
+        )
+        print(f"{C.GRAY}   ./main.sh ~/Documents{C.RESET}\n")
     elif stats["groups_skipped"] > 0:
-        print(f"\n{C.YELLOW}ℹ️  Completado sin cambios (grupos omitidos por el usuario).{C.RESET}\n")
+        print(
+            f"\n{C.YELLOW}ℹ️  Completado sin cambios (grupos omitidos por el usuario).{C.RESET}\n"
+        )
     else:
         print(f"\n{C.CYAN}ℹ️  No se requirieron cambios.{C.RESET}\n")
 
@@ -109,9 +118,11 @@ def confirm_group(group_number: int) -> bool:
     Returns True if the user confirmed (default), False to skip.
     """
     try:
-        response = input(
-            f"{C.BOLD}¿Crear hard links para este grupo? [S/n]: {C.RESET}"
-        ).strip().lower()
+        response = (
+            input(f"{C.BOLD}¿Crear hard links para este grupo? [S/n]: {C.RESET}")
+            .strip()
+            .lower()
+        )
         return response not in ("n", "no")
     except EOFError:
         # Non-interactive environment (pipe, CI) — default to confirm

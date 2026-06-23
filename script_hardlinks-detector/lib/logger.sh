@@ -12,15 +12,15 @@
 # Exported so child modules can reference them after sourcing this file.
 # ---------------------------------------------------------------------------
 if [[ -t 1 ]]; then
-    BOLD='\033[1m'
-    RESET='\033[0m'
-    GRAY='\033[0;90m'
-    RED='\033[0;91m'
-    GREEN='\033[0;92m'
-    YELLOW='\033[0;93m'
-    BLUE='\033[0;94m'
-    CYAN='\033[0;96m'
-    WHITE='\033[0;97m'
+    BOLD=$'\033[1m'
+    RESET=$'\033[0m'
+    GRAY=$'\033[0;90m'
+    RED=$'\033[0;91m'
+    GREEN=$'\033[0;92m'
+    YELLOW=$'\033[0;93m'
+    BLUE=$'\033[0;94m'
+    CYAN=$'\033[0;96m'
+    WHITE=$'\033[0;97m'
 else
     # Non-interactive terminal (pipe, file redirect) — disable all colors
     BOLD=''; RESET=''; GRAY=''; RED=''; GREEN=''

@@ -138,6 +138,9 @@ hardlinks-detector [DIRECTORIO] [OPCIONES]
 ### Ejemplos
 
 ```bash
+# Inicio
+cd ~/Documents/scripts_for_linux/script_hardlinks-detector
+
 # Ver hard links en el directorio actual
 ./main.sh
 
