@@ -160,6 +160,22 @@ python main.py .editorconfig --replace-exclude build dist
 
 # Sin colores para log de CI
 python main.py _quarto.yml --auto --no-color >> /var/log/hardlinks.log 2>&1
+
+# otros:
+python main.py _contenido-final.qmd
+python main.py _contenido-inicio.qmd
+python main.py README.md
+python main.py SECURITY.md
+python main.py .gitignore
+python main.py 404.qmd
+python main.py LICENSE
+python main.py title-block.html
+python main.py colors.scss
+python main.py fonts.scss
+python main.py listing-default.css
+python main.py styles.css
+python main.py theme_dark.scss
+python main.py theme_light.scss
 ```
 
 ---

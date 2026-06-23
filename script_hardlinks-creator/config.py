@@ -10,7 +10,7 @@ never contains magic strings or hardcoded paths.
 # ==============================================================================
 VERSION = "3.0.0"
 AUTHOR = "Edison Achalma"
-EMAIL = "achalmaedison@gmail.com"
+EMAIL = "achalmed.18@gmail.com"
 
 # ==============================================================================
 # DIRECTORIO DE TRABAJO
@@ -52,9 +52,10 @@ DEFAULT_EXCLUDED_DIRS = [
     "pub_axiomata/_site/",
     "pub_actus-mercator/_site/",
     "pub_res-publica/_site/",
-    "website-achalma/_site/",
     "pub_dialectica-y-mercado/_site/",
+    "website-achalma/_site/",
     # Per-site extension exclusions
+    "pub_aequilibria/_extensions/",
     "pub_pecunia-fluxus/_extensions/",
     "pub_numerus-scriptum/_extensions/",
     "pub_epsilon-y-beta/_extensions/",
@@ -66,7 +67,7 @@ DEFAULT_EXCLUDED_DIRS = [
     "pub_res-publica/_extensions/",
     "pub_website-achalma/_extensions/",
     "pub_dialectica-y-mercado/_extensions/",
-    "pub_borradores/tesis 2025/_extensions/",
+    "website-achalma/_extensions/",
 ]
 
 # ==============================================================================
