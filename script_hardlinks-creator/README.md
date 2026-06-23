@@ -143,6 +143,9 @@ hardlinks-creator FILENAME [OPCIONES]
 ### Ejemplos
 
 ```bash
+# Inicio
+cd ~/Documents/scripts_for_linux/script_hardlinks-creator
+
 # Enlazar _metadata.yml con mismo contenido
 python main.py _metadata.yml
 

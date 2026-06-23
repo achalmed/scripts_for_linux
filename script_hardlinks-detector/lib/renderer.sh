@@ -50,7 +50,7 @@ _print_tree_group() {
     size_str=$(format_size "$size")
     saved_str=$(format_size $(( size * (nlinks - 1) )))
 
-    print_separator "─"
+    print_separator ""
     printf "${BOLD}${BLUE}Conjunto #%d${RESET}\n" "$group_num"
     printf "  ${GRAY}Inodo:   ${RESET}%s\n" "$inode"
     printf "  ${GRAY}Enlaces: ${RESET}${BOLD}%s${RESET}\n" "$nlinks"

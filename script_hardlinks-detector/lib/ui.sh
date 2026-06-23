@@ -33,9 +33,11 @@ print_header() {
 print_separator() {
     local char="${1:-─}"
     local width="${TERM_WIDTH:-80}"
-    printf "\n${GRAY}"
-    printf "%${width}s" | tr ' ' "$char"
-    printf "${RESET}\n\n"
+    local line=""
+    for (( i=0; i<width; i++ )); do
+        line+="$char"
+    done
+    printf "\n%s%s%s\n\n" "$GRAY" "$line" "$RESET"
 }
 
 # ---------------------------------------------------------------------------
@@ -101,7 +103,7 @@ print_summary_box() {
 
     printf "\n${BOLD}${BLUE}╔%s╗${RESET}\n" "$bar"
     printf "${BOLD}${BLUE}║${RESET}  ${GREEN}%-40s${RESET}%*s${BOLD}${BLUE}║${RESET}\n" \
-        "📊 Estadísticas de enlaces:" $(( inner - 42 )) ""
+        "📊 Estadísticas de enlaces:" $(( inner - 39 )) ""
     printf "${BOLD}${BLUE}║${RESET}     • %-30s ${BOLD}%-10s${RESET}%*s${BOLD}${BLUE}║${RESET}\n" \
         "Conjuntos encontrados:" "$groups" $(( inner - 48 )) ""
     printf "${BOLD}${BLUE}║${RESET}     • %-30s ${BOLD}%-10s${RESET}%*s${BOLD}${BLUE}║${RESET}\n" \
