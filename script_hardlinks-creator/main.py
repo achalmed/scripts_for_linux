@@ -11,7 +11,7 @@ Orchestrates the four-phase pipeline:
 Each phase is handled by a dedicated module so this file
 reads like a high-level summary of the program's flow.
 
-Author : Edison Achalma <achalmaedison@gmail.com>
+Author : Edison Achalma <achalmed.18@gmail.com>
 Version: 3.0.0
 """
 
@@ -45,8 +45,10 @@ def main() -> None:
     # Phase 1: Resolve configuration
     validate_filename(args.filename)
 
-    search_dir_raw = args.directory or DEFAULT_DIRECTORY or os.path.dirname(
-        os.path.abspath(__file__)
+    search_dir_raw = (
+        args.directory
+        or DEFAULT_DIRECTORY
+        or os.path.dirname(os.path.abspath(__file__))
     )
     search_dir = validate_directory(search_dir_raw)
 
@@ -76,7 +78,9 @@ def main() -> None:
         ui.print_warning(f"No se encontraron archivos con el nombre '{args.filename}'.")
         sys.exit(0)
 
-    ui.print_success(f"{total_files} archivo(s) encontrado(s) con el nombre '{args.filename}'.")
+    ui.print_success(
+        f"{total_files} archivo(s) encontrado(s) con el nombre '{args.filename}'."
+    )
 
     # Phase 4: Link
     try:
