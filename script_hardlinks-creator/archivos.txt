@@ -1,0 +1,104 @@
+# ============================================================================
+# archivos.txt — Listado batch para hardlinks-creator
+#
+# Uso:
+#   cd ~/Documents/scripts_for_linux/script_hardlinks-creator
+#   python main.py --batch archivos.txt --dry-run   # primero simular
+#   python main.py --batch archivos.txt --auto      # luego ejecutar
+#
+# Formato: un nombre de archivo por línea.
+# Se ignoran líneas vacías, espacios sobrantes, duplicados
+# y líneas que comienzan con '#'.
+# ============================================================================
+
+# ── Configuración Quarto ────────────────────────────────────────────────────
+_metadata.yml
+_quarto.yml
+
+# ── Contenido compartido (Quarto) ───────────────────────────────────────────
+_contenido-inicio.qmd
+_contenido-final.qmd
+404.qmd
+
+# ── Documentación y meta del repositorio ────────────────────────────────────
+README.md
+SECURITY.md
+LICENSE
+.gitignore
+
+# ── Plantillas HTML ─────────────────────────────────────────────────────────
+title-block.html
+interactions.html
+
+# ── SCSS: temas y paleta ────────────────────────────────────────────────────
+theme_dark.scss
+theme_light.scss
+theme-dark.scss
+theme-light.scss
+_palette-dark.scss
+_palette-light.scss
+_tokens-dark.scss
+_tokens-light.scss
+_dark-adjustments.scss
+colors.scss
+fonts.scss
+
+# ── SCSS: base ──────────────────────────────────────────────────────────────
+_bootstrap.scss
+_layout.scss
+_typography.scss
+_mixins.scss
+_fonts.scss
+_reset.scss
+_root.scss
+
+# ── SCSS: componentes ───────────────────────────────────────────────────────
+_footer.scss
+_navbar.scss
+_responsive.scss
+_toc.scss
+_buttons.scss
+_callouts.scss
+_citations.scss
+_code.scss
+_floats.scss
+_listings.scss
+_math.scss
+_pagination.scss
+_search.scss
+_section-numbers.scss
+_social.scss
+_tables.scss
+_title-block.scss
+_microinteractions.scss
+
+# ── SCSS: páginas y secciones ───────────────────────────────────────────────
+_blog.scss
+_courses.scss
+_post.scss
+_projects.scss
+_publications.scss
+about.scss
+contact.scss
+home.scss
+listing.scss
+
+# ── CSS ─────────────────────────────────────────────────────────────────────
+styles.css
+listing-default.css
+bibbase.css
+about.css
+contact.css
+home.css
+listing.css
+
+# ── JavaScript ──────────────────────────────────────────────────────────────
+cursor.js
+hero.js
+navbar.js
+scroll-effects.js
+
+# ── Scripts y filtros Lua ───────────────────────────────────────────────────
+build-page-css.sh
+apa-floats-html.lua
+_metadata-pdf.lua
