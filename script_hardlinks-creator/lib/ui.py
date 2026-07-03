@@ -102,6 +102,48 @@ def print_summary(stats: dict) -> None:
         print(f"\n{C.CYAN}ℹ️  No se requirieron cambios.{C.RESET}\n")
 
 
+def print_batch_item(index: int, total: int, filename: str) -> None:
+    """Renders the progress header for one batch entry."""
+    print(
+        f"\n{C.BOLD}{C.BLUE}[{index}/{total}]{C.RESET} "
+        f"{C.BOLD}{filename}{C.RESET}\n"
+    )
+
+
+def print_batch_summary(
+    processed: int,
+    failed: int,
+    elapsed_seconds: float,
+    total_stats: dict,
+    failures: list,
+) -> None:
+    """
+    Renders the final batch summary and, if any, the list of failures.
+
+    Args:
+        processed:       Total filenames attempted.
+        failed:          Filenames that ended with an error.
+        elapsed_seconds: Wall-clock duration of the whole batch.
+        total_stats:     Aggregated stats from all process_groups() runs.
+        failures:        List of (filename, message) tuples.
+    """
+    print_separator("═")
+    print_header("BATCH FINALIZADO")
+
+    print_field("Archivos procesados", str(processed), "📦")
+    print_field("Correctos", str(processed - failed), "✅")
+    print_field("Errores", str(failed), "❌")
+    print_field("Hard links creados", str(total_stats["links_created"]), "🔗")
+    print_field("Ya enlazados (omit)", str(total_stats["files_skipped"]), "⏭️")
+    print_field("Tiempo total", f"{elapsed_seconds:.1f} segundos", "⏱️")
+
+    if failures:
+        print(f"\n{C.RED}{C.BOLD}Errores:{C.RESET}")
+        for name, message in failures:
+            print(f"   {C.RED}•{C.RESET} {C.BOLD}{name}{C.RESET}: {message}")
+    print()
+
+
 def format_size(size_bytes: int) -> str:
     """Returns a human-readable file size string."""
     for unit in ["B", "KB", "MB", "GB", "TB"]:

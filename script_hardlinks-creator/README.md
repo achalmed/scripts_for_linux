@@ -2,7 +2,8 @@
 
 > Busca archivos con el mismo nombre en un árbol de directorios, los agrupa
 > por contenido idéntico (SHA-256) y crea hard links para eliminar duplicados
-> sin perder datos — con operaciones atómicas y reporte JSON opcional.
+> sin perder datos — con operaciones atómicas, modo batch para procesar
+> listas completas de nombres y reporte JSON opcional.
 
 **Proyecto complementario:** [`hardlinks-detector`](../hardlinks-detector/) — visualiza los hard links existentes en estructura de árbol.
 
@@ -11,11 +12,13 @@
 ## 📋 Tabla de Contenidos
 
 - [Descripción](#-descripción)
+- [Novedades v3.1](#-novedades-v31--modo-batch)
 - [Novedades v3.0](#-novedades-v30-respecto-al-script-original)
 - [Bugs corregidos](#-bugs-corregidos)
 - [Requisitos](#-requisitos)
 - [Instalación](#-instalación)
 - [Uso](#-uso)
+- [Modo batch](#-modo-batch)
 - [Arquitectura](#-arquitectura)
 - [Casos de uso comunes](#-casos-de-uso-comunes)
 - [Solución de problemas](#-solución-de-problemas)
@@ -34,6 +37,28 @@ redundante sin que ninguna herramienta note la diferencia.
 
 Diseñado para proyectos Quarto/R Markdown con múltiples sitios que comparten
 archivos de configuración (`_metadata.yml`, `_quarto.yml`, `.editorconfig`).
+
+Admite dos modos de ejecución que comparten el mismo pipeline interno:
+
+```bash
+python main.py _metadata.yml          # modo single: un nombre de archivo
+python main.py --batch archivos.txt   # modo batch: una lista de nombres
+```
+
+---
+
+## 🆕 Novedades v3.1 — Modo batch
+
+| Característica nueva    | Descripción                                                                             |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| **`--batch FILE`**      | Procesa una lista completa de nombres (uno por línea) en una sola ejecución             |
+| **Tolerancia a fallos** | Un error en un nombre no detiene el batch; se registra y se continúa con el resto       |
+| **Resumen agregado**    | Progreso `[i/N]`, totales combinados, tiempo total y lista de errores al final          |
+| **Reporte JSON batch**  | `--report-json` en modo batch genera un único JSON con el detalle por archivo           |
+| **`lib/pipeline.py`**   | El pipeline de un archivo se extrajo a `process_filename()`, compartido por ambos modos |
+| **`lib/batch.py`**      | Módulo dedicado al parseo del listado (comentarios, líneas vacías, duplicados)          |
+
+El modo single (`python main.py _metadata.yml`) funciona exactamente igual que antes.
 
 ---
 
@@ -119,26 +144,31 @@ DEFAULT_DIRECTORY = "/home/achalmaedison/Documents/"
 ### Sintaxis
 
 ```bash
-python main.py FILENAME [OPCIONES]
+python main.py FILENAME [OPCIONES]        # modo single
+python main.py --batch FILE [OPCIONES]    # modo batch
 # o si está en el PATH:
 hardlinks-creator FILENAME [OPCIONES]
 ```
 
+`FILENAME` y `--batch` son mutuamente excluyentes: se debe indicar
+exactamente uno de los dos.
+
 ### Opciones disponibles
 
-| Flag                       | Descripción                        | Requerido |
-| -------------------------- | ---------------------------------- | --------- |
-| `filename`                 | Nombre exacto del archivo a buscar | **Sí**    |
-| `-d, --directory DIR`      | Directorio raíz de búsqueda        | No        |
-| `--exclude DIR...`         | Carpetas adicionales a excluir     | No        |
-| `--replace-exclude DIR...` | Reemplaza la lista de exclusiones  | No        |
-| `--auto`                   | Sin confirmación interactiva       | No        |
-| `--dry-run`                | Simular sin cambios                | No        |
-| `--report-json FILE`       | Exportar reporte JSON              | No        |
-| `--no-color`               | Desactivar colores ANSI            | No        |
-| `-v, --verbose`            | Mensajes de depuración             | No        |
-| `--version`                | Mostrar versión                    | No        |
-| `-h, --help`               | Mostrar ayuda                      | No        |
+| Flag                       | Descripción                        | Requerido             |
+| -------------------------- | ---------------------------------- | --------------------- |
+| `filename`                 | Nombre exacto del archivo a buscar | **Sí** (o `--batch`)  |
+| `-b, --batch FILE`         | Listado de nombres, uno por línea  | **Sí** (o `filename`) |
+| `-d, --directory DIR`      | Directorio raíz de búsqueda        | No                    |
+| `--exclude DIR...`         | Carpetas adicionales a excluir     | No                    |
+| `--replace-exclude DIR...` | Reemplaza la lista de exclusiones  | No                    |
+| `--auto`                   | Sin confirmación interactiva       | No                    |
+| `--dry-run`                | Simular sin cambios                | No                    |
+| `--report-json FILE`       | Exportar reporte JSON              | No                    |
+| `--no-color`               | Desactivar colores ANSI            | No                    |
+| `-v, --verbose`            | Mensajes de depuración             | No                    |
+| `--version`                | Mostrar versión                    | No                    |
+| `-h, --help`               | Mostrar ayuda                      | No                    |
 
 ### Ejemplos
 
@@ -161,22 +191,126 @@ python main.py .editorconfig --replace-exclude build dist
 # Sin colores para log de CI
 python main.py _quarto.yml --auto --no-color >> /var/log/hardlinks.log 2>&1
 
-# otros:
-python main.py _contenido-final.qmd
-python main.py _contenido-inicio.qmd
-python main.py README.md
-python main.py SECURITY.md
-python main.py .gitignore
-python main.py 404.qmd
-python main.py LICENSE
-python main.py title-block.html
-python main.py colors.scss
-python main.py fonts.scss
-python main.py listing-default.css
-python main.py styles.css
-python main.py theme_dark.scss
-python main.py theme_light.scss
+# Procesar decenas de nombres de una sola vez (ver "Modo batch")
+cd ~/Documents/scripts_for_linux/script_hardlinks-creator
+python main.py --batch archivos.txt --dry-run # primero simula
+python main.py --batch archivos.txt           # ejecuta de verdad (confirmar)
+python main.py --batch archivos.txt --auto    # ejecuta de verdad (sin confirmar)
 ```
+
+---
+
+## 📦 Modo batch
+
+En lugar de ejecutar el programa una vez por cada nombre de archivo:
+
+```bash
+python main.py _metadata.yml
+python main.py _quarto.yml
+python main.py README.md
+python main.py styles.css
+# ... decenas de ejecuciones más
+```
+
+el modo batch procesa toda la lista en una sola ejecución:
+
+```bash
+python main.py --batch archivos.txt
+```
+
+Internamente ejecuta el mismo pipeline (escaneo → agrupación por hash →
+enlace) para cada nombre del listado, reutilizando la configuración
+(directorio, exclusiones, flags) resuelta una sola vez al inicio.
+
+### Formato del archivo batch
+
+Un nombre de archivo por línea. Se ignoran automáticamente:
+
+- líneas vacías
+- espacios al inicio/final de cada línea
+- líneas que comienzan con `#` (comentarios)
+- nombres duplicados (se conserva la primera aparición)
+
+```text
+# ── Configuración Quarto ──
+_metadata.yml
+_quarto.yml
+
+# ── Contenido compartido ──
+_contenido-inicio.qmd
+_contenido-final.qmd
+README.md
+LICENSE
+.gitignore
+
+# ── Estilos ──
+styles.css
+theme-dark.scss
+theme-light.scss
+_typography.scss
+
+# ── Scripts ──
+navbar.js
+scroll-effects.js
+apa-floats-html.lua
+```
+
+### Ejemplos
+
+```bash
+# Simular todo el batch sin tocar el disco (recomendado como primer paso)
+python main.py --batch archivos.txt --dry-run
+
+# Batch completo sin confirmaciones interactivas
+python main.py --batch archivos.txt --auto
+
+# Directorio explícito
+python main.py --batch archivos.txt --directory ~/Documents
+
+# Batch con reporte JSON agregado (un solo archivo con el detalle por nombre)
+python main.py --batch archivos.txt --auto --report-json reporte.json
+
+# Combinación típica para cron/CI
+python main.py --batch archivos.txt --auto --no-color --dry-run
+```
+
+Todas las opciones existentes (`--dry-run`, `--auto`, `--directory`,
+`--exclude`, `--replace-exclude`, `--report-json`, `--no-color`,
+`--verbose`) funcionan igual en modo batch; no hay variantes especiales.
+
+### Salida y manejo de errores
+
+Cada nombre se muestra con su progreso:
+
+```text
+[1/38] _metadata.yml
+...
+[2/38] README.md
+...
+```
+
+Si un nombre falla (no encontrado, nombre inválido, error de E/S), el
+error se registra y el batch **continúa con el siguiente**. Al final se
+muestra un resumen agregado con la lista de errores:
+
+```text
+╔══════════════════════════════════════════════╗
+║               BATCH FINALIZADO               ║
+╚══════════════════════════════════════════════╝
+
+📦 Archivos procesados: 38
+✅ Correctos: 36
+❌ Errores: 2
+🔗 Hard links creados: 214
+⏱️ Tiempo total: 12.6 segundos
+
+Errores:
+   • README2.md: No encontrado en el directorio.
+   • styles2.css: 1 error(es) durante el enlace.
+```
+
+El código de salida es `0` si todos los nombres se procesaron sin
+errores y `1` si alguno falló — útil para detectar fallos desde cron o CI.
 
 ---
 
@@ -184,7 +318,7 @@ python main.py theme_light.scss
 
 ```
 hardlinks-creator/
-├── main.py          # Punto de entrada: orquesta las 5 fases del pipeline
+├── main.py          # Punto de entrada: despacha al modo single o batch
 ├── config.py        # Constantes, paths predefinidos, exclusiones por defecto
 └── lib/
     ├── __init__.py  # Marca lib/ como paquete Python
@@ -192,24 +326,48 @@ hardlinks-creator/
     ├── logger.py    # Logger centralizado + constantes de color ANSI
     ├── ui.py        # Todo el output formateado al terminal
     ├── validator.py # Validación de directorio, filename, permisos, filesystem
+    ├── batch.py     # Parseo del listado batch (comentarios, vacíos, duplicados)
+    ├── pipeline.py  # process_filename(): pipeline completo para UN nombre
     ├── scanner.py   # Walk del árbol, cálculo SHA-256, agrupación por hash
     ├── linker.py    # Creación atómica de hard links, estadísticas
-    └── reporter.py  # Exportación de reporte JSON
+    └── reporter.py  # Exportación de reporte JSON (single y batch)
+```
+
+### Flujo de ejecución
+
+Ambos modos convergen en el mismo pipeline:
+
+```
+Modo single                      Modo batch
+───────────                      ──────────
+main.py                          main.py
+   │                                │
+   │                             batch.py ──► lista de nombres
+   │                                │  (por cada nombre)
+   └──────────► pipeline.process_filename() ◄┘
+                        │
+                    scanner.py   (walk + SHA-256 + agrupación)
+                        │
+                    linker.py    (enlace atómico + estadísticas)
+                        │
+                    reporter.py  (reporte JSON opcional)
 ```
 
 ### Descripción de módulos
 
-| Módulo             | Responsabilidad única                                             |
-| ------------------ | ----------------------------------------------------------------- |
-| `main.py`          | Orquestar las fases; sin lógica de negocio propia                 |
-| `config.py`        | Todas las constantes y valores predefinidos                       |
-| `lib/cli.py`       | Parsear argumentos; no valida ni ejecuta                          |
-| `lib/logger.py`    | Configurar logger y constantes de color                           |
-| `lib/ui.py`        | Imprimir output; no toma decisiones                               |
-| `lib/validator.py` | Validar entradas; aborta con código de salida apropiado           |
-| `lib/scanner.py`   | Descubrir archivos y calcular hashes; no crea links               |
-| `lib/linker.py`    | Crear links de forma atómica; no hace I/O de consola directo      |
-| `lib/reporter.py`  | Serializar y guardar el reporte; no interactúa con el FS de links |
+| Módulo             | Responsabilidad única                                                 |
+| ------------------ | --------------------------------------------------------------------- |
+| `main.py`          | Orquestar las fases y despachar el modo; sin lógica de negocio propia |
+| `config.py`        | Todas las constantes y valores predefinidos                           |
+| `lib/cli.py`       | Parsear argumentos; no valida ni ejecuta                              |
+| `lib/logger.py`    | Configurar logger y constantes de color                               |
+| `lib/ui.py`        | Imprimir output; no toma decisiones                                   |
+| `lib/validator.py` | Validar entradas; aborta con código de salida apropiado               |
+| `lib/batch.py`     | Leer y limpiar el listado batch; no sabe nada de hard links           |
+| `lib/pipeline.py`  | Ejecutar el pipeline de UN nombre; compartido por ambos modos         |
+| `lib/scanner.py`   | Descubrir archivos y calcular hashes; no crea links                   |
+| `lib/linker.py`    | Crear links de forma atómica; no hace I/O de consola directo          |
+| `lib/reporter.py`  | Serializar y guardar el reporte; no interactúa con el FS de links     |
 
 ---
 
@@ -226,6 +384,9 @@ python main.py _quarto.yml --auto
 
 # Ver qué se haría sin hacer cambios
 python main.py _metadata.yml --dry-run
+
+# Sincronizar TODOS los archivos compartidos del sitio de una sola vez
+python main.py --batch archivos-sitio.txt --auto --report-json /tmp/sync.json
 ```
 
 ### Configuraciones de desarrollo

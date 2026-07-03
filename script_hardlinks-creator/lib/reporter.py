@@ -15,7 +15,22 @@ import logging
 from datetime import datetime
 from typing import Dict, List
 
+from config import VERSION
+
 logger = logging.getLogger("hardlinks-creator")
+
+
+def _groups_detail(hash_groups: Dict[str, List[str]], search_dir: str) -> List[dict]:
+    """Serializes linkable groups (≥2 members) with paths relative to search_dir."""
+    return [
+        {
+            "hash": file_hash,
+            "count": len(paths),
+            "files": [os.path.relpath(p, search_dir) for p in paths],
+        }
+        for file_hash, paths in hash_groups.items()
+        if len(paths) >= 2
+    ]
 
 
 def build_report(
@@ -38,18 +53,9 @@ def build_report(
     Returns:
         Dict ready for json.dumps().
     """
-    groups_detail = []
-    for file_hash, paths in hash_groups.items():
-        if len(paths) >= 2:
-            groups_detail.append({
-                "hash": file_hash,
-                "count": len(paths),
-                "files": [os.path.relpath(p, search_dir) for p in paths],
-            })
-
     return {
         "tool": "hardlinks-creator",
-        "version": "3.0.0",
+        "version": VERSION,
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "parameters": {
             "filename": filename,
@@ -57,7 +63,64 @@ def build_report(
             "dry_run": dry_run,
         },
         "summary": stats,
-        "groups": groups_detail,
+        "groups": _groups_detail(hash_groups, search_dir),
+    }
+
+
+def build_batch_report(
+    batch_file: str,
+    search_dir: str,
+    dry_run: bool,
+    files_processed: int,
+    total_stats: dict,
+    elapsed_seconds: float,
+    runs: List[dict],
+    failures: List[tuple],
+) -> dict:
+    """
+    Assembles a structured report for a batch run: one aggregated
+    summary plus a per-filename breakdown.
+
+    Args:
+        batch_file:      Path of the batch list that was processed.
+        search_dir:      Root directory that was scanned.
+        dry_run:         Whether the run was a simulation.
+        files_processed: Total filenames attempted (valid or not).
+        total_stats:     Aggregated stats across all filenames.
+        elapsed_seconds: Wall-clock duration of the whole batch.
+        runs:            Per-file dicts with keys: filename, stats, hash_groups.
+        failures:        List of (filename, message) tuples.
+
+    Returns:
+        Dict ready for json.dumps().
+    """
+    return {
+        "tool": "hardlinks-creator",
+        "version": VERSION,
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "mode": "batch",
+        "parameters": {
+            "batch_file": os.path.abspath(batch_file),
+            "search_directory": search_dir,
+            "dry_run": dry_run,
+        },
+        "summary": {
+            **total_stats,
+            "files_processed": files_processed,
+            "files_failed": len(failures),
+            "elapsed_seconds": round(elapsed_seconds, 2),
+        },
+        "runs": [
+            {
+                "filename": run["filename"],
+                "summary": run["stats"],
+                "groups": _groups_detail(run["hash_groups"], search_dir),
+            }
+            for run in runs
+        ],
+        "errors": [
+            {"filename": name, "message": message} for name, message in failures
+        ],
     }
 
 

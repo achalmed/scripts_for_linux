@@ -40,6 +40,20 @@ def validate_directory(path: str) -> str:
     return abs_path
 
 
+def is_valid_filename(filename: str) -> bool:
+    """
+    Non-aborting filename check, used by batch mode to record the
+    error and continue with the next entry instead of exiting.
+
+    Args:
+        filename: The raw filename to check.
+
+    Returns:
+        True if the name is non-empty and contains no path separators.
+    """
+    return bool(filename) and os.sep not in filename
+
+
 def validate_filename(filename: str) -> None:
     """
     Rejects filenames that contain path separators or are empty.
@@ -53,7 +67,7 @@ def validate_filename(filename: str) -> None:
     Raises:
         SystemExit(2): Filename is invalid.
     """
-    if not filename or os.sep in filename:
+    if not is_valid_filename(filename):
         logger.error(
             f"Nombre de archivo inválido: '{filename}'. "
             "Proporciona solo el nombre, sin rutas (ej. '_metadata.yml')."
