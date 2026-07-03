@@ -15,6 +15,7 @@ VERBOSE=false
 NO_COLOR=false
 FILTER_INODE=""     # NEW: filter output to a single inode group
 MIN_LINKS=2         # NEW: only show groups with at least N hard links
+GENERATE_REPORT=false  # NEW: write Markdown audit report to reports/
 
 # ---------------------------------------------------------------------------
 # show_help()
@@ -37,6 +38,7 @@ ${BOLD}Opciones:${RESET}
   -o, --output FILE     Guardar salida en un archivo (además de mostrar en consola)
       --min-links N     Mostrar solo grupos con al menos N enlaces (defecto: 2)
       --filter-inode N  Mostrar solo el grupo con el inodo indicado
+      --report          Generar reporte de auditoría Markdown (reports/hardlinks-report.md)
       --no-color        Desactivar colores ANSI
   -v, --verbose         Mostrar mensajes de depuración
       --version         Mostrar versión
@@ -60,6 +62,9 @@ ${BOLD}Ejemplos:${RESET}
 
   # Ver un inodo específico
   $(basename "$0") ~/Documents --filter-inode 14820714
+
+  # Generar el reporte ejecutivo de auditoría (sobrescribe el anterior)
+  $(basename "$0") ~/Documents --report
 
 ${BOLD}Herramienta complementaria:${RESET}
   ${CYAN}hardlinks-creator${RESET} — crea hard links entre archivos con contenido idéntico
@@ -104,6 +109,10 @@ parse_arguments() {
             --filter-inode)
                 FILTER_INODE="$2"
                 shift 2
+                ;;
+            --report)
+                GENERATE_REPORT=true
+                shift
                 ;;
             --no-color)
                 NO_COLOR=true

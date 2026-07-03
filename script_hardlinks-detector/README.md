@@ -10,11 +10,13 @@
 ## 📋 Tabla de Contenidos
 
 - [Descripción](#-descripción)
+- [Novedades v3.1](#-novedades-v31)
 - [Novedades v3.0](#-novedades-v30-respecto-al-script-original)
 - [Bugs corregidos](#-bugs-corregidos)
 - [Requisitos](#-requisitos)
 - [Instalación](#-instalación)
 - [Uso](#-uso)
+- [Reporte de auditoría](#-reporte-de-auditoría---report)
 - [Arquitectura](#-arquitectura)
 - [Casos de uso comunes](#-casos-de-uso-comunes)
 - [Solución de problemas](#-solución-de-problemas)
@@ -35,6 +37,20 @@ agrupa los archivos por inodo y los presenta en:
 Diseñado como la herramienta de verificación y auditoría del par
 `hardlinks-creator` / `hardlinks-detector`, usados juntos para optimizar
 los proyectos Quarto/blog de publicaciones académicas.
+
+---
+
+## 🆕 Novedades v3.1
+
+| Característica nueva | Descripción                                                                  |
+| -------------------- | ---------------------------------------------------------------------------- |
+| **`--report`**       | Genera un Reporte Ejecutivo de Auditoría en Markdown                         |
+| **`lib/report.sh`**  | Nuevo módulo con responsabilidad única: construir el reporte                 |
+| **`reports/`**       | Carpeta fija del reporte (`hardlinks-report.md`), pensada para diffs con Git |
+
+El reporte se construye **reutilizando los datos ya obtenidos por `scanner.sh`**
+(sin segundo escaneo del filesystem) y se sobrescribe en cada ejecución de forma
+intencional: el historial de versiones se delega a Git.
 
 ---
 
@@ -130,6 +146,7 @@ hardlinks-detector [DIRECTORIO] [OPCIONES]
 | `-o, --output FILE`   | Guardar salida en archivo (además de consola) | —                 |
 | `--min-links N`       | Solo grupos con ≥ N enlaces                   | `2`               |
 | `--filter-inode N`    | Solo el grupo con ese inodo                   | —                 |
+| `--report`            | Generar reporte de auditoría Markdown         | —                 |
 | `--no-color`          | Desactivar colores ANSI                       | —                 |
 | `-v, --verbose`       | Mensajes de depuración                        | —                 |
 | `--version`           | Mostrar versión                               | —                 |
@@ -161,7 +178,48 @@ cd ~/Documents/scripts_for_linux/script_hardlinks-detector
 
 # Sin colores para log de CI o pipe
 ./main.sh ~/Documents --no-color | grep "Conjunto"
+
+# Generar el reporte ejecutivo de auditoría
+./main.sh ~/Documents --report
 ```
+
+---
+
+## 📊 Reporte de auditoría (`--report`)
+
+Con `--report`, además de la salida normal, se escribe un Reporte Ejecutivo
+de Auditoría en Markdown en una **ubicación fija** dentro del proyecto:
+
+```
+script_hardlinks-detector/reports/hardlinks-report.md
+```
+
+Características:
+
+- **Un único archivo, siempre sobrescrito.** Sin timestamps ni historial propio:
+  las diferencias entre ejecuciones se revisan con Git
+  (`git diff -- reports/hardlinks-report.md`), usando el reporte como línea base.
+- **Sin segundo escaneo.** El reporte se construye únicamente con los arrays
+  `INODE_*` que ya pobló `scanner.sh`.
+- **Orden determinista.** Los conjuntos se ordenan por ruta (no por orden de hash)
+  para que los diffs de Git sean estables y significativos.
+
+Secciones del reporte:
+
+1. **Encabezado** — fecha, hora, directorio, tiempo de ejecución, versión, SO
+2. **Resumen Ejecutivo** — tabla de indicadores generales
+3. **Estado General** — anomalías detectadas (enlaces externos, tamaños 0)
+4. **Inventario Completo** — una fila por conjunto, sin omitir ninguno
+5. **Agrupación por categorías** — SCSS, JavaScript, HTML, YAML, Markdown, QMD, Lua, Scripts, Otros
+6. **Top archivos más compartidos** — ordenados por cantidad de enlaces
+7. **Archivos críticos** — inferidos automáticamente (umbral: `CRITICAL_LINKS_THRESHOLD` en `config.sh`)
+8. **Resumen por directorios** — archivos compartidos y ahorro por proyecto
+9. **Checklist de auditoría** — para comparar ejecuciones futuras
+10. **Comandos útiles** — `stat`, `find -inum`, `find -samefile`, `find -links +1`
+11. **Conclusión** — resumen automático del estado general
+
+Ajustes disponibles en `config.sh`: `REPORT_DIR_NAME`, `REPORT_FILE_NAME`,
+`CRITICAL_LINKS_THRESHOLD`, `TOP_SHARED_LIMIT`.
 
 ---
 
@@ -169,29 +227,33 @@ cd ~/Documents/scripts_for_linux/script_hardlinks-detector
 
 ```
 hardlinks-detector/
-├── main.sh          # Punto de entrada: orquesta las 5 fases del pipeline
+├── main.sh          # Punto de entrada: orquesta las 6 fases del pipeline
 ├── config.sh        # Constantes, paths, valores predefinidos
-└── lib/
-    ├── logger.sh    # Logging centralizado (INFO/WARN/ERROR/DEBUG) + colores ANSI
-    ├── ui.sh        # Output formateado: headers, separadores, mensajes, format_size
-    ├── validator.sh # Validación de directorio, permisos, herramientas del sistema
-    ├── cli.sh       # Parsing de argumentos y función show_help
-    ├── scanner.sh   # find + stat, agrupación por inodo en arrays asociativos
-    └── renderer.sh  # Tres renderers: render_tree, render_csv, render_json
+├── lib/
+│   ├── logger.sh    # Logging centralizado (INFO/WARN/ERROR/DEBUG) + colores ANSI
+│   ├── ui.sh        # Output formateado: headers, separadores, mensajes, format_size
+│   ├── validator.sh # Validación de directorio, permisos, herramientas del sistema
+│   ├── cli.sh       # Parsing de argumentos y función show_help
+│   ├── scanner.sh   # find + stat, agrupación por inodo en arrays asociativos
+│   ├── renderer.sh  # Tres renderers: render_tree, render_csv, render_json
+│   └── report.sh    # Reporte de auditoría Markdown (--report); no accede al FS
+└── reports/
+    └── hardlinks-report.md  # Reporte generado (se crea con --report)
 ```
 
 ### Descripción de módulos
 
-| Módulo             | Responsabilidad única                               |
-| ------------------ | --------------------------------------------------- |
-| `main.sh`          | Orquestar las 5 fases; sin lógica de negocio propia |
-| `config.sh`        | Todas las constantes y valores predefinidos         |
-| `lib/logger.sh`    | Funciones de log y constantes de color ANSI         |
-| `lib/ui.sh`        | Todo el output formateado; no toma decisiones       |
-| `lib/validator.sh` | Validar entradas y herramientas; aborta temprano    |
-| `lib/cli.sh`       | Parsear argumentos; no valida ni ejecuta            |
-| `lib/scanner.sh`   | Descubrir hard links; popula arrays globales        |
-| `lib/renderer.sh`  | Renderizar datos en tree/csv/json; no accede al FS  |
+| Módulo             | Responsabilidad única                                       |
+| ------------------ | ----------------------------------------------------------- |
+| `main.sh`          | Orquestar las 6 fases; sin lógica de negocio propia         |
+| `config.sh`        | Todas las constantes y valores predefinidos                 |
+| `lib/logger.sh`    | Funciones de log y constantes de color ANSI                 |
+| `lib/ui.sh`        | Todo el output formateado; no toma decisiones               |
+| `lib/validator.sh` | Validar entradas y herramientas; aborta temprano            |
+| `lib/cli.sh`       | Parsear argumentos; no valida ni ejecuta                    |
+| `lib/scanner.sh`   | Descubrir hard links; popula arrays globales                |
+| `lib/renderer.sh`  | Renderizar datos en tree/csv/json; no accede al FS          |
+| `lib/report.sh`    | Construir el reporte Markdown desde los datos ya escaneados |
 
 ---
 

@@ -5,8 +5,8 @@
 # ║  Detects and visualizes hard links in a directory tree.                      ║
 # ║  Companion tool to hardlinks-creator.                                        ║
 # ║                                                                              ║
-# ║  Author : Edison Achalma <achalmaedison@gmail.com>                           ║
-# ║  Version: 3.0.0                                                              ║
+# ║  Author : Edison Achalma <achalmaedison@outlook.com>                           ║
+# ║  Version: 3.1.0                                                              ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 #
 # Fail fast: exit on unset variables and pipeline errors.
@@ -26,6 +26,7 @@ source "${SCRIPT_DIR}/lib/validator.sh"
 source "${SCRIPT_DIR}/lib/cli.sh"
 source "${SCRIPT_DIR}/lib/scanner.sh"
 source "${SCRIPT_DIR}/lib/renderer.sh"
+source "${SCRIPT_DIR}/lib/report.sh"
 
 # ---------------------------------------------------------------------------
 # Phase 0: Parse arguments (must happen before color disable so logger works)
@@ -67,7 +68,9 @@ print_field "🔍" "Formato de salida" "$FORMAT"
 echo ""
 
 log_info "Escaneando directorio en busca de hard links…"
+SCAN_START_TIME=$(date +%s)
 scan_hardlinks "$DIRECTORY" "$MIN_LINKS"
+SCAN_DURATION=$(( $(date +%s) - SCAN_START_TIME ))
 
 # Apply inode filter if requested
 if [[ -n "$FILTER_INODE" ]]; then
@@ -78,6 +81,10 @@ fi
 if (( ${#INODE_FILES[@]} == 0 )); then
     print_success "No se encontraron archivos con hard links en '${DIRECTORY}'."
     print_info "Usa '${COMPANION_TOOL}' para crear hard links entre archivos idénticos."
+    # A baseline report with zero groups is still valuable for Git diffs
+    if [[ "$GENERATE_REPORT" == "true" ]]; then
+        generate_report "$DIRECTORY"
+    fi
     exit "${EXIT_SUCCESS}"
 fi
 
@@ -136,6 +143,14 @@ if [[ "$FORMAT" == "tree" ]]; then
         "$(basename "$0")"
 
     print_success "Análisis completado."
+fi
+
+# ---------------------------------------------------------------------------
+# Phase 6: Audit report (optional — only when --report is passed)
+# Reuses the INODE_* data already in memory; no second filesystem scan.
+# ---------------------------------------------------------------------------
+if [[ "$GENERATE_REPORT" == "true" ]]; then
+    generate_report "$DIRECTORY"
 fi
 
 echo ""
