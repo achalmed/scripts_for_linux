@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------------
 # VERSION
 # ---------------------------------------------------------------------------
-readonly VERSION="3.0.0"
+readonly VERSION="3.1.0"
 readonly AUTHOR="Edison Achalma"
-readonly EMAIL="achalmaedison@gmail.com"
+readonly EMAIL="achalmaedison@outlook.com"
 
 # ---------------------------------------------------------------------------
 # DISPLAY
@@ -29,6 +29,17 @@ readonly COMPANION_TOOL="hardlinks-creator"
 # Can be overridden at runtime with --format FLAG.
 # ---------------------------------------------------------------------------
 readonly DEFAULT_FORMAT="tree"
+
+# ---------------------------------------------------------------------------
+# AUDIT REPORT (--report)
+# The Markdown report is always written to the same fixed path inside the
+# project so consecutive runs can be compared with Git. Overwriting the
+# previous file is intentional: no timestamps, no automatic history.
+# ---------------------------------------------------------------------------
+readonly REPORT_DIR_NAME="reports"
+readonly REPORT_FILE_NAME="hardlinks-report.md"
+readonly CRITICAL_LINKS_THRESHOLD=5   # nlinks needed to flag a file as critical
+readonly TOP_SHARED_LIMIT=10          # max rows in the "top shared files" table
 
 # ---------------------------------------------------------------------------
 # EXIT CODES (POSIX)
