@@ -28,6 +28,13 @@ Ejemplos:
   # Enlazar todos los _metadata.yml con mismo contenido
   python main.py _metadata.yml
 
+  # Modo batch: procesar una lista de nombres (uno por línea, '#' comenta)
+  python main.py --batch archivos.txt
+
+  # Batch simulado y sin confirmaciones
+  python main.py --batch archivos.txt --dry-run
+  python main.py --batch archivos.txt --auto
+
   # Simular sin hacer cambios
   python main.py _metadata.yml --dry-run
 
@@ -48,9 +55,23 @@ Ejemplos:
         """,
     )
 
-    parser.add_argument(
+    # Un target obligatorio: un nombre suelto O un listado batch, nunca ambos.
+    target = parser.add_mutually_exclusive_group(required=True)
+
+    target.add_argument(
         "filename",
+        nargs="?",
         help="Nombre exacto del archivo a buscar (ej. '_metadata.yml', '.editorconfig')",
+    )
+
+    target.add_argument(
+        "--batch",
+        "-b",
+        metavar="FILE",
+        help=(
+            "Archivo de texto con un nombre por línea. Se ignoran líneas vacías, "
+            "espacios sobrantes y líneas que comienzan con '#'"
+        ),
     )
 
     parser.add_argument(

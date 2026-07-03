@@ -8,7 +8,7 @@ never contains magic strings or hardcoded paths.
 # ==============================================================================
 # VERSIÓN
 # ==============================================================================
-VERSION = "3.0.0"
+VERSION = "3.1.0"
 AUTHOR = "Edison Achalma"
 EMAIL = "achalmed.18@gmail.com"
 
