@@ -1,559 +1,235 @@
-# 📘 Ejemplos de Uso Detallados - PDF Page Counter
+# PDF Page Counter
 
-#readme 
+> Cuenta las páginas de los PDFs renderizados por la familia de blogs Quarto
+> (`pub_*` y `website-achalma`) y genera un reporte Excel con subtotales por
+> blog y total general.
 
-Ejemplos prácticos y casos de uso específicos para el análisis de tus blogs académicos.
+## 📋 Tabla de Contenidos
 
-**Autor:** Edison Achalma  
-**Universidad:** Universidad Nacional de San Cristóbal de Huamanga
+- [Descripción](#-descripción)
+- [Requisitos](#-requisitos)
+- [Instalación](#-instalación)
+- [Uso](#-uso)
+- [Arquitectura](#-arquitectura)
+- [Bugs Corregidos](#-bugs-corregidos)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Cómo Contribuir](#-cómo-contribuir)
+- [Notas y Advertencias](#-notas-y-advertencias)
 
----
+## 📖 Descripción
 
-## 🎯 Ejemplos Básicos
+Recorre los `_site/` de cada blog buscando `index.pdf` (los PDF APA
+generados por apaquarto) — o todos los PDFs con `--todos` — cuenta sus
+páginas con `pypdf` y produce un `.xlsx` en `excel_databases/` con:
 
-### 1. Ver todos los blogs disponibles
+- **Hoja "Conteo de Páginas"**: bloques por blog con cada archivo, su número
+  de páginas y estado (`OK` / `VACÍO` / `ERROR`), subtotales por blog y
+  total general.
+- **Hoja "Información"**: metadatos del reporte (fecha, tipo de búsqueda,
+  totales).
 
-```bash
-python3 pdf_page_counter.py --listar
-```
+Los blogs se seleccionan por su nombre lógico (`axiomata`, `chaska`, …); la
+herramienta resuelve sola la carpeta real (`~/Documents/pub_axiomata/_site`).
+Las secciones de website-achalma se llaman `blog` y `teching` (o el alias
+`website-achalma` para ambas).
 
-**Cuándo usar:** Antes de ejecutar cualquier análisis, para verificar qué blogs están configurados y disponibles.
+## ⚙️ Requisitos
 
----
+### Sistema Operativo
 
-### 2. Analizar todos los blogs (por defecto)
+- Linux/macOS con Python >= 3.8.
 
-```bash
-python3 pdf_page_counter.py
-```
+### Dependencias
 
-**Resultado:**
-- Procesa todos los blogs en `BLOGS_ESTANDAR`
-- Procesa los blogs en `BLOGS_WEBSITE_ACHALMA`
-- Solo busca archivos `index.pdf`
-- Genera archivo con timestamp automático
+- `pypdf` >= 3.0 — lectura de PDFs (se acepta `PyPDF2` como fallback)
+- `openpyxl` >= 3.0 — generación del Excel
 
----
-
-### 3. Analizar un solo blog
-
-```bash
-python3 pdf_page_counter.py -b actus-mercator
-```
-
-**Cuándo usar:** 
-- Verificar un blog específico
-- Después de actualizar contenido de un blog
-- Análisis rápido
-
----
-
-### 4. Analizar múltiples blogs específicos
+## 🚀 Instalación
 
 ```bash
-python3 pdf_page_counter.py -b actus-mercator aequilibria axiomata
+cd script_pdf_page_counter
+
+# Con pip
+pip install -r requirements.txt
+
+# O con conda
+conda install -c conda-forge pypdf openpyxl
+
+# O el instalador asistido (crea entorno conda si hace falta)
+./install.sh
 ```
 
-**Cuándo usar:**
-- Análisis por categoría (ej: solo blogs de economía)
-- Reportes parciales
-- Comparación entre blogs relacionados
+## 💻 Uso
 
----
-
-### 5. Buscar todos los PDFs (no solo index.pdf)
+### Sintaxis
 
 ```bash
-python3 pdf_page_counter.py --todos
+python3 main.py [OPCIONES]
 ```
 
-**Cuándo usar:**
-- Análisis completo de recursos
-- Incluir documentos adicionales (no solo index.pdf)
-- Auditoría completa de contenido
+### Opciones disponibles
 
----
+| Flag              | Descripción                                          | Requerido |
+| ----------------- | ---------------------------------------------------- | --------- |
+| `-b, --blogs ...` | Blogs específicos (separados por espacios)           | No        |
+| `-t, --todos`     | Buscar todos los PDFs, no solo `index.pdf`           | No        |
+| `-o, --output F`  | Nombre del Excel de salida (en `excel_databases/`)   | No        |
+| `-l, --listar`    | Listar blogs disponibles y salir                     | No        |
+| `-v, --verbose`   | Detalle extra (incluye la causa de PDFs ilegibles)   | No        |
+| `--version`       | Mostrar versión                                      | No        |
+| `-h, --help`      | Mostrar ayuda                                        | No        |
 
-## 📊 Análisis por Categoría
-
-### Blogs de Economía
+### Ejemplos de uso
 
 ```bash
-python3 pdf_page_counter.py \
-  -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
-  -o economia_$(date +%Y%m%d).xlsx
+# Todos los blogs, solo index.pdf, nombre con timestamp
+python3 main.py
+
+# Blogs específicos
+python3 main.py -b actus-mercator aequilibria
+
+# Todos los PDFs (no solo index.pdf) con salida personalizada
+python3 main.py --todos -o conteo_completo.xlsx
+
+# Ver qué blogs están renderizados y disponibles
+python3 main.py --listar
 ```
 
-**Blogs incluidos:**
-- `actus-mercator`: Comercio y negocios
-- `aequilibria`: Equilibrio económico
-- `dialectica-y-mercado`: Dialéctica económica
-- `pecunia-fluxus`: Flujos monetarios
+Más ejemplos y casos de uso en [EJEMPLOS.md](EJEMPLOS.md).
 
----
+## 🗂️ Arquitectura
 
-### Blogs de Metodología y APA
+```
+script_pdf_page_counter/
+├── main.py              # Punto de entrada — solo orquestación
+├── config.py            # Rutas de blogs, prefijo pub_, códigos de salida
+├── requirements.txt     # Dependencias pip
+├── install.sh           # Instalador asistido (conda/pip)
+└── lib/
+    ├── __init__.py
+    ├── logger.py        # Logger único de la aplicación (--verbose → DEBUG)
+    ├── cli.py           # Parser argparse centralizado
+    ├── validator.py     # Ruta base, nombres de blog, resolución de rutas
+    ├── scanner.py       # Búsqueda de PDFs y conteo de páginas
+    ├── excel_report.py  # Construcción del .xlsx (datos + metadatos)
+    └── ui.py            # Encabezados, secciones, listado y resumen
+```
+
+### Descripción de módulos
+
+| Archivo               | Responsabilidad                                         |
+| --------------------- | ------------------------------------------------------- |
+| `main.py`             | Orquestar: validar → escanear → reportar → resumen      |
+| `config.py`           | Única fuente de rutas y constantes editables            |
+| `lib/logger.py`       | Formato de log consistente en toda la app               |
+| `lib/cli.py`          | Definición completa de la CLI                           |
+| `lib/validator.py`    | Fallar temprano ante rutas o nombres inválidos          |
+| `lib/scanner.py`      | Única pieza que abre PDFs                               |
+| `lib/excel_report.py` | Única pieza que escribe Excel                           |
+| `lib/ui.py`           | Presentación en terminal (no toca PDFs ni Excel)        |
+
+## 🐛 Bugs Corregidos
+
+### Bug #1: Ruta base apuntando a una carpeta inexistente
+- **Descripción**: `RUTA_BASE_PUBLICACIONES` era
+  `~/Documents/publicaciones`, una estructura que ya no existe — los blogs
+  viven como sub-repos `pub_<nombre>` directamente en `~/Documents`.
+- **Impacto**: la herramienta terminaba siempre con "La ruta base no
+  existe"; **ninguna** funcionalidad era utilizable.
+- **Corrección**: `config.py` apunta a `~/Documents` con prefijo `pub_`;
+  `lib/validator.py` resuelve nombre lógico → carpeta real. Verificado
+  contra los 13 blogs reales (11 `pub_*` + `blog` + `teching`).
+
+### Bug #2: Errores de lectura de PDF silenciados
+- **Descripción**: `except Exception as e: return -1` descartaba la causa
+  (el `e` ni se usaba).
+- **Impacto**: un PDF corrupto aparecía como "ERROR" sin forma de saber por
+  qué (cifrado, truncado, permisos…).
+- **Corrección**: la causa se registra en nivel DEBUG; `--verbose` la
+  muestra por archivo.
+
+### Bug #3: Sin códigos de salida
+- **Descripción**: todos los caminos de error hacían `return` desde `main()`
+  y el proceso terminaba con 0.
+- **Impacto**: imposible detectar fallos desde scripts o cron
+  (`main.py && siguiente` seguía adelante tras un error).
+- **Corrección**: códigos estándar — 0 éxito, 1 error (incluye PDFs
+  ilegibles), 2 uso, 3 ruta/blogs no encontrados, 5 dependencia faltante.
+
+### Bug #4: Typos en nombres de blog ignorados en silencio
+- **Descripción**: `-b axiomta` (typo) simplemente no matcheaba y el blog
+  quedaba fuera del reporte sin aviso.
+- **Impacto**: reportes incompletos sin que el usuario lo notara.
+- **Corrección**: los nombres desconocidos abortan con error explícito y
+  sugerencia de `--listar` (salida 2).
+
+### Bug #5: Archivos vacíos contados como exitosos
+- **Descripción**: el resumen calculaba "exitosos = total − errores", con lo
+  que los PDFs de 0 páginas (estado `VACÍO`) contaban como éxito.
+- **Impacto**: resumen final engañoso.
+- **Corrección**: los tres estados se cuentan por separado y el resumen
+  muestra una línea propia para vacíos.
+
+### Bug #6: Dependencia PDF exigida para todo
+- **Descripción**: el import de la librería PDF a nivel de módulo abortaba
+  incluso `--listar` y `--help`, que no leen ningún PDF.
+- **Impacto**: la herramienta era inutilizable sin la librería aunque solo
+  se quisiera consultar los blogs disponibles.
+- **Corrección**: import diferido — la dependencia solo se exige al empezar
+  a escanear. Además se migró a `pypdf` (PyPDF2 está descontinuado desde
+  2023), manteniendo PyPDF2 como fallback.
+
+### Bug #7: Fallo al guardar el Excel sin capturar
+- **Descripción**: `wb.save()` sin manejo de errores.
+- **Impacto**: un destino sin permisos o el archivo abierto en LibreOffice
+  producía un traceback crudo tras minutos de escaneo.
+- **Corrección**: `PermissionError`/`OSError` capturados con mensaje claro y
+  salida 1.
+
+## 🔧 Solución de Problemas
+
+### Error: "no está instalado pypdf"
 
 ```bash
-python3 pdf_page_counter.py \
-  -b methodica \
-  -o metodologia_$(date +%Y%m%d).xlsx
+pip install -r requirements.txt
 ```
 
-**Notas:**
-- No incluye `apa` porque no es un blog (carpeta de recursos)
-- No incluye `taller unsch...` porque no es blog estándar
+### "No se encontraron blogs para procesar"
 
----
+Los `_site/` no existen aún: renderiza los blogs con Quarto
+(`quarto render`) o verifica cuáles están disponibles con `--listar`.
 
-### Blogs de Matemáticas y Análisis
+### El Excel no se guarda (Permission denied)
 
-```bash
-python3 pdf_page_counter.py \
-  -b axiomata epsilon-y-beta numerus-scriptum optimums \
-  -o matematicas_$(date +%Y%m%d).xlsx
-```
+Cierra el archivo si lo tienes abierto en LibreOffice/Excel y reintenta.
 
-**Blogs incluidos:**
-- `axiomata`: Axiomas matemáticos
-- `epsilon-y-beta`: Análisis epsilon-delta
-- `numerus-scriptum`: Números y escritura matemática
-- `optimums`: Optimización
+### Un archivo aparece como ERROR
 
----
+Ejecuta con `-v` para ver la causa exacta (PDF cifrado, truncado, etc.).
 
-### Website Achalma (Blog personal + Teaching)
+## 🤝 Cómo Contribuir
 
-```bash
-python3 pdf_page_counter.py \
-  -b blog teching \
-  -o website_achalma_$(date +%Y%m%d).xlsx
-```
+1. Crea el módulo en `lib/nuevo_modulo.py` con una única responsabilidad.
+2. Añade sus flags en `lib/cli.py` y sus constantes en `config.py`.
+3. Impórtalo desde `main.py`; mantén `main()` como orquestador puro.
+4. Verifica con `python3 -m py_compile main.py config.py lib/*.py`.
 
-**Blogs incluidos:**
-- `blog`: Blog personal en website-achalma
-- `teching`: Contenido educativo (economía preuniversitaria, etc.)
+### Estándares de código
 
----
+- Máximo ~30 líneas por función; docstrings que expliquen el "por qué".
+- Nada de `except Exception: pass` — captura tipos específicos o registra
+  la causa.
+- Rutas y constantes solo en `config.py`.
 
-## 🤖 Scripts de Automatización
+## ⚠️ Notas y Advertencias
 
-### Script 1: Análisis Completo Mensual (Linux/Mac)
-
-Crea `analisis_mensual.sh`:
-
-```bash
-#!/bin/bash
-
-# ============================================================================
-# Script de Análisis Mensual de Blogs
-# Autor: Edison Achalma
-# ============================================================================
-
-# Configuración
-SCRIPT_DIR="/home/achalmaedison/Documents/scripts/scripts_for_linux/script_pdf_page_counter"
-FECHA=$(date +%Y%m%d)
-MES=$(date +%Y_%m)
-
-# Colores
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-cd "$SCRIPT_DIR"
-
-echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}   ANÁLISIS MENSUAL DE BLOGS - $(date '+%B %Y')${NC}"
-echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}"
-echo ""
-
-# Activar entorno conda
-echo "🐍 Activando entorno conda..."
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate pdf_counter
-
-# 1. Análisis general (solo index.pdf)
-echo ""
-echo "📊 1/4 - Análisis general..."
-python3 pdf_page_counter.py -o "reporte_general_${MES}.xlsx"
-
-# 2. Análisis completo (todos los PDFs)
-echo ""
-echo "📊 2/4 - Análisis completo..."
-python3 pdf_page_counter.py --todos -o "reporte_completo_${MES}.xlsx"
-
-# 3. Análisis por categoría: Economía
-echo ""
-echo "📊 3/4 - Análisis de blogs de economía..."
-python3 pdf_page_counter.py \
-  -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
-  -o "reporte_economia_${MES}.xlsx"
-
-# 4. Análisis de website-achalma
-echo ""
-echo "📊 4/4 - Análisis de website-achalma..."
-python3 pdf_page_counter.py \
-  -b blog teching \
-  -o "reporte_website_${MES}.xlsx"
-
-# Resumen
-echo ""
-echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}   ✅ ANÁLISIS COMPLETADO${NC}"
-echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
-echo ""
-echo "📁 Archivos generados en: $SCRIPT_DIR/excel_databases/"
-echo ""
-echo "   • reporte_general_${MES}.xlsx"
-echo "   • reporte_completo_${MES}.xlsx"
-echo "   • reporte_economia_${MES}.xlsx"
-echo "   • reporte_website_${MES}.xlsx"
-echo ""
-
-# Desactivar entorno
-conda deactivate
-```
-
-**Uso:**
-```bash
-chmod +x analisis_mensual.sh
-./analisis_mensual.sh
-```
-
----
-
-### Script 2: Análisis Rápido por Blog (Linux/Mac)
-
-Crea `analizar_blog.sh`:
-
-```bash
-#!/bin/bash
-
-# Script para analizar un blog específico rápidamente
-# Uso: ./analizar_blog.sh nombre_del_blog
-
-if [ $# -eq 0 ]; then
-    echo "❌ Error: Debes especificar el nombre del blog"
-    echo "Uso: $0 nombre_del_blog"
-    echo ""
-    echo "Ejemplos:"
-    echo "  $0 actus-mercator"
-    echo "  $0 blog"
-    exit 1
-fi
-
-BLOG=$1
-FECHA=$(date +%Y%m%d_%H%M%S)
-SCRIPT_DIR="/home/achalmaedison/Documents/scripts/scripts_for_linux/script_pdf_page_counter"
-
-cd "$SCRIPT_DIR"
-
-# Activar entorno
-source ~/miniconda3/etc/profile.d/conda.sh
-conda activate pdf_counter
-
-# Ejecutar análisis
-python3 pdf_page_counter.py -b "$BLOG" -o "${BLOG}_${FECHA}.xlsx"
-
-# Desactivar entorno
-conda deactivate
-```
-
-**Uso:**
-```bash
-chmod +x analizar_blog.sh
-./analizar_blog.sh actus-mercator
-```
-
----
-
-### Script 3: Automatización con Cron
-
-```bash
-# Editar crontab
-crontab -e
-
-# Añadir estas líneas:
-
-# Análisis general el primer día de cada mes a las 8 AM
-0 8 1 * * cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 pdf_page_counter.py -o reporte_mensual_$(date +\%Y\%m).xlsx
-
-# Análisis semanal todos los lunes a las 9 AM
-0 9 * * 1 cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 pdf_page_counter.py -o reporte_semanal_$(date +\%Y\%m\%d).xlsx
-```
-
----
-
-## 📈 Análisis Comparativo
-
-### Comparar crecimiento mensual
-
-```bash
-#!/bin/bash
-
-# Script para generar reportes mensuales y comparar
-
-MESES=("01" "02" "03" "04" "05" "06" "07" "08" "09" "10" "11" "12")
-ANIO="2025"
-
-for MES in "${MESES[@]}"; do
-    echo "Generando reporte para $ANIO-$MES..."
-    python3 pdf_page_counter.py -o "historico_${ANIO}_${MES}.xlsx"
-    
-    # Esperar para no sobrecargar
-    sleep 2
-done
-
-echo "✅ Reportes históricos generados"
-echo "📊 Puedes comparar los archivos en excel_databases/"
-```
-
----
-
-## 🔄 Workflows Recomendados
-
-### Workflow 1: Análisis Post-Publicación
-
-```bash
-# Después de publicar contenido nuevo en un blog
-
-# 1. Verificar el blog
-python3 pdf_page_counter.py -b nombre-del-blog -o verificacion_$(date +%Y%m%d).xlsx
-
-# 2. Revisar el Excel generado
-# 3. Comparar con análisis anterior
-```
-
----
-
-### Workflow 2: Auditoría Trimestral
-
-```bash
-# Script: auditoria_trimestral.sh
-
-#!/bin/bash
-
-TRIMESTRE=$(date +%Y_Q$(($(date +%-m)/3+1)))
-
-# Análisis completo con todos los PDFs
-python3 pdf_page_counter.py --todos -o "auditoria_${TRIMESTRE}.xlsx"
-
-# Análisis por categorías
-python3 pdf_page_counter.py \
-  -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
-  -o "auditoria_economia_${TRIMESTRE}.xlsx"
-
-python3 pdf_page_counter.py \
-  -b axiomata epsilon-y-beta numerus-scriptum optimums \
-  -o "auditoria_matematicas_${TRIMESTRE}.xlsx"
-
-echo "✅ Auditoría trimestral completada"
-```
-
----
-
-### Workflow 3: Preparación de Informe Académico
-
-```bash
-# Para preparar estadísticas para un informe académico
-
-# 1. Análisis general
-python3 pdf_page_counter.py -o informe_general.xlsx
-
-# 2. Análisis por área (para incluir en el informe)
-python3 pdf_page_counter.py \
-  -b actus-mercator aequilibria \
-  -o informe_economia.xlsx
-
-python3 pdf_page_counter.py \
-  -b blog teching \
-  -o informe_docencia.xlsx
-
-# 3. Los archivos Excel se pueden insertar directamente en el informe
-```
-
----
-
-## 💡 Tips Avanzados
-
-### Tip 1: Crear Alias Personalizados
-
-Añade a tu `~/.bashrc` o `~/.zshrc`:
-
-```bash
-# Aliases para PDF Counter
-alias count-all='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py'
-
-alias count-blog='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py -b'
-
-alias count-list='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py --listar'
-
-alias count-economia='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus'
-```
-
-**Uso después de recargar el shell:**
-```bash
-source ~/.bashrc  # o source ~/.zshrc
-
-# Ahora puedes usar:
-count-list
-count-all
-count-blog actus-mercator
-count-economia
-```
-
----
-
-### Tip 2: Integración con Git
-
-```bash
-# Script para análisis antes de commit
-
-#!/bin/bash
-# pre-commit-stats.sh
-
-# Generar estadísticas antes de hacer commit
-python3 pdf_page_counter.py -o pre_commit_$(date +%Y%m%d).xlsx
-
-# Añadir al commit
-git add excel_databases/pre_commit_$(date +%Y%m%d).xlsx
-git commit -m "docs: actualizar estadísticas de páginas"
-```
-
----
-
-### Tip 3: Enviar Reportes por Email
-
-```bash
-#!/bin/bash
-# enviar_reporte.sh
-
-FECHA=$(date +%Y%m%d)
-REPORTE="excel_databases/reporte_${FECHA}.xlsx"
-
-# Generar reporte
-python3 pdf_page_counter.py -o "reporte_${FECHA}.xlsx"
-
-# Enviar por email (requiere configurar mail/sendmail)
-echo "Reporte de páginas PDF adjunto" | mail -s "Reporte Mensual - $FECHA" \
-  -A "$REPORTE" \
-  tu_email@unsch.edu.pe
-```
-
----
-
-## 🎓 Casos de Uso Académicos
-
-### 1. Informe de Productividad Docente
-
-```bash
-# Generar estadísticas para informe anual
-
-python3 pdf_page_counter.py \
-  -b blog teching \
-  -o productividad_docente_2025.xlsx
-```
-
-**Uso del reporte:**
-- Número total de materiales educativos
-- Páginas totales de contenido generado
-- Comparación año a año
-
----
-
-### 2. Análisis de Publicaciones Científicas
-
-```bash
-# Blogs de investigación
-
-python3 pdf_page_counter.py \
-  -b res-publica chaska \
-  -o publicaciones_cientificas_2025.xlsx
-```
-
----
-
-### 3. Estadísticas para Memoria Institucional
-
-```bash
-# Reporte completo para memoria anual
-
-python3 pdf_page_counter.py \
-  --todos \
-  -o memoria_institucional_2025.xlsx
-```
-
----
-
-## 🚀 Optimización y Performance
-
-### Para grandes volúmenes de archivos
-
-Si tienes muchos archivos, procesa por partes:
-
-```bash
-# Procesar blogs en lotes
-
-# Lote 1: Economía
-python3 pdf_page_counter.py \
-  -b actus-mercator aequilibria \
-  -o lote1_economia.xlsx
-
-# Lote 2: Matemáticas  
-python3 pdf_page_counter.py \
-  -b axiomata numerus-scriptum \
-  -o lote2_matematicas.xlsx
-
-# etc...
-```
-
----
-
-## 📝 Notas Importantes
-
-1. **Nombres de archivos:** El script genera nombres con timestamp automático si no especificas `-o`
-
-2. **Directorio de salida:** Todos los Excel se guardan en `excel_databases/` en el directorio del script
-
-3. **Blogs de website-achalma:** Usa los nombres `blog` y `teching`, no `website-achalma/_site/blog`
-
-4. **Añadir nuevos blogs:** Edita `BLOGS_ESTANDAR` en el script principal
-
-5. **Conda vs pip:** El script detecta automáticamente qué método usaste
-
----
-
-## 🆘 Solución de Problemas Específicos
-
-### El script no encuentra un blog específico
-
-```bash
-# 1. Verificar que el blog está en la lista
-python3 pdf_page_counter.py --listar
-
-# 2. Si no aparece, añádelo en el script:
-# Editar pdf_page_counter.py línea ~43
-```
-
-### Error: "conda: command not found"
-
-```bash
-# Instalar Miniconda
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
-
-# O usar pip
-pip3 install PyPDF2 openpyxl --break-system-packages
-```
-
----
-
-**¿Más ejemplos? Escríbeme en cualquiera de mis plataformas:**
-
-- GitHub: @achalmed
-- LinkedIn: achalmaedison  
-- Email: Ver perfil en Gravatar
-
----
-
-**¡Feliz análisis de datos! 📊✨**
+- El conteo opera sobre los PDFs **renderizados** en `_site/`; con
+  `freeze: true` en Quarto un render global puede reutilizar caché — si un
+  conteo parece desactualizado, re-renderiza el blog afectado.
+- Los nombres lógicos de blog no llevan el prefijo `pub_` (se usa
+  `axiomata`, no `pub_axiomata`); el prefijo es configurable en `config.py`.
+- El estado `VACÍO` (0 páginas) es raro pero posible en PDFs malformados
+  que pypdf sí puede abrir.
+- `excel_databases/` local a esta herramienta no es la carpeta
+  `~/Documents/excel_databases` del pipeline de metadatos de los blogs;
+  son almacenes distintos.

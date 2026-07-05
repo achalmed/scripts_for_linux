@@ -181,6 +181,9 @@ cd ~/Documents/scripts_for_linux/script_hardlinks-detector
 
 # Generar el reporte ejecutivo de auditoría
 ./main.sh ~/Documents --report
+
+git add reports/hardlinks-report.md
+git commit -m "chore: actualizar hardlinks-report con nuevos datos escaneados"
 ```
 
 ---

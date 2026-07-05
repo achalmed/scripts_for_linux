@@ -1,76 +1,204 @@
-# count_files_by_extension.sh
+# Count Files by Extension
 
-Script de Bash que analiza recursivamente un directorio y genera un reporte estadístico de los archivos agrupados por extensión: cantidad, tamaño total y proporción visual.
+> Analiza recursivamente un directorio y cuenta los archivos agrupados por
+> extensión, mostrando cantidad, tamaño acumulado, ranking top-N y
+> estadísticas generales — todo en una sola pasada sobre el disco.
 
-## Descripción
+## 📋 Tabla de Contenidos
 
-Pensado para revisar bibliotecas grandes de archivos (por ejemplo una carpeta de Zotero, un repositorio de materiales académicos o un disco de fotografías), el script recorre todo el árbol de directorios indicado, identifica la extensión de cada archivo (ignorando mayúsculas/minúsculas) y produce:
+- [Descripción](#-descripción)
+- [Requisitos](#-requisitos)
+- [Instalación](#-instalación)
+- [Uso](#-uso)
+- [Arquitectura](#-arquitectura)
+- [Bugs Corregidos](#-bugs-corregidos)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Cómo Contribuir](#-cómo-contribuir)
+- [Notas y Advertencias](#-notas-y-advertencias)
 
-- una tabla con cantidad y tamaño total por extensión,
-- un ranking de las 5 extensiones más comunes con barra de progreso visual y porcentaje,
-- estadísticas generales del directorio (total de archivos, subdirectorios y tamaño combinado).
+## 📖 Descripción
 
-Los archivos sin extensión se agrupan bajo la etiqueta `sin_extension`.
+Herramienta de diagnóstico de contenido de directorios (una biblioteca de
+Zotero, un repositorio de materiales, un disco de fotografías). Recorre el
+árbol una única vez con `find -printf` (obteniendo nombre y tamaño sin
+ejecutar `stat` por archivo) y acumula los resultados en arrays asociativos
+de Bash. Produce:
 
-## Requisitos
+1. **Tabla por extensión** — cantidad y tamaño total, ordenada por frecuencia.
+2. **Ranking top-N** — barras de porcentaje de las extensiones más comunes.
+3. **Estadísticas generales** — totales de archivos, directorios y bytes.
 
-- Bash 4 o superior.
-- Utilidades estándar: `find`, `stat`, `awk`, `sort`, `uniq`, `grep`, `basename`.
-- Compatible tanto con `stat` de GNU/Linux (`stat -c%s`) como con la variante BSD/macOS (`stat -f%z`); el script intenta ambas automáticamente.
+Las extensiones se normalizan a minúsculas (`.TXT` y `.txt` cuentan juntas).
+Los archivos sin punto y los dotfiles (`.bashrc`) se agrupan bajo
+`sin_extension`.
 
-## Instalación
+## ⚙️ Requisitos
 
-```bash
-chmod +x count_files_by_extension.sh
-```
+### Sistema Operativo
 
-## Uso
+- Linux (probado en Kubuntu/Debian). Requiere GNU findutils — el `find` de
+  BSD/macOS no soporta `-printf`.
 
-```bash
-./count_files_by_extension.sh [directorio]
-```
+### Dependencias
 
-Si no se especifica un directorio, el script usa `~/Documents/biblioteca` por defecto.
+- `bash` >= 4.0 — arrays asociativos
+- GNU `find` — escaneo con `-printf`
+- `awk` — aritmética de punto flotante (porcentajes y tamaños legibles)
 
-### Ejemplos
-
-```bash
-# Usar el directorio por defecto (~/Documents/biblioteca)
-./count_files_by_extension.sh
-
-# Analizar una carpeta específica
-./count_files_by_extension.sh ~/Documents
-
-# Analizar con ruta absoluta
-./count_files_by_extension.sh /home/usuario/proyectos
-
-# Ver la ayuda
-./count_files_by_extension.sh -h
-```
-
-## Salida esperada
-
-El reporte se divide en tres bloques:
-
-1. **Tabla por extensión** — extensión, cantidad de archivos y tamaño total formateado (B, KB, MB o GB según corresponda).
-2. **Top 5 extensiones más comunes** — con barra de progreso (`█`) proporcional al porcentaje que representa cada extensión sobre el total de archivos.
-3. **Estadísticas generales** — total de archivos, total de directorios (sin contar el directorio raíz analizado), tamaño total y nombre de la ruta analizada.
-
-## Notas de la versión corregida
-
-Esta versión corrige un defecto del script original en la función `show_top_extensions()`: el porcentaje de cada extensión se calcula como número decimal (por ejemplo `42.9`), pero la aritmética nativa de Bash (`$(( ))`) **no admite punto flotante**, así que la línea `bar_length=$((percentage / 2))` lanzaba un error de sintaxis (`invalid arithmetic operator`) y el script se detenía antes de mostrar las estadísticas generales. Se corrigió usando `awk` para hacer la división y truncar el resultado a entero:
+## 🚀 Instalación
 
 ```bash
-bar_length=$(awk "BEGIN {printf \"%d\", $percentage/2}")
+cd script_count_files_by_extension
+chmod +x main.sh lib/*.sh
 ```
 
-También se añadió `set -uo pipefail` al inicio del script para que errores de variables no definidas o fallos en tuberías se detecten de inmediato en lugar de continuar silenciosamente.
+## 💻 Uso
 
-## Limitaciones conocidas
+### Sintaxis
 
-- El cálculo de tamaño por extensión recorre el árbol de archivos una vez por cada extensión encontrada (`get_size_by_extension`), lo cual es razonable para bibliotecas de tamaño moderado pero puede ser lento en directorios con cientos de miles de archivos y docenas de extensiones distintas.
-- Los nombres de archivo con saltos de línea no son soportados (limitación estándar de procesar `find` línea por línea); en la práctica esto es extremadamente raro.
+```bash
+./main.sh [OPCIONES] [directorio]
+```
 
-## Autor
+### Opciones disponibles
 
-Edison Achalma — 2024 (script original), corregido y documentado 2026.
+| Flag            | Descripción                                                | Requerido |
+| --------------- | ---------------------------------------------------------- | --------- |
+| `directorio`    | Directorio a analizar (default: `~/Documents/biblioteca`)  | No        |
+| `-t, --top N`   | Extensiones a mostrar en el ranking (default: 5)           | No        |
+| `-v, --verbose` | Información de diagnóstico                                 | No        |
+| `--no-color`    | Desactivar colores                                         | No        |
+| `--version`     | Mostrar versión                                            | No        |
+| `-h, --help`    | Mostrar ayuda                                              | No        |
+
+### Ejemplos de uso
+
+```bash
+# Directorio por defecto (~/Documents/biblioteca)
+./main.sh
+
+# Analizar un directorio específico
+./main.sh ~/Documents
+
+# Ranking con 10 extensiones y sin colores (útil para redirigir a archivo)
+./main.sh -t 10 --no-color /ruta/proyecto > reporte.txt
+```
+
+## 🗂️ Arquitectura
+
+```
+script_count_files_by_extension/
+├── main.sh              # Punto de entrada — solo orquestación
+├── config.sh            # Defaults editables (directorio, top-N, ancho de barra)
+└── lib/
+    ├── logger.sh        # Logging INFO/WARN/ERROR/DEBUG con colores auto-desactivables
+    ├── cli.sh           # Parseo de argumentos → variables OPT_*
+    ├── validator.sh     # Dependencias, permisos y validación de opciones
+    ├── scanner.sh       # Escaneo en una sola pasada (find -printf + arrays asociativos)
+    └── renderer.sh      # Tabla, ranking con barras y estadísticas
+```
+
+### Descripción de módulos
+
+| Archivo            | Responsabilidad                                           |
+| ------------------ | --------------------------------------------------------- |
+| `main.sh`          | Cargar módulos y ejecutar el pipeline en orden            |
+| `config.sh`        | Constantes editables por el usuario                       |
+| `lib/logger.sh`    | Salida consistente; WARN/ERROR a stderr                   |
+| `lib/cli.sh`       | Flags y ayuda; compatibilidad con el argumento posicional |
+| `lib/validator.sh` | Fallar temprano con códigos de salida estándar (2/3/4/5)  |
+| `lib/scanner.sh`   | Recolectar conteos y tamaños por extensión                |
+| `lib/renderer.sh`  | Formatear resultados (no escanea nada)                    |
+
+## 🐛 Bugs Corregidos
+
+### Bug #1: Crash al ejecutar sin argumentos
+- **Descripción**: con `set -u`, la comprobación `[[ "$1" == "-h" ]]` (línea
+  258 de la v1.x) accedía a `$1` sin valor por defecto; sin argumentos el
+  script moría con "unbound variable" antes de llegar a `main`.
+- **Impacto**: el caso de uso principal documentado (`./script.sh` sin
+  argumentos) no funcionaba.
+- **Corrección**: parseo centralizado en `lib/cli.sh` con bucle `while` que
+  nunca accede a posicionales inexistentes.
+
+### Bug #2: Escaneo O(N×M) — un find + un stat por archivo por extensión
+- **Descripción**: `get_size_by_extension()` relanzaba `find` sobre todo el
+  árbol y un proceso `stat` por cada archivo, una vez POR CADA extensión;
+  `show_statistics()` volvía a recorrer todo el árbol otra vez.
+- **Impacto**: sobre directorios grandes la ejecución tardaba minutos; el
+  trabajo crecía multiplicativamente con el número de extensiones.
+- **Corrección**: `lib/scanner.sh` hace UNA pasada con
+  `find -printf '%s\t%f\0'` y acumula en arrays asociativos, sin procesos
+  por archivo.
+
+### Bug #3: Conteo y tamaño calculados sobre conjuntos distintos
+- **Descripción**: el conteo normalizaba extensiones a minúsculas, pero el
+  tamaño se buscaba con `find -iname "*.$ext"`, un criterio distinto que
+  además se rompía si la extensión contenía caracteres glob (`[`, `*`, `?`).
+- **Impacto**: tamaños inconsistentes con los conteos mostrados.
+- **Corrección**: ambos valores se acumulan en el mismo punto de la única
+  pasada, siempre desde el mismo registro.
+
+### Bug #4: `stat` de BSD intentado primero en Linux
+- **Descripción**: `stat -f%z ... 2>/dev/null || stat -c%s ...` ejecutaba
+  siempre un `stat` destinado a macOS que falla en Linux, silenciando el
+  error y duplicando procesos.
+- **Impacto**: rendimiento degradado y errores enmascarados.
+- **Corrección**: el tamaño viene de `find -printf '%s'`; ya no se invoca
+  `stat`.
+
+### Bug #5: Dotfiles clasificados como extensión
+- **Descripción**: para `.bashrc`, `${filename##*.}` devuelve `bashrc`, así
+  que se contaba como extensión `.bashrc` en vez de "sin extensión".
+- **Impacto**: extensiones fantasma en el reporte.
+- **Corrección**: `extract_extension()` descarta el punto inicial antes de
+  decidir si el nombre tiene extensión real.
+
+### Bug #6: Nombres de archivo con saltos de línea rompían los totales
+- **Descripción**: los conteos con `find | wc -l` y los bucles `while read`
+  sin delimitador NUL cuentan/parten mal los nombres con `\n`.
+- **Impacto**: totales incorrectos en árboles con nombres inusuales.
+- **Corrección**: registros delimitados por NUL en el escaneo y conteo de
+  directorios con `-printf '.'`.
+
+## 🔧 Solución de Problemas
+
+### Error: "Permission denied"
+
+```bash
+chmod +x main.sh lib/*.sh
+```
+
+### Error: "Este 'find' no soporta -printf"
+
+Estás en un sistema BSD/macOS. Instala GNU findutils (`brew install findutils`)
+o ejecuta en Linux.
+
+### La salida muestra códigos de color al redirigir a archivo
+
+Los colores se desactivan solos cuando stdout no es TTY; si tu entorno los
+fuerza, usa `--no-color`.
+
+## 🤝 Cómo Contribuir
+
+1. Crea el módulo en `lib/nuevo_modulo.sh` con una única responsabilidad.
+2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh` (nunca
+   hardcodeados en `lib/`).
+3. Cárgalo con `source` en `main.sh` en orden de dependencias.
+4. Verifica con `bash -n` cada archivo y actualiza este README.
+
+### Estándares de código
+
+- Máximo ~30 líneas por función; nombres verbo+sustantivo en inglés.
+- Comentarios que explican el "por qué", no el "qué".
+- `set -euo pipefail` y errores por stderr.
+
+## ⚠️ Notas y Advertencias
+
+- La v2 usa GNU `find -printf`, por lo que **no es portable a macOS/BSD** sin
+  findutils GNU (la v1.x tampoco lo era en la práctica: mezclaba `stat` BSD
+  con hábitos GNU).
+- Los enlaces simbólicos **no** se siguen (`find -type f` no cuenta el
+  destino de un symlink), igual que en la v1.x.
+- El separador decimal de los porcentajes depende del `LC_NUMERIC` del
+  sistema (coma en locales españoles).

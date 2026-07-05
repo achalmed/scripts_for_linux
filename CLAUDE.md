@@ -11,15 +11,14 @@ A collection of independent Linux CLI utilities (Bash and Python 3), one per `sc
 Each tool is executed via its entry point:
 
 ```bash
-# Modular Bash tools (backup_suite, pdf-suite, proyect_tree, hardlinks-detector, git_sync_respos)
+# Modular Bash tools (backup_suite, pdf-suite, proyect_tree, hardlinks-detector,
+# git_sync_respos, count_files_by_extension, create_folders_batch, git_download_respos)
 ./script_backup_suite/main.sh --help
+./script_create_folders_batch/main.sh -f lista.txt -d
 
-# Python tool
+# Python tools
 python3 script_hardlinks-creator/main.py <filename> --dry-run
-
-# Single-file legacy tools
-./script_count_files_by_extension/count_files_by_extension.sh [dir]
-./script_create_folders_batch/create_folders_batch.sh -f lista.txt -d
+python3 script_pdf_page_counter/main.py --listar
 ```
 
 - Most tools support a simulation flag (`--dry-run`, `-d`, or simulate mode) — use it to verify changes without touching the filesystem.
@@ -50,6 +49,6 @@ Key conventions to preserve:
 - Destructive operations ask for interactive confirmation unless a `--no-confirm`/`--auto` flag is passed, and honor the simulation flag end-to-end.
 - File headers carry a version number and phase-by-phase description of the flow; module files state their single responsibility.
 
-Older tools (`script_count_files_by_extension`, `script_create_folders_batch`, `script_git_download_respos`, `script_pdf_page_counter`) predate this pattern and are single files. When substantially extending one, the repo's history shows the preferred move is refactoring it into the modular layout (see the hardlinks and backup suite commits).
+As of 2026-07 every tool follows this modular layout (the last four single-file tools — count_files_by_extension, create_folders_batch, git_download_respos, pdf_page_counter — were refactored into it; each README documents the bugs fixed in that migration). If a new single-file script is added, refactor it into the modular layout before substantially extending it.
 
 Each tool has its own README.md with usage, architecture notes, and extension instructions — read it before modifying that tool, and update it when behavior changes.

@@ -12,7 +12,7 @@ Ejemplos prácticos y casos de uso específicos para el análisis de tus blogs a
 ### 1. Ver todos los blogs disponibles
 
 ```bash
-python3 pdf_page_counter.py --listar
+python3 main.py --listar
 ```
 
 **Cuándo usar:** Antes de ejecutar cualquier análisis, para verificar qué blogs están configurados y disponibles.
@@ -22,7 +22,7 @@ python3 pdf_page_counter.py --listar
 ### 2. Analizar todos los blogs (por defecto)
 
 ```bash
-python3 pdf_page_counter.py
+python3 main.py
 ```
 
 **Resultado:**
@@ -36,7 +36,7 @@ python3 pdf_page_counter.py
 ### 3. Analizar un solo blog
 
 ```bash
-python3 pdf_page_counter.py -b actus-mercator
+python3 main.py -b actus-mercator
 ```
 
 **Cuándo usar:** 
@@ -49,7 +49,7 @@ python3 pdf_page_counter.py -b actus-mercator
 ### 4. Analizar múltiples blogs específicos
 
 ```bash
-python3 pdf_page_counter.py -b actus-mercator aequilibria axiomata
+python3 main.py -b actus-mercator aequilibria axiomata
 ```
 
 **Cuándo usar:**
@@ -62,7 +62,7 @@ python3 pdf_page_counter.py -b actus-mercator aequilibria axiomata
 ### 5. Buscar todos los PDFs (no solo index.pdf)
 
 ```bash
-python3 pdf_page_counter.py --todos
+python3 main.py --todos
 ```
 
 **Cuándo usar:**
@@ -77,7 +77,7 @@ python3 pdf_page_counter.py --todos
 ### Blogs de Economía
 
 ```bash
-python3 pdf_page_counter.py \
+python3 main.py \
   -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
   -o economia_$(date +%Y%m%d).xlsx
 ```
@@ -93,7 +93,7 @@ python3 pdf_page_counter.py \
 ### Blogs de Metodología y APA
 
 ```bash
-python3 pdf_page_counter.py \
+python3 main.py \
   -b methodica \
   -o metodologia_$(date +%Y%m%d).xlsx
 ```
@@ -107,7 +107,7 @@ python3 pdf_page_counter.py \
 ### Blogs de Matemáticas y Análisis
 
 ```bash
-python3 pdf_page_counter.py \
+python3 main.py \
   -b axiomata epsilon-y-beta numerus-scriptum optimums \
   -o matematicas_$(date +%Y%m%d).xlsx
 ```
@@ -123,7 +123,7 @@ python3 pdf_page_counter.py \
 ### Website Achalma (Blog personal + Teaching)
 
 ```bash
-python3 pdf_page_counter.py \
+python3 main.py \
   -b blog teching \
   -o website_achalma_$(date +%Y%m%d).xlsx
 ```
@@ -173,24 +173,24 @@ conda activate pdf_counter
 # 1. Análisis general (solo index.pdf)
 echo ""
 echo "📊 1/4 - Análisis general..."
-python3 pdf_page_counter.py -o "reporte_general_${MES}.xlsx"
+python3 main.py -o "reporte_general_${MES}.xlsx"
 
 # 2. Análisis completo (todos los PDFs)
 echo ""
 echo "📊 2/4 - Análisis completo..."
-python3 pdf_page_counter.py --todos -o "reporte_completo_${MES}.xlsx"
+python3 main.py --todos -o "reporte_completo_${MES}.xlsx"
 
 # 3. Análisis por categoría: Economía
 echo ""
 echo "📊 3/4 - Análisis de blogs de economía..."
-python3 pdf_page_counter.py \
+python3 main.py \
   -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
   -o "reporte_economia_${MES}.xlsx"
 
 # 4. Análisis de website-achalma
 echo ""
 echo "📊 4/4 - Análisis de website-achalma..."
-python3 pdf_page_counter.py \
+python3 main.py \
   -b blog teching \
   -o "reporte_website_${MES}.xlsx"
 
@@ -251,7 +251,7 @@ source ~/miniconda3/etc/profile.d/conda.sh
 conda activate pdf_counter
 
 # Ejecutar análisis
-python3 pdf_page_counter.py -b "$BLOG" -o "${BLOG}_${FECHA}.xlsx"
+python3 main.py -b "$BLOG" -o "${BLOG}_${FECHA}.xlsx"
 
 # Desactivar entorno
 conda deactivate
@@ -274,10 +274,10 @@ crontab -e
 # Añadir estas líneas:
 
 # Análisis general el primer día de cada mes a las 8 AM
-0 8 1 * * cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 pdf_page_counter.py -o reporte_mensual_$(date +\%Y\%m).xlsx
+0 8 1 * * cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 main.py -o reporte_mensual_$(date +\%Y\%m).xlsx
 
 # Análisis semanal todos los lunes a las 9 AM
-0 9 * * 1 cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 pdf_page_counter.py -o reporte_semanal_$(date +\%Y\%m\%d).xlsx
+0 9 * * 1 cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && ~/miniconda3/condabin/conda run -n pdf_counter python3 main.py -o reporte_semanal_$(date +\%Y\%m\%d).xlsx
 ```
 
 ---
@@ -296,7 +296,7 @@ ANIO="2025"
 
 for MES in "${MESES[@]}"; do
     echo "Generando reporte para $ANIO-$MES..."
-    python3 pdf_page_counter.py -o "historico_${ANIO}_${MES}.xlsx"
+    python3 main.py -o "historico_${ANIO}_${MES}.xlsx"
     
     # Esperar para no sobrecargar
     sleep 2
@@ -316,7 +316,7 @@ echo "📊 Puedes comparar los archivos en excel_databases/"
 # Después de publicar contenido nuevo en un blog
 
 # 1. Verificar el blog
-python3 pdf_page_counter.py -b nombre-del-blog -o verificacion_$(date +%Y%m%d).xlsx
+python3 main.py -b nombre-del-blog -o verificacion_$(date +%Y%m%d).xlsx
 
 # 2. Revisar el Excel generado
 # 3. Comparar con análisis anterior
@@ -334,14 +334,14 @@ python3 pdf_page_counter.py -b nombre-del-blog -o verificacion_$(date +%Y%m%d).x
 TRIMESTRE=$(date +%Y_Q$(($(date +%-m)/3+1)))
 
 # Análisis completo con todos los PDFs
-python3 pdf_page_counter.py --todos -o "auditoria_${TRIMESTRE}.xlsx"
+python3 main.py --todos -o "auditoria_${TRIMESTRE}.xlsx"
 
 # Análisis por categorías
-python3 pdf_page_counter.py \
+python3 main.py \
   -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus \
   -o "auditoria_economia_${TRIMESTRE}.xlsx"
 
-python3 pdf_page_counter.py \
+python3 main.py \
   -b axiomata epsilon-y-beta numerus-scriptum optimums \
   -o "auditoria_matematicas_${TRIMESTRE}.xlsx"
 
@@ -356,14 +356,14 @@ echo "✅ Auditoría trimestral completada"
 # Para preparar estadísticas para un informe académico
 
 # 1. Análisis general
-python3 pdf_page_counter.py -o informe_general.xlsx
+python3 main.py -o informe_general.xlsx
 
 # 2. Análisis por área (para incluir en el informe)
-python3 pdf_page_counter.py \
+python3 main.py \
   -b actus-mercator aequilibria \
   -o informe_economia.xlsx
 
-python3 pdf_page_counter.py \
+python3 main.py \
   -b blog teching \
   -o informe_docencia.xlsx
 
@@ -380,13 +380,13 @@ Añade a tu `~/.bashrc` o `~/.zshrc`:
 
 ```bash
 # Aliases para PDF Counter
-alias count-all='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py'
+alias count-all='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 main.py'
 
-alias count-blog='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py -b'
+alias count-blog='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 main.py -b'
 
-alias count-list='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py --listar'
+alias count-list='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 main.py --listar'
 
-alias count-economia='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 pdf_page_counter.py -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus'
+alias count-economia='conda activate pdf_counter && cd ~/Documents/scripts/scripts_for_linux/script_pdf_page_counter && python3 main.py -b actus-mercator aequilibria dialectica-y-mercado pecunia-fluxus'
 ```
 
 **Uso después de recargar el shell:**
@@ -411,7 +411,7 @@ count-economia
 # pre-commit-stats.sh
 
 # Generar estadísticas antes de hacer commit
-python3 pdf_page_counter.py -o pre_commit_$(date +%Y%m%d).xlsx
+python3 main.py -o pre_commit_$(date +%Y%m%d).xlsx
 
 # Añadir al commit
 git add excel_databases/pre_commit_$(date +%Y%m%d).xlsx
@@ -430,7 +430,7 @@ FECHA=$(date +%Y%m%d)
 REPORTE="excel_databases/reporte_${FECHA}.xlsx"
 
 # Generar reporte
-python3 pdf_page_counter.py -o "reporte_${FECHA}.xlsx"
+python3 main.py -o "reporte_${FECHA}.xlsx"
 
 # Enviar por email (requiere configurar mail/sendmail)
 echo "Reporte de páginas PDF adjunto" | mail -s "Reporte Mensual - $FECHA" \
@@ -447,7 +447,7 @@ echo "Reporte de páginas PDF adjunto" | mail -s "Reporte Mensual - $FECHA" \
 ```bash
 # Generar estadísticas para informe anual
 
-python3 pdf_page_counter.py \
+python3 main.py \
   -b blog teching \
   -o productividad_docente_2025.xlsx
 ```
@@ -464,7 +464,7 @@ python3 pdf_page_counter.py \
 ```bash
 # Blogs de investigación
 
-python3 pdf_page_counter.py \
+python3 main.py \
   -b res-publica chaska \
   -o publicaciones_cientificas_2025.xlsx
 ```
@@ -476,7 +476,7 @@ python3 pdf_page_counter.py \
 ```bash
 # Reporte completo para memoria anual
 
-python3 pdf_page_counter.py \
+python3 main.py \
   --todos \
   -o memoria_institucional_2025.xlsx
 ```
@@ -493,12 +493,12 @@ Si tienes muchos archivos, procesa por partes:
 # Procesar blogs en lotes
 
 # Lote 1: Economía
-python3 pdf_page_counter.py \
+python3 main.py \
   -b actus-mercator aequilibria \
   -o lote1_economia.xlsx
 
 # Lote 2: Matemáticas  
-python3 pdf_page_counter.py \
+python3 main.py \
   -b axiomata numerus-scriptum \
   -o lote2_matematicas.xlsx
 
@@ -527,10 +527,10 @@ python3 pdf_page_counter.py \
 
 ```bash
 # 1. Verificar que el blog está en la lista
-python3 pdf_page_counter.py --listar
+python3 main.py --listar
 
 # 2. Si no aparece, añádelo en el script:
-# Editar pdf_page_counter.py línea ~43
+# Editar main.py línea ~43
 ```
 
 ### Error: "conda: command not found"
