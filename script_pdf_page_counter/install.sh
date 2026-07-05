@@ -171,7 +171,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "🔐 PASO 5: Configurando Permisos"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-chmod +x pdf_page_counter.py
+chmod +x main.py
 if [ $? -eq 0 ]; then
     print_success "Permisos de ejecución configurados"
 else
@@ -226,7 +226,7 @@ if [ "$USE_CONDA" = true ]; then
     echo "      ${GREEN}conda activate $ENV_NAME${NC}"
     echo ""
     echo "   2. Ejecuta el script:"
-    echo "      ${GREEN}python3 pdf_page_counter.py${NC}"
+    echo "      ${GREEN}python3 main.py${NC}"
     echo ""
     echo "   3. Para desactivar el entorno:"
     echo "      ${GREEN}conda deactivate${NC}"
@@ -235,22 +235,22 @@ else
     echo "📖 INSTRUCCIONES DE USO:"
     echo ""
     echo "   Ejecuta el script:"
-    echo "   ${GREEN}python3 pdf_page_counter.py${NC}"
+    echo "   ${GREEN}python3 main.py${NC}"
     echo ""
 fi
 
 echo "📚 EJEMPLOS:"
 echo "   • Ver blogs disponibles:"
-echo "     ${BLUE}python3 pdf_page_counter.py --listar${NC}"
+echo "     ${BLUE}python3 main.py --listar${NC}"
 echo ""
 echo "   • Contar todos los blogs:"
-echo "     ${BLUE}python3 pdf_page_counter.py${NC}"
+echo "     ${BLUE}python3 main.py${NC}"
 echo ""
 echo "   • Contar blogs específicos:"
-echo "     ${BLUE}python3 pdf_page_counter.py -b actus-mercator aequilibria${NC}"
+echo "     ${BLUE}python3 main.py -b actus-mercator aequilibria${NC}"
 echo ""
 echo "   • Ver ayuda completa:"
-echo "     ${BLUE}python3 pdf_page_counter.py --help${NC}"
+echo "     ${BLUE}python3 main.py --help${NC}"
 echo ""
 echo "📄 Para más información, consulta README.md"
 echo ""
@@ -262,9 +262,9 @@ echo "💡 TIP: Puedes crear un alias para facilitar el uso:"
 echo ""
 if [ "$USE_CONDA" = true ]; then
     echo "   Agrega esto a tu ~/.bashrc o ~/.zshrc:"
-    echo "   ${YELLOW}alias count-pdfs='conda activate $ENV_NAME && python3 $(pwd)/pdf_page_counter.py'${NC}"
+    echo "   ${YELLOW}alias count-pdfs='conda activate $ENV_NAME && python3 $(pwd)/main.py'${NC}"
 else
     echo "   Agrega esto a tu ~/.bashrc o ~/.zshrc:"
-    echo "   ${YELLOW}alias count-pdfs='python3 $(pwd)/pdf_page_counter.py'${NC}"
+    echo "   ${YELLOW}alias count-pdfs='python3 $(pwd)/main.py'${NC}"
 fi
 echo ""

@@ -1,255 +1,234 @@
-# download_respos
+# Git Download Repos
 
-Script en Bash para descargar repositorios de GitHub con control total sobre la profundidad del historial de commits: desde un snapshot del último commit hasta el historial completo, para uno, varios o todos los repos de una cuenta.
+> Descarga repositorios de GitHub con control total sobre la profundidad del
+> historial de commits: desde un snapshot del último commit hasta el
+> historial completo, para uno, varios o todos los repos de una cuenta.
 
-Nace de un caso de uso concreto: descargar manualmente, repo por repo, solo el commit más reciente de una veintena de proyectos personales (`git clone --depth 1 ...` repetido a mano). Este script automatiza ese flujo y lo extiende con todas las variantes razonables: profundidad ajustable, selección de repos, exclusión de forks, snapshot sin historial git, y soporte SSH/HTTPS.
+## 📋 Tabla de Contenidos
 
-## Tabla de contenidos
+- [Descripción](#-descripción)
+- [Requisitos](#-requisitos)
+- [Instalación](#-instalación)
+- [Uso](#-uso)
+- [Arquitectura](#-arquitectura)
+- [Bugs Corregidos](#-bugs-corregidos)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Cómo Contribuir](#-cómo-contribuir)
+- [Notas y Advertencias](#-notas-y-advertencias)
 
-- [Características](#características)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Uso rápido](#uso-rápido)
-- [Referencia de opciones](#referencia-de-opciones)
-- [Casos de uso](#casos-de-uso)
-- [Cómo funciona la profundidad de commits](#cómo-funciona-la-profundidad-de-commits)
-- [Autenticación y límites de la API](#autenticación-y-límites-de-la-api)
-- [Comportamiento ante errores y carpetas existentes](#comportamiento-ante-errores-y-carpetas-existentes)
-- [Limitaciones conocidas](#limitaciones-conocidas)
-- [Preguntas frecuentes](#preguntas-frecuentes)
-- [Licencia](#licencia)
+## 📖 Descripción
 
-## Características
+Nace de un caso de uso concreto: descargar solo el commit más reciente de
+una veintena de proyectos personales sin repetir `git clone --depth 1 ...` a
+mano. Cubre:
 
-- **Profundidad de commits ajustable**: descarga solo el último commit (`-d 1`), los últimos N commits (`-d 5`), o el historial completo (`-d full`).
-- **Tres modos de selección de repos**: todos los repos de una cuenta (`all`), una lista específica (`list`), o un solo repo (`single`).
-- **Descubrimiento automático vía API de GitHub**: en modo `all`, el script consulta la API pública de GitHub y pagina automáticamente, sin necesidad de listar nombres de repos a mano.
-- **Exclusión de forks por defecto**: al descargar "todos", los forks se omiten salvo que se indique lo contrario.
-- **Exclusión de repos puntuales**: lista de nombres a saltar, útil para repos ya actualizados o irrelevantes.
-- **Snapshot sin `.git`**: opción para eliminar el historial git tras clonar, dejando solo los archivos.
-- **SSH o HTTPS**: elegible según la configuración de llaves del usuario.
-- **Rama específica**: opción para clonar solo una rama en particular.
-- **Soporte de token de autenticación**: para repos privados o para evitar el límite de peticiones de la API pública.
-- **Idempotente por carpeta**: si una carpeta destino ya existe, se omite en vez de sobrescribirla.
+1. Descargar **un** repo con N commits de profundidad (o todo el historial).
+2. Descargar **varios** repos específicos (lista separada por comas).
+3. Descargar **todos** los repos de un usuario/organización vía API de GitHub.
+4. Clonar con `.git` (historial usable) o snapshot puro de archivos (`-s`).
+5. Protocolo SSH o HTTPS, exclusión de repos, inclusión opcional de forks.
+6. **Dry-run** (`-n`): ver qué se clonaría sin tocar la red de git.
 
-## Requisitos
+## ⚙️ Requisitos
 
-| Herramienta | Uso | Instalación (Kubuntu/Debian) | Instalación (Arch) |
-|---|---|---|---|
-| `git` | Clonado de repositorios | `sudo apt install git` | `sudo pacman -S git` |
-| `curl` | Peticiones a la API de GitHub | `sudo apt install curl` | `sudo pacman -S curl` |
-| `jq` | Parseo de respuestas JSON de la API | `sudo apt install jq` | `sudo pacman -S jq` |
+### Sistema Operativo
 
-Adicionalmente, si se usa el protocolo SSH (por defecto), se necesita una llave SSH configurada y asociada a la cuenta de GitHub. Para HTTPS no se requiere configuración previa de llaves, pero sí puede pedir credenciales según el repo.
+- Linux (Kubuntu/Debian, Arch) con `bash` >= 4.3 (namerefs).
 
-## Instalación
+### Dependencias
+
+- `git` — siempre
+- `curl` y `jq` — solo para el modo `-m all` (consulta a la API)
 
 ```bash
-# Descargar el script (o copiarlo desde donde se haya guardado)
-chmod +x download_respos.sh
-
-# Opcional: moverlo a un directorio en el PATH para invocarlo desde cualquier lugar
-mv download_respos.sh ~/.local/bin/download_respos
+sudo apt install jq      # Kubuntu/Debian
+sudo pacman -S jq        # Arch
 ```
 
-## Uso rápido
+## 🚀 Instalación
 
 ```bash
-./download_respos.sh -u USUARIO [opciones]
+cd script_git_download_respos
+chmod +x main.sh lib/*.sh
 ```
 
-Ejemplo mínimo, descargar todos los repos propios con solo el último commit de cada uno:
+## 💻 Uso
+
+### Sintaxis
 
 ```bash
-cd Documents
-
-./download_respos.sh -u achalmed -d 1
+./main.sh -u USUARIO [OPCIONES]
 ```
 
-## Referencia de opciones
+### Opciones disponibles
 
-### Obligatoria
+| Flag             | Descripción                                              | Requerido |
+| ---------------- | -------------------------------------------------------- | --------- |
+| `-u USUARIO`     | Usuario u organización de GitHub                          | Sí        |
+| `-m all\|list\|single` | Modo de selección de repos (default: `all`)         | No        |
+| `-r "a,b,c"`     | Repos a descargar (obligatorio con `list`/`single`)       | Según modo|
+| `-d N\|full`     | Profundidad: 1 último commit (default), N últimos, `full`/`0` todo | No |
+| `-b RAMA`        | Clonar solo una rama específica                           | No        |
+| `-o DIRECTORIO`  | Carpeta destino (default: `./`)                           | No        |
+| `-p ssh\|https`  | Protocolo de clonado (default: `ssh`)                     | No        |
+| `-x "r1,r2"`     | Excluir repos en modo `all`                               | No        |
+| `-F`             | Incluir forks en modo `all`                               | No        |
+| `-s`             | Eliminar `.git` tras clonar (snapshot)                    | No        |
+| `-t TOKEN`       | Token de GitHub (o variable `GITHUB_TOKEN`)               | No        |
+| `-n`             | Dry-run: mostrar qué se clonaría                          | No        |
+| `-v`             | Modo detallado                                            | No        |
+| `-h`             | Mostrar ayuda                                             | No        |
 
-| Flag | Descripción |
-|---|---|
-| `-u USUARIO` | Usuario u organización de GitHub del cual descargar repos. |
-
-### Modo de selección de repos
-
-| Flag | Valores | Descripción |
-|---|---|---|
-| `-m` | `all` (por defecto), `list`, `single` | Define si se descargan todos los repos, una lista, o uno solo. |
-| `-r` | string | Nombre(s) de repo(s). Obligatorio si `-m` es `list` (separados por coma) o `single`. |
-
-### Control de profundidad
-
-| Flag | Valores | Descripción |
-|---|---|---|
-| `-d` | `1` (por defecto), `N`, `full` | Profundidad de commits: `1` trae solo el último, `N` trae los últimos N, `full` trae el historial completo. |
-| `-b` | nombre de rama | Clona solo esa rama, en vez de la rama por defecto del repo. |
-
-### Otras opciones
-
-| Flag | Valores | Descripción |
-|---|---|---|
-| `-o` | ruta | Carpeta destino donde se crean las subcarpetas de cada repo. Por defecto, el directorio actual. |
-| `-p` | `ssh` (por defecto), `https` | Protocolo usado para clonar. |
-| `-x` | string | Repos a excluir al usar `-m all`, separados por coma. |
-| `-F` | (flag, sin valor) | Incluye forks al usar `-m all`. Por defecto se omiten. |
-| `-s` | (flag, sin valor) | Elimina la carpeta `.git` tras clonar, dejando solo los archivos (snapshot puro). |
-| `-t` | token | Token personal de GitHub. Alternativa: variable de entorno `GITHUB_TOKEN`. |
-| `-h` | — | Muestra la ayuda y termina. |
-
-## Casos de uso
-
-### 1. Descargar todos los repos, solo el último commit
-
-Equivale a automatizar la secuencia de `git clone --depth 1` repo por repo:
+### Ejemplos de uso
 
 ```bash
-./download_respos.sh -u achalmed -d 1 -o ~/Documents/github-backup
+# Todos los repos, solo último commit, vía SSH
+./main.sh -u achalmed -d 1
+
+# Todos, últimos 5 commits, en carpeta específica
+./main.sh -u achalmed -d 5 -o ~/Documents/github-backup
+
+# Historial completo de todos los repos
+./main.sh -u achalmed -d full
+
+# Solo repos puntuales
+./main.sh -u achalmed -m list -r "chaska,website-achalma,axiomata" -d 1
+
+# Un repo, snapshot sin .git
+./main.sh -u achalmed -m single -r "scripts_for_zotero" -s
+
+# Simular la descarga de todos, excluyendo algunos
+./main.sh -u achalmed -n -x "Python,CampusTeX-Research"
 ```
 
-### 2. Descargar todos los repos con un historial corto (últimos 5 commits)
+## 🗂️ Arquitectura
 
-Útil cuando se necesita algo de contexto reciente sin traer todo el historial:
+```
+script_git_download_respos/
+├── main.sh              # Punto de entrada — despacho por modo y resumen
+├── config.sh            # Defaults editables (destino, profundidad, protocolo, API)
+└── lib/
+    ├── logger.sh        # Logging INFO/WARN/ERROR/DEBUG con colores auto-desactivables
+    ├── cli.sh           # getopts compatible con la v1.x + dry-run
+    ├── validator.sh     # Dependencias por modo, coherencia de opciones, destino
+    ├── github_api.sh    # Lista paginada de repos con manejo de errores de red/API
+    └── cloner.sh        # URL, flags, clonado individual y contadores
+```
+
+### Descripción de módulos
+
+| Archivo              | Responsabilidad                                          |
+| -------------------- | -------------------------------------------------------- |
+| `main.sh`            | Orquestación y bucles de los modos `list`/`all`           |
+| `config.sh`          | Constantes editables por el usuario                       |
+| `lib/logger.sh`      | Salida consistente; WARN/ERROR a stderr                   |
+| `lib/cli.sh`         | Flags y ayuda (mismas letras que la v1.x)                 |
+| `lib/validator.sh`   | Fallar temprano: usuario, modo, protocolo, profundidad    |
+| `lib/github_api.sh`  | Única pieza que habla con la red HTTP                     |
+| `lib/cloner.sh`      | Única pieza que ejecuta `git clone`                       |
+
+## 🐛 Bugs Corregidos
+
+### Bug #1: Cuenta sin repos producía un clon de nombre vacío
+- **Descripción**: con 0 repos, `printf '%s\n' "${repos[@]}"` sobre el array
+  vacío emitía una línea en blanco; `mapfile` la convertía en un elemento
+  `""` y el script intentaba `git clone` de un repo sin nombre.
+- **Impacto**: error confuso de git en vez del mensaje "no se encontraron
+  repos".
+- **Corrección**: `fetch_all_repos()` no emite nada si no hay repos y `main`
+  lo detecta con un mensaje claro.
+
+### Bug #2: Flags de clone reconstruidas partiendo un string
+- **Descripción**: `read -ra flags <<< "$(build_clone_flags)"` aplanaba el
+  array a texto y lo re-partía por espacios.
+- **Impacto**: nombres de rama con espacios o caracteres especiales rompían
+  el comando `git clone`.
+- **Corrección**: `build_clone_flags()` llena un array real por nameref
+  (bash 4.3+); nunca se aplanan los argumentos.
+
+### Bug #3: Protocolo inválido caía a HTTPS en silencio
+- **Descripción**: `build_url` hacía `if ssh ... else https`; un typo como
+  `-p shh` clonaba por HTTPS sin avisar.
+- **Impacto**: comportamiento distinto al pedido sin ningún aviso (con repos
+  privados, fallo de autenticación difícil de diagnosticar).
+- **Corrección**: `validate_options()` rechaza cualquier protocolo que no
+  sea `ssh` o `https` (salida 2).
+
+### Bug #4: Profundidad sin validar
+- **Descripción**: `-d abc` se pasaba tal cual a `git clone --depth abc`.
+- **Impacto**: error críptico de git en cada repo del lote.
+- **Corrección**: se valida como entero, `0` o `full` antes de empezar.
+
+### Bug #5: Fallos de red de curl sin mensaje
+- **Descripción**: con `set -e`, un fallo de `curl` (sin conexión, timeout)
+  abortaba el script sin explicación; además no había timeout, con riesgo de
+  cuelgue indefinido.
+- **Impacto**: cortes silenciosos a mitad de proceso.
+- **Corrección**: `curl -sf --max-time 30` con captura del error, mensaje
+  específico ("¿sin conexión?") y extracción del mensaje real de la API
+  cuando existe.
+
+### Bug #6: La ayuda (-h) salía con código de error
+- **Descripción**: `usage()` terminaba siempre con `exit 1`, incluso cuando
+  el usuario pidió la ayuda explícitamente.
+- **Impacto**: `./script -h && siguiente_comando` nunca ejecutaba la segunda
+  parte; semántica de exit codes rota para scripting.
+- **Corrección**: `-h` sale con 0; los errores de uso salen con 2.
+
+### Bug #7: Dependencias exigidas aunque no se usaran
+- **Descripción**: `curl` y `jq` se exigían siempre, pero solo el modo `all`
+  los usa.
+- **Impacto**: los modos `single`/`list` fallaban en máquinas sin `jq` pese a
+  no necesitarlo.
+- **Corrección**: `validate_dependencies()` exige `curl`/`jq` solo con
+  `-m all`.
+
+## 🔧 Solución de Problemas
+
+### Error: "Falta el comando 'jq'"
 
 ```bash
-./download_respos.sh -u achalmed -d 5
+sudo apt install jq        # Kubuntu/Debian
+sudo pacman -S jq          # Arch
 ```
 
-### 3. Descargar todo el historial completo de todos los repos
+### Error de la API: "API rate limit exceeded"
 
-Equivale a un `git clone` normal, repo por repo:
+Sin token, GitHub limita a 60 peticiones/hora por IP. Usa un token:
 
 ```bash
-./download_respos.sh -u achalmed -d full
+export GITHUB_TOKEN="ghp_..."
+./main.sh -u achalmed
 ```
 
-### 4. Descargar solo repos puntuales
+### "La carpeta 'X' ya existe, se omite"
 
-```bash
-./download_respos.sh -u achalmed -m list -r "chaska,website-achalma,axiomata" -d 1
-```
+Es el comportamiento esperado: el script nunca sobreescribe. Borra o mueve
+la carpeta si quieres re-descargar el repo.
 
-### 5. Descargar un único repo
+### Falla el clonado por SSH
 
-```bash
-./download_respos.sh -u achalmed -m single -r "scripts_for_zotero" -d 1
-```
+Verifica tu clave (`ssh -T git@github.com`) o usa `-p https`.
 
-### 6. Descargar todos, excluyendo algunos puntuales
+## 🤝 Cómo Contribuir
 
-Útil para saltar repos que ya se tienen actualizados localmente:
+1. Crea el módulo en `lib/nuevo_modulo.sh` con una única responsabilidad
+   (p. ej. soporte de GitLab iría en su propio `gitlab_api.sh`).
+2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh`.
+3. Cárgalo con `source` en `main.sh` en orden de dependencias.
+4. Verifica con `bash -n` y prueba siempre primero con `-n` (dry-run).
 
-```bash
-./download_respos.sh -u achalmed -d 1 -x "Python,CampusTeX-Research"
-```
+### Estándares de código
 
-### 7. Snapshot puro, sin historial git
+- Máximo ~30 líneas por función; nombres verbo+sustantivo en inglés.
+- Comentarios que explican el "por qué", no el "qué".
+- `set -euo pipefail` y errores por stderr.
 
-Para cuando solo se necesitan los archivos tal como están, sin carpeta `.git` (más liviano, no permite hacer `git log`, `git pull`, etc.):
+## ⚠️ Notas y Advertencias
 
-```bash
-./download_respos.sh -u achalmed -d 1 -s
-```
-
-### 8. Usar HTTPS en vez de SSH
-
-Útil en máquinas donde no hay una llave SSH configurada:
-
-```bash
-./download_respos.sh -u achalmed -d 1 -p https
-```
-
-### 9. Incluir forks en la descarga masiva
-
-Por defecto los forks se omiten; para incluirlos:
-
-```bash
-./download_respos.sh -u achalmed -d 1 -F
-```
-
-### 10. Clonar solo una rama específica
-
-```bash
-./download_respos.sh -u achalmed -m single -r "website-achalma" -d 1 -b main
-```
-
-### 11. Combinar varias opciones
-
-Todos los repos, últimos 3 commits, snapshot sin `.git`, excluyendo dos repos, en una carpeta específica:
-
-```bash
-./download_respos.sh -u achalmed -d 3 -s -x "Python,axiomata" -o ~/Documents/backup-2026
-```
-
-## Cómo funciona la profundidad de commits
-
-El script traduce el valor de `-d` a las flags correspondientes de `git clone`:
-
-| Valor de `-d` | Flag de git aplicada | Resultado |
-|---|---|---|
-| `1` | `--depth 1` | Solo el commit más reciente (HEAD). Más rápido y liviano. |
-| `N` (ej. `5`) | `--depth 5` | Los últimos N commits de la rama clonada. |
-| `full` o `0` | (ninguna, clon normal) | Historial completo, equivalente a `git clone` sin `--depth`. |
-
-Importante: un clon con `--depth` (`1` o `N`) es un **shallow clone**. Esto significa que no se puede hacer `git log` más allá de la profundidad descargada, ni `git rebase`/`cherry-pick` contra commits fuera de ese rango, ni `git push` sin antes ejecutar `git fetch --unshallow` para recuperar el historial completo. Si el objetivo es solo trabajar con los archivos actuales (copiar a otro repo, revisar código, hacer una build), esto no representa ninguna limitación práctica.
-
-## Autenticación y límites de la API
-
-El script usa el endpoint público `https://api.github.com/users/{usuario}/repos` para listar repos en modo `all`. Esta API tiene límites de peticiones (rate limit):
-
-- **Sin autenticar**: 60 peticiones por hora, compartidas por dirección IP.
-- **Autenticado con token**: 5,000 peticiones por hora.
-
-Si se descargan muchos repos seguidos o se ejecuta el script repetidamente en poco tiempo, es posible toparse con el límite sin token. El script detecta este caso (la API responde con un campo `message` de error) y lo reporta claramente en vez de fallar en silencio.
-
-Para evitarlo, generar un token personal en GitHub (`Settings → Developer settings → Personal access tokens`) y pasarlo de cualquiera de estas dos formas:
-
-```bash
-# Como variable de entorno (recomendado, no queda en el historial de comandos)
-export GITHUB_TOKEN="ghp_xxxxxxxxxxxx"
-./download_respos.sh -u achalmed -d 1
-
-# O como flag directo
-./download_respos.sh -u achalmed -d 1 -t "ghp_xxxxxxxxxxxx"
-```
-
-Un token también es necesario si se quiere listar y descargar repositorios **privados** del usuario, ya que la API pública sin autenticar solo devuelve repos públicos.
-
-## Comportamiento ante errores y carpetas existentes
-
-- **Carpeta ya existente**: si la carpeta destino de un repo ya existe, el script la omite con un aviso, en vez de sobrescribirla o fallar. Para volver a descargar ese repo, hay que eliminar o mover la carpeta existente primero.
-- **Repo individual que falla al clonar**: se reporta el error puntual de ese repo y el script continúa con el resto (no se detiene la descarga masiva por un solo fallo).
-- **Usuario inexistente o error de API**: el script detecta la respuesta de error de la API de GitHub y termina con un mensaje claro, sin intentar procesar una lista vacía o corrupta.
-- **Dependencias faltantes** (`git`, `curl`, `jq`): se valida su presencia al inicio y el script termina inmediatamente si falta alguna, indicando cuál.
-
-## Limitaciones conocidas
-
-- Solo lista repos del tipo `owner` (propios del usuario), no repos donde el usuario es colaborador pero no dueño.
-- No descarga submódulos automáticamente (se podría añadir `--recurse-submodules` a `build_clone_flags` si se necesita en el futuro).
-- El modo `all` no diferencia entre repos públicos y privados visualmente en el log; ambos se procesan igual si se usa un token con los permisos adecuados.
-- No hay verificación de espacio en disco antes de iniciar la descarga masiva.
-
-## Preguntas frecuentes
-
-**¿Por qué `--depth 1` y no clonar todo y luego recortar?**
-Porque `--depth` limita lo que se transfiere desde el servidor, no solo lo que se guarda localmente. Para repos con mucho historial acumulado, esto reduce tanto el tiempo de descarga como el espacio usado, no solo el resultado final.
-
-**¿Puedo luego recuperar el historial completo de un repo descargado con `--depth 1`?**
-Sí. Dentro de la carpeta del repo (siempre que no se haya usado `-s` para eliminar `.git`):
-
-```bash
-git fetch --unshallow
-```
-
-**¿Qué pasa si interrumpo el script a la mitad de una descarga masiva?**
-Los repos ya clonados quedan completos en disco. Al volver a ejecutar el mismo comando, esos repos se omitirán automáticamente (por la validación de carpeta existente) y continuará con los que falten.
-
-**¿Sirve para repos de una organización, no solo de un usuario personal?**
-El script usa el endpoint `/users/{usuario}/repos`. Para organizaciones, GitHub también expone `/orgs/{org}/repos`, que tiene una estructura de respuesta similar; se podría adaptar el script cambiando esa URL si el caso de uso lo requiere.
-
-## Licencia
-
-Script de uso personal, sin licencia formal asignada. Libre de adaptar y reutilizar.
+- El endpoint `users/USUARIO/repos` **solo lista repos públicos** salvo que
+  el token tenga permisos sobre los privados.
+- En dry-run el contador "Descargados" significa "se clonarían".
+- `-s` (strip `.git`) borra el historial local de forma irreversible para
+  esa copia; el repo remoto no se toca.
+- El código de salida es `1` si algún repo falló, `0` en caso contrario.
