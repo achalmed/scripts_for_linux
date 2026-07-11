@@ -99,5 +99,19 @@ list_all_projects() {
                 "${group_key}"
         fi
     done
+
+    # Carpetas enlistadas manualmente en EXTRA_PROJECTS (config.sh)
+    if [[ ${#EXTRA_PROJECTS[@]} -gt 0 ]]; then
+        printf "\n  ${CLR_BOLD}%-12s${CLR_RESET} (%d)\n" \
+            "[extra]" "${#EXTRA_PROJECTS[@]}"
+        local name
+        for name in "${EXTRA_PROJECTS[@]}"; do
+            if [[ -d "${PROJECTS_ROOT}/${name}" ]]; then
+                printf "    • %s\n" "${name}"
+            else
+                printf "    ${CLR_DIM}• %s (no existe)${CLR_RESET}\n" "${name}"
+            fi
+        done
+    fi
     printf "\n"
 }

@@ -59,6 +59,12 @@ validate_target() {
     # "all" is always valid
     [[ "${t}" == "all" ]] && return 0
 
+    # "." = la carpeta actual (donde se ejecutó el script)
+    [[ "${t}" == "." ]] && return 0
+
+    # "extra" = carpetas enlistadas manualmente en EXTRA_PROJECTS (config.sh)
+    [[ "${t}" == "extra" ]] && return 0
+
     # Known group keys are always valid
     [[ -v PROJECT_GROUPS["${t}"] ]] && return 0
 
@@ -68,6 +74,6 @@ validate_target() {
     fi
 
     log_error "Target desconocido: '${t}'"
-    log_info  "Usa un grupo (pub, scripts, campustex, website) o el nombre exacto de un proyecto."
+    log_info  "Usa un grupo (pub, scripts, campustex, website, extra), '.' para la carpeta actual, o el nombre exacto de un proyecto."
     exit 2
 }

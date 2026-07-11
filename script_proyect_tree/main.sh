@@ -49,6 +49,7 @@ source "${SCRIPT_DIR}/lib/stats.sh"
 main() {
     parse_arguments "$@"
     _setup_colors
+    resolve_default_target
 
     printf "\n${CLR_BOLD}%s v%s${CLR_RESET} — Project Structure Manager\n\n" \
         "${SCRIPT_NAME}" "${SCRIPT_VERSION}"
@@ -101,8 +102,11 @@ _print_run_summary() {
     log_info "Proyectos : ${#paths[@]}"
     log_info "Formato   : ${FORMAT}"
     log_info "Profund.  : ${DEPTH}"
-    [[ "${DRY_RUN}" == "true" ]] && \
+    # Nota: usar if (no `[[ ]] &&`) — con set -e, un && cuya condición es
+    # falsa al final de la función retorna 1 y aborta todo el script.
+    if [[ "${DRY_RUN}" == "true" ]]; then
         log_warn "Modo DRY-RUN activo — no se escribirá ningún archivo."
+    fi
 }
 
 # _run_generation_loop()
@@ -134,8 +138,9 @@ _run_generation_loop() {
 _print_final_status() {
     printf "\n"
     log_ok "Completado — OK: ${_GEN_SUCCESS}  Fallidos: ${_GEN_FAIL}"
-    [[ "${DRY_RUN}" == "true" ]] && \
+    if [[ "${DRY_RUN}" == "true" ]]; then
         log_warn "Nada fue escrito (--dry-run activo)."
+    fi
     printf "\n"
 }
 

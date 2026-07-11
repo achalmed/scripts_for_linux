@@ -22,9 +22,13 @@ ${CLR_BOLD}Descripción:${CLR_RESET}
   directorios de los proyectos en ${PROJECTS_ROOT}.
 
 ${CLR_BOLD}Opciones de selección:${CLR_RESET}
-  -t, --target TARGET     Qué actualizar (default: all)
+  -t, --target TARGET     Qué actualizar
                           Valores: all | pub | scripts | campustex | website
-                                   | <nombre-exacto-del-proyecto>
+                                   | extra | . | <nombre-exacto-del-proyecto>
+                          'extra' = carpetas enlistadas en EXTRA_PROJECTS
+                          '.'     = la carpeta actual
+                          Sin --target: trabaja sobre la carpeta actual;
+                          desde ${PROJECTS_ROOT} o \$HOME equivale a 'all'.
   -L, --depth N           Profundidad del árbol (default: ${DEFAULT_DEPTH})
 
 ${CLR_BOLD}Opciones de exclusión:${CLR_RESET}
@@ -48,8 +52,11 @@ ${CLR_BOLD}Opciones generales:${CLR_RESET}
   -h, --help              Mostrar esta ayuda
 
 ${CLR_BOLD}Ejemplos:${CLR_RESET}
-  # Actualizar todos los proyectos
+  # Generar la estructura de la carpeta actual (cd a la carpeta y ejecutar)
   ${SCRIPT_NAME}
+
+  # Actualizar todos los proyectos (desde cualquier lugar)
+  ${SCRIPT_NAME} --target all
 
   # Actualizar solo las publicaciones
   ${SCRIPT_NAME} --target pub
@@ -84,6 +91,21 @@ EOF
 _parse_target() {
     [[ -z "${1:-}" ]] && { log_error "--target requiere un valor."; exit 2; }
     TARGET="$1"
+    TARGET_EXPLICIT=true
+}
+
+# resolve_default_target()
+# Si el usuario no pasó --target, el script trabaja sobre la carpeta actual
+# (TARGET=".") en vez de sobre todos los proyectos. Se conserva el
+# comportamiento "all" solo cuando se ejecuta desde PROJECTS_ROOT o desde
+# $HOME, donde generar el árbol del directorio actual no tiene sentido.
+resolve_default_target() {
+    [[ "${TARGET_EXPLICIT}" == "true" ]] && return 0
+
+    if [[ "${PWD}" != "${PROJECTS_ROOT}" && "${PWD}" != "${HOME}" ]]; then
+        TARGET="."
+        log_verbose "Sin --target: se usará la carpeta actual (${PWD})."
+    fi
 }
 
 # _parse_depth()
