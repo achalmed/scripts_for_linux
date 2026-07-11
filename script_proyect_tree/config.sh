@@ -10,7 +10,7 @@
 # =============================================================================
 
 readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_VERSION="2.0.0"
+readonly SCRIPT_VERSION="2.1.0"
 readonly PROJECTS_ROOT="${HOME}/Documents"
 
 # Output file name written inside each project directory
@@ -23,6 +23,13 @@ declare -A PROJECT_GROUPS=(
     [scripts]="scripts_*"
     [campustex]="CampusTeX-*"
     [website]="website-achalma"
+)
+
+# Carpetas enlistadas manualmente (nombres exactos bajo PROJECTS_ROOT).
+# Útil para proyectos renombrados que ya no coinciden con ningún glob de
+# PROJECT_GROUPS. Se incluyen en --target all y en el grupo --target extra.
+EXTRA_PROJECTS=(
+    "Academic_Writing_Framework"
 )
 
 # Folders excluded from every tree call.
@@ -63,7 +70,8 @@ DRY_RUN=false
 NO_META=false
 NO_COLOR=false
 FORMAT="txt"        # txt | md | json
-TARGET="all"        # all | pub | scripts | campustex | website | <name>
+TARGET="all"        # all | pub | scripts | campustex | website | extra | . | <name>
+TARGET_EXPLICIT=false   # true si el usuario pasó --target (ver resolve_default_target)
 EXTRA_EXCLUDE_DIRS=()
 EXTRA_EXCLUDE_FILES=()
 DEPTH="${DEFAULT_DEPTH}"

@@ -30,6 +30,25 @@ find_projects_by_pattern() {
          | sort
 }
 
+# _append_extra_projects()
+# Appends the manually listed EXTRA_PROJECTS (config.sh) to the caller's
+# array. Entries that no longer exist on disk are skipped with a warning
+# so a stale config never aborts the run.
+#
+# Arguments:
+#   $1 - name of the caller's array variable (nameref)
+_append_extra_projects() {
+    local -n _extra_ref="$1"
+    local name
+    for name in "${EXTRA_PROJECTS[@]}"; do
+        if [[ -d "${PROJECTS_ROOT}/${name}" ]]; then
+            _extra_ref+=("${PROJECTS_ROOT}/${name}")
+        else
+            log_warn "EXTRA_PROJECTS: no existe '${PROJECTS_ROOT}/${name}', omitiendo."
+        fi
+    done
+}
+
 # collect_target_paths()
 # Resolves TARGET into a deduplicated, sorted list of absolute project paths.
 # Using a nameref avoids subshell restrictions on returning arrays.
@@ -40,6 +59,12 @@ find_projects_by_pattern() {
 collect_target_paths() {
     local -n _result_ref="$1"   # nameref to caller's array
 
+    if [[ "${TARGET}" == "." ]]; then
+        # Carpeta actual — no se ordena ni deduplica nada más
+        _result_ref+=("${PWD}")
+        return 0
+    fi
+
     if [[ "${TARGET}" == "all" ]]; then
         for group_key in "${!PROJECT_GROUPS[@]}"; do
             local pattern="${PROJECT_GROUPS[${group_key}]}"
@@ -47,6 +72,9 @@ collect_target_paths() {
                 _result_ref+=("${dir}")
             done < <(find_projects_by_pattern "${pattern}")
         done
+        _append_extra_projects _result_ref
+    elif [[ "${TARGET}" == "extra" ]]; then
+        _append_extra_projects _result_ref
     elif [[ -v PROJECT_GROUPS["${TARGET}"] ]]; then
         local pattern="${PROJECT_GROUPS[${TARGET}]}"
         while IFS= read -r dir; do

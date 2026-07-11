@@ -45,13 +45,14 @@ forma aislada y puede extenderse sin tocar el resto del código.
 ## ⚙️ Requisitos
 
 ### Sistema Operativo
+
 - Kubuntu 22.04+ / Debian / Ubuntu (o cualquier distro con APT)
 - Bash >= 5.0
 
 ### Dependencias
 
 | Herramienta | Versión mínima | Para qué se usa                 |
-|-------------|----------------|---------------------------------|
+| ----------- | -------------- | ------------------------------- |
 | `tree`      | >= 1.7         | Generar el árbol de directorios |
 | `find`      | GNU findutils  | Descubrir proyectos por patrón  |
 | `du`        | GNU coreutils  | Estadísticas de disco           |
@@ -80,17 +81,24 @@ chmod +x ~/Documents/scripts_for_linux/script_project_tree/lib/*.sh
 sudo apt install tree
 ```
 
-### Paso 4 (opcional): Crear alias en `.zshrc`
+### Paso 4: Crear alias para acceso global (recomendado)
 
-Para ejecutarlo desde cualquier lugar sin escribir la ruta completa:
+Agrega esta línea a tu shell de configuración y ya no necesitas escribir
+la ruta completa nunca más:
 
 ```bash
-echo 'alias ptree="~/Documents/scripts_for_linux/script_project_tree/main.sh"' >> ~/.zshrc
-source ~/.zshrc
+# ~/.zshrc  (zsh — tu shell actual en Kubuntu/Arch)
+alias ptree='~/Documents/scripts_for_linux/script_project_tree/main.sh'
 ```
 
-Con el alias activo, todos los ejemplos de esta guía funcionan usando
-`ptree` en lugar de `./main.sh`.
+Recarga la configuración:
+
+```bash
+source ~/.zshrc      # zsh
+# o abre una nueva terminal
+```
+
+Desde este momento puedes usar `ptree` desde cualquier directorio.
 
 ---
 
@@ -104,43 +112,76 @@ Con el alias activo, todos los ejemplos de esta guía funcionan usando
 
 ### Opciones disponibles
 
-| Flag                    | Descripción                                              | Default   |
-|-------------------------|----------------------------------------------------------|-----------|
-| `-t, --target TARGET`   | Qué proyectos actualizar (ver valores abajo)             | `all`     |
-| `-L, --depth N`         | Profundidad del árbol                                    | `6`       |
-| `-X, --exclude-dir DIR` | Excluir carpeta adicional (repetible)                    | —         |
-| `-x, --exclude-file PAT`| Excluir patrón de archivo adicional (repetible)          | —         |
-| `-f, --format FORMAT`   | Formato de salida: `txt` \| `md` \| `json`               | `txt`     |
-| `--no-meta`             | Omitir tamaños y fechas en el árbol                      | off       |
-| `-l, --list`            | Listar proyectos detectados y salir                      | off       |
-| `-s, --summary`         | Mostrar tabla resumen al finalizar                       | off       |
-| `--stats`               | Mostrar solo estadísticas de disco (sin generar archivos)| off       |
-| `-v, --verbose`         | Activar mensajes de depuración                           | off       |
-| `--dry-run`             | Simular sin escribir ningún archivo                      | off       |
-| `--no-color`            | Deshabilitar colores en la terminal                      | off       |
-| `--version`             | Mostrar versión                                          | —         |
-| `-h, --help`            | Mostrar ayuda                                            | —         |
+| Flag                     | Descripción                                               | Default                |
+| ------------------------ | --------------------------------------------------------- | ---------------------- |
+| `-t, --target TARGET`    | Qué proyectos actualizar (ver valores abajo)              | `.` (carpeta actual)\* |
+| `-L, --depth N`          | Profundidad del árbol                                     | `6`                    |
+| `-X, --exclude-dir DIR`  | Excluir carpeta adicional (repetible)                     | —                      |
+| `-x, --exclude-file PAT` | Excluir patrón de archivo adicional (repetible)           | —                      |
+| `-f, --format FORMAT`    | Formato de salida: `txt` \| `md` \| `json`                | `txt`                  |
+| `--no-meta`              | Omitir tamaños y fechas en el árbol                       | off                    |
+| `-l, --list`             | Listar proyectos detectados y salir                       | off                    |
+| `-s, --summary`          | Mostrar tabla resumen al finalizar                        | off                    |
+| `--stats`                | Mostrar solo estadísticas de disco (sin generar archivos) | off                    |
+| `-v, --verbose`          | Activar mensajes de depuración                            | off                    |
+| `--dry-run`              | Simular sin escribir ningún archivo                       | off                    |
+| `--no-color`             | Deshabilitar colores en la terminal                       | off                    |
+| `--version`              | Mostrar versión                                           | —                      |
+| `-h, --help`             | Mostrar ayuda                                             | —                      |
 
-### Valores de `--target`
+### Valores de `--target` (--TARGET Actualiza los archivos `estructra.txt`)
 
-| Valor                 | Proyectos afectados                         |
-|-----------------------|---------------------------------------------|
-| `all`                 | Todos los grupos (comportamiento por defecto)|
-| `pub`                 | Todos los `pub_*`                           |
-| `scripts`             | Todos los `scripts_*`                       |
-| `campustex`           | Todos los `CampusTeX-*`                     |
-| `website`             | Solo `website-achalma`                      |
-| `pub_numerus-scriptum`| Solo ese proyecto exacto (nombre de carpeta)|
+| Valor                  | Proyectos afectados                                       |
+| ---------------------- | --------------------------------------------------------- |
+| `.`                    | La carpeta actual (donde se ejecutó el comando)           |
+| `all`                  | Todos los grupos + carpetas de `EXTRA_PROJECTS`           |
+| `pub`                  | Todos los `pub_*`                                         |
+| `scripts`              | Todos los `scripts_*`                                     |
+| `campustex`            | Todos los `CampusTeX-*`                                   |
+| `website`              | Solo `website-achalma`                                    |
+| `extra`                | Solo las carpetas enlistadas en `EXTRA_PROJECTS` (config) |
+| `pub_numerus-scriptum` | Solo ese proyecto exacto (nombre de carpeta)              |
+
+> **\*Comportamiento por defecto (sin `--target`):** el script trabaja sobre
+> la **carpeta actual**, así que basta con `cd` a cualquier carpeta y ejecutar
+> `ptree` para generar su `estructura.txt` ahí mismo. Las dos excepciones son
+> ejecutarlo desde `~/Documents` o desde `$HOME`, donde equivale a `--target all`
+> (el comportamiento clásico).
+
+### Carpetas enlistadas manualmente (`EXTRA_PROJECTS`)
+
+Los proyectos renombrados que ya no coinciden con ningún glob de
+`PROJECT_GROUPS` (por ejemplo, una carpeta CampusTeX con nuevo nombre) pueden
+declararse por su nombre exacto en el array `EXTRA_PROJECTS` de `config.sh`:
+
+```bash
+EXTRA_PROJECTS=(
+    "Academic_Writing_Framework"
+    # "otra-carpeta-renombrada"
+)
+```
+
+Estas carpetas se incluyen en `--target all`, aparecen en `--list` bajo el
+grupo `[extra]`, y pueden procesarse solas con `--target extra`. Si una
+entrada ya no existe en disco, se omite con una advertencia (no aborta).
 
 ---
 
 ### Ejemplos de uso
 
 ```bash
+# ── CARPETA ACTUAL ──────────────────────────────────────────────────────────
+
+# Generar estructura.txt de la carpeta donde estás parado
+cd ~/Documents/Academic_Writing_Framework && ptree
+
+# Lo mismo pero en Markdown y sin metadatos
+ptree --format md --no-meta
+
 # ── ACTUALIZACIÓN GLOBAL ────────────────────────────────────────────────────
 
-# Actualizar todos los proyectos (configuración por defecto)
-./main.sh
+# Actualizar todos los proyectos
+./main.sh --target all
 
 # Actualizar todos con resumen de disco al final
 ./main.sh --summary
@@ -230,16 +271,16 @@ script_project_tree/
 
 ### Descripción de módulos
 
-| Archivo            | Responsabilidad                                                              |
-|--------------------|------------------------------------------------------------------------------|
-| `main.sh`          | Carga módulos, llama `parse_arguments`, valida, despacha y reporta           |
-| `config.sh`        | Define `PROJECT_GROUPS`, `DEFAULT_EXCLUDE_*`, `DEFAULT_DEPTH` y runtime vars |
-| `lib/logger.sh`    | `log_info/ok/warn/error/verbose/section` + `_setup_colors()`                 |
-| `lib/validator.sh` | `validate_dependencies`, `validate_projects_root`, `validate_target`         |
-| `lib/cli.sh`       | `parse_arguments`, `show_help`, helpers `_parse_target/depth/format`         |
-| `lib/tree_utils.sh`| `build_exclude_pattern`, `build_meta_flags`, `run_tree_txt/json/markdown`    |
-| `lib/generator.sh` | `find_projects_by_pattern`, `collect_target_paths`, `generate_project_structure` |
-| `lib/stats.sh`     | `show_disk_stats`, `show_summary`, `list_all_projects`                       |
+| Archivo             | Responsabilidad                                                                  |
+| ------------------- | -------------------------------------------------------------------------------- |
+| `main.sh`           | Carga módulos, llama `parse_arguments`, valida, despacha y reporta               |
+| `config.sh`         | Define `PROJECT_GROUPS`, `DEFAULT_EXCLUDE_*`, `DEFAULT_DEPTH` y runtime vars     |
+| `lib/logger.sh`     | `log_info/ok/warn/error/verbose/section` + `_setup_colors()`                     |
+| `lib/validator.sh`  | `validate_dependencies`, `validate_projects_root`, `validate_target`             |
+| `lib/cli.sh`        | `parse_arguments`, `show_help`, helpers `_parse_target/depth/format`             |
+| `lib/tree_utils.sh` | `build_exclude_pattern`, `build_meta_flags`, `run_tree_txt/json/markdown`        |
+| `lib/generator.sh`  | `find_projects_by_pattern`, `collect_target_paths`, `generate_project_structure` |
+| `lib/stats.sh`      | `show_disk_stats`, `show_summary`, `list_all_projects`                           |
 
 ### Flujo de ejecución
 
@@ -289,6 +330,7 @@ Usa `--exclude-dir` para añadir exclusiones en esa ejecución, o edita
 ### La salida en JSON está vacía o malformada
 
 Verifica que la versión de `tree` soporta `-J`:
+
 ```bash
 tree --version
 # Se recomienda tree >= 1.8 para JSON limpio
@@ -324,7 +366,7 @@ Edita `DEFAULT_EXCLUDE_DIRS` o `DEFAULT_EXCLUDE_FILES` en `config.sh`.
 
 - Máximo 30 líneas por función
 - Nombres descriptivos en inglés técnico: `verbo_sustantivo()`
-- Comenta el *por qué*, no el *qué*
+- Comenta el _por qué_, no el _qué_
 - Usa `local` para todas las variables dentro de funciones
 - Valida argumentos antes de usarlos
 
@@ -351,7 +393,8 @@ Edita `DEFAULT_EXCLUDE_DIRS` o `DEFAULT_EXCLUDE_FILES` en `config.sh`.
 
 - **Los `doc_*`, `01 notes`, `meta`, `biblioteca`** y otros directorios
   que no coinciden con ningún grupo son ignorados por diseño. Si quieres
-  incluirlos, añade un nuevo grupo en `PROJECT_GROUPS` dentro de `config.sh`.
+  incluirlos, añade un nuevo grupo en `PROJECT_GROUPS` o enlista la carpeta
+  por su nombre exacto en `EXTRA_PROJECTS`, ambos dentro de `config.sh`.
 
 - **`_GEN_SUCCESS` y `_GEN_FAIL`**: son variables globales usadas para
   comunicar el conteo entre `_run_generation_loop()` y `_print_final_status()`.
