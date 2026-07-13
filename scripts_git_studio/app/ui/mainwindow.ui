@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>1280</width><height>800</height></rect>
+  </property>
+  <property name="windowTitle"><string>Git Studio</string></property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="centralLayout">
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+    <property name="spacing"><number>0</number></property>
+    <item>
+     <widget class="QListWidget" name="sidebar">
+      <property name="minimumSize"><size><width>200</width><height>0</height></size></property>
+      <property name="maximumSize"><size><width>200</width><height>16777215</height></size></property>
+      <property name="frameShape"><enum>QFrame::NoFrame</enum></property>
+      <property name="verticalScrollBarPolicy"><enum>Qt::ScrollBarAlwaysOff</enum></property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stack"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <widget class="QMenu" name="menuArchivo">
+    <property name="title"><string>&amp;Archivo</string></property>
+    <addaction name="actionPreferencias"/>
+    <addaction name="separator"/>
+    <addaction name="actionSalir"/>
+   </widget>
+   <widget class="QMenu" name="menuVer">
+    <property name="title"><string>&amp;Ver</string></property>
+    <addaction name="actionConsola"/>
+   </widget>
+   <widget class="QMenu" name="menuAyuda">
+    <property name="title"><string>Ay&amp;uda</string></property>
+    <addaction name="actionAcercaDe"/>
+   </widget>
+   <addaction name="menuArchivo"/>
+   <addaction name="menuVer"/>
+   <addaction name="menuAyuda"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSalir">
+   <property name="text"><string>&amp;Salir</string></property>
+   <property name="shortcut"><string>Ctrl+Q</string></property>
+  </action>
+  <action name="actionPreferencias">
+   <property name="text"><string>&amp;Preferencias…</string></property>
+   <property name="shortcut"><string>Ctrl+,</string></property>
+  </action>
+  <action name="actionConsola">
+   <property name="text"><string>&amp;Consola</string></property>
+   <property name="checkable"><bool>true</bool></property>
+   <property name="checked"><bool>true</bool></property>
+  </action>
+  <action name="actionAcercaDe">
+   <property name="text"><string>&amp;Acerca de Git Studio</string></property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

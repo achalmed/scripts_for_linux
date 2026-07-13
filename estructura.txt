@@ -1,141 +1,186 @@
 # ============================================================
 # Proyecto : scripts_for_linux
 # Ruta     : /home/achalmaedison/Documents/scripts_for_linux
-# Generado : 2026-07-13 02:08:28
-# Script   : main.sh v2.1.0
+# Generado : 2026-07-13 14:05:34
+# Script   : Filesystem Studio v1.0.0
 # Profund. : 6 niveles
 # Formato  : txt
-# Excluye  : _extensions _freeze _partials _site site_libs build __pycache__ log output temp .git .quarto node_modules .Rproj.user index_cache __MACOSX *.aux *.log *.out *.toc *.bbl *.blg *.synctex.gz *.fff *.ttt *.fls *.fdb_latexmk *.pyc *.pyo *.egg-info *.ipynb_checkpoints .DS_Store Thumbs.db .Rhistory .RData estructura.txt
+# Excluye  : .git .github .vscode .idea .obsidian .quarto _site _freeze _extensions _partials site_libs node_modules __pycache__ .pytest_cache build log output temp .Rproj.user index_cache __MACOSX *.aux *.log *.out *.toc *.bbl *.blg *.synctex.gz *.fff *.ttt *.fls *.fdb_latexmk *.pyc *.pyo *.egg-info *.ipynb_checkpoints .DS_Store Thumbs.db .Rhistory .RData estructura.txt
 # ============================================================
 
-[4.0K Jul 10 22:06]  /home/achalmaedison/Documents/scripts_for_linux
-├── [3.5K Jul  5 10:11]  CLAUDE.md
-├── [4.9K Jun 20 11:40]  README.md
-├── [4.0K Jun 23 11:39]  script_backup_suite
-│   ├── [7.0K Jun 23 16:37]  config.sh
-│   ├── [4.0K Jun 23 11:39]  lib
-│   │   ├── [6.3K Jun 23 16:37]  analyzer.sh
-│   │   ├── [ 11K Jun 23 16:37]  cli.sh
-│   │   ├── [7.0K Jun 23 16:37]  logger.sh
-│   │   ├── [ 16K Jun 23 16:37]  processor.sh
-│   │   ├── [4.8K Jun 23 16:37]  summary.sh
-│   │   └── [ 11K Jun 23 16:37]  validator.sh
-│   ├── [9.0K Jun 23 16:37]  main.sh
-│   └── [ 16K Jun 23 11:51]  README.md
-├── [4.0K Jul  5 09:57]  script_count_files_by_extension
-│   ├── [ 998 Jul  5 09:53]  config.sh
-│   ├── [4.0K Jul  5 09:55]  lib
-│   │   ├── [2.8K Jul  5 09:54]  cli.sh
-│   │   ├── [2.0K Jul  5 09:54]  logger.sh
-│   │   ├── [3.0K Jul  5 09:55]  renderer.sh
-│   │   ├── [3.0K Jul  5 09:54]  scanner.sh
-│   │   └── [1.9K Jul  5 09:54]  validator.sh
-│   ├── [2.1K Jul  5 09:55]  main.sh
-│   └── [8.3K Jul  5 09:57]  README.md
-├── [4.0K Jul  5 10:01]  script_create_folders_batch
-│   ├── [1.3K Jul  5 09:57]  config.sh
-│   ├── [4.0K Jul  5 09:59]  lib
-│   │   ├── [3.1K Jul  5 09:58]  cli.sh
-│   │   ├── [3.2K Jul  5 09:59]  creator.sh
-│   │   ├── [2.0K Jul  5 09:58]  logger.sh
-│   │   ├── [1.8K Jul  5 09:59]  reader.sh
-│   │   ├── [2.2K Jul  5 09:59]  ui.sh
-│   │   └── [3.1K Jul  5 09:59]  validator.sh
-│   ├── [2.5K Jul  5 10:00]  main.sh
-│   └── [7.8K Jul  5 10:01]  README.md
-├── [4.0K Jul  5 10:04]  script_git_download_respos
-│   ├── [1.1K Jul  5 10:01]  config.sh
-│   ├── [4.0K Jul  5 10:02]  lib
-│   │   ├── [3.6K Jul  5 10:02]  cli.sh
-│   │   ├── [3.6K Jul  5 10:02]  cloner.sh
-│   │   ├── [2.4K Jul  5 10:02]  github_api.sh
-│   │   ├── [2.0K Jul  5 10:01]  logger.sh
-│   │   └── [2.5K Jul  5 10:02]  validator.sh
-│   ├── [4.2K Jul  5 10:03]  main.sh
-│   └── [9.4K Jul  5 10:04]  README.md
-├── [4.0K Jun 22 11:28]  script_git_sync_respos
-│   ├── [7.5K Jun 22 16:26]  install.sh
-│   ├── [4.0K Jun 22 16:26]  lib
-│   │   ├── [5.5K Jun 22 16:26]  config.sh
-│   │   ├── [7.9K Jun 22 16:26]  git_ops.sh
-│   │   ├── [3.6K Jun 22 16:26]  logging.sh
-│   │   ├── [9.7K Jun 22 16:26]  status_reporter.sh
-│   │   └── [5.6K Jun 22 16:26]  sync_engine.sh
-│   ├── [ 19K Jun 22 11:28]  README.md
-│   ├── [3.2K Jun 22 16:26]  repos-config.yml
-│   ├── [5.4K Jun 22 16:26]  status.sh
-│   └── [5.7K Jun 22 16:26]  sync.sh
-├── [4.0K Jul  2 19:24]  script_hardlinks-creator
-│   ├── [3.6K Jul  2 19:24]  archivos.txt
-│   ├── [3.4K Jul  2 19:01]  config.py
-│   ├── [4.0K Jul  2 19:00]  lib
-│   │   ├── [2.4K Jul  2 18:57]  batch.py
-│   │   ├── [3.5K Jul  2 18:58]  cli.py
-│   │   ├── [  34 Jun 23 00:17]  __init__.py
-│   │   ├── [7.9K Jun 23 00:16]  linker.py
-│   │   ├── [3.2K Jun 23 00:15]  logger.py
-│   │   ├── [2.3K Jul  2 18:57]  pipeline.py
-│   │   ├── [4.6K Jul  2 19:00]  reporter.py
-│   │   ├── [3.7K Jun 23 00:16]  scanner.py
-│   │   ├── [5.7K Jul  2 18:58]  ui.py
-│   │   └── [2.9K Jul  2 18:58]  validator.py
-│   ├── [6.9K Jul  2 19:01]  main.py
-│   └── [ 17K Jul  2 19:26]  README.md
-├── [4.0K Jul  2 22:50]  script_hardlinks-detector
-│   ├── [2.2K Jul  2 23:02]  config.sh
-│   ├── [4.0K Jul  2 22:49]  lib
-│   │   ├── [4.7K Jul  2 22:49]  cli.sh
-│   │   ├── [2.4K Jun 23 01:50]  logger.sh
-│   │   ├── [6.3K Jun 23 02:13]  renderer.sh
-│   │   ├── [ 20K Jul  2 22:49]  report.sh
-│   │   ├── [3.4K Jun 23 00:20]  scanner.sh
-│   │   ├── [4.5K Jun 23 02:12]  ui.sh
-│   │   └── [2.5K Jun 23 00:19]  validator.sh
-│   ├── [6.9K Jul  2 23:02]  main.sh
-│   ├── [ 13K Jul  2 23:19]  README.md
-│   └── [4.0K Jul  2 22:49]  reports
-│       └── [ 33K Jul  2 23:09]  hardlinks-report.md
-├── [4.0K Jul  5 10:11]  script_pdf_page_counter
-│   ├── [2.0K Jul  5 10:04]  config.py
-│   ├── [ 12K Jul  5 10:10]  EJEMPLOS.md
-│   ├── [ 12K Jul  5 10:10]  install.sh
-│   ├── [4.0K Jul  5 10:11]  lib
-│   │   ├── [1.9K Jul  5 10:05]  cli.py
-│   │   ├── [6.3K Jul  5 10:06]  excel_report.py
-│   │   ├── [  56 Jul  5 10:04]  __init__.py
-│   │   ├── [1.2K Jul  5 10:05]  logger.py
-│   │   ├── [3.5K Jul  5 10:07]  scanner.py
-│   │   ├── [2.5K Jul  5 10:06]  ui.py
-│   │   └── [3.1K Jul  5 10:05]  validator.py
-│   ├── [5.7K Jul  5 10:06]  main.py
-│   ├── [9.2K Jul  5 10:11]  README.md
-│   └── [  25 Jul  5 10:07]  requirements.txt
-├── [4.0K Jun 22 13:20]  script_pdf-suite
-│   ├── [5.0K Jun 22 13:09]  config.sh
-│   ├── [7.9K Jun 22 13:18]  install.sh
-│   ├── [4.0K Jun 22 13:17]  lib
-│   │   ├── [8.4K Jun 22 13:11]  cli.sh
-│   │   ├── [ 14K Jun 22 13:12]  compress.sh
-│   │   ├── [9.4K Jun 22 13:14]  convert.sh
-│   │   ├── [4.3K Jun 22 13:10]  logger.sh
-│   │   ├── [ 13K Jun 22 13:13]  manipulate.sh
-│   │   ├── [9.8K Jun 22 13:15]  metadata.sh
-│   │   ├── [5.7K Jun 22 13:16]  ocr.sh
-│   │   ├── [9.5K Jun 22 13:16]  protect.sh
-│   │   ├── [7.1K Jun 22 13:17]  repair.sh
-│   │   └── [9.1K Jun 22 13:11]  validator.sh
-│   ├── [6.7K Jun 22 13:17]  main.sh
-│   └── [ 24K Jun 22 13:26]  README.md
-└── [4.0K Jul 10 22:01]  script_proyect_tree
-    ├── [2.9K Jul 10 17:15]  config.sh
-    ├── [4.0K Jul 10 17:17]  lib
-    │   ├── [6.6K Jul 10 17:16]  cli.sh
-    │   ├── [6.9K Jul 10 17:16]  generator.sh
-    │   ├── [2.0K Jun 22 23:51]  logger.sh
-    │   ├── [3.9K Jul 10 17:17]  stats.sh
-    │   ├── [4.2K Jun 22 23:52]  tree_utils.sh
-    │   └── [2.6K Jul 10 17:16]  validator.sh
-    ├── [4.5K Jul 10 22:01]  main.sh
-    └── [ 16K Jul 10 22:10]  README.md
+/home/achalmaedison/Documents/scripts_for_linux
+├── CLAUDE.md
+├── filesystem-studio
+│   ├── app
+│   │   ├── context.py
+│   │   ├── controllers
+│   │   │   ├── base.py
+│   │   │   ├── dashboard_controller.py
+│   │   │   ├── explorer_controller.py
+│   │   │   ├── folders_controller.py
+│   │   │   ├── hardlinks_controller.py
+│   │   │   ├── __init__.py
+│   │   │   ├── reports_controller.py
+│   │   │   ├── stats_controller.py
+│   │   │   └── tree_controller.py
+│   │   ├── dialogs
+│   │   │   ├── __init__.py
+│   │   │   ├── preferences_dialog.py
+│   │   │   └── properties_dialog.py
+│   │   ├── __init__.py
+│   │   ├── main_window.py
+│   │   ├── models
+│   │   │   ├── extension_model.py
+│   │   │   └── __init__.py
+│   │   ├── services
+│   │   │   ├── export_service.py
+│   │   │   ├── folder_service.py
+│   │   │   ├── hardlink_service.py
+│   │   │   ├── history_service.py
+│   │   │   ├── __init__.py
+│   │   │   ├── scanner_service.py
+│   │   │   ├── settings_service.py
+│   │   │   └── tree_service.py
+│   │   ├── ui
+│   │   │   ├── dialog_preferences.ui
+│   │   │   ├── mainwindow.ui
+│   │   │   ├── page_folders.ui
+│   │   │   ├── page_hardlinks.ui
+│   │   │   ├── page_stats.ui
+│   │   │   └── page_tree.ui
+│   │   ├── utils
+│   │   │   ├── format.py
+│   │   │   ├── icons.py
+│   │   │   ├── __init__.py
+│   │   │   ├── paths.py
+│   │   │   ├── theming.py
+│   │   │   └── ui_loader.py
+│   │   ├── widgets
+│   │   │   ├── console_dock.py
+│   │   │   └── __init__.py
+│   │   └── workers
+│   │       ├── function_worker.py
+│   │       ├── __init__.py
+│   │       └── process_worker.py
+│   ├── backend
+│   │   ├── script_count_files_by_extension
+│   │   │   ├── config.sh
+│   │   │   ├── lib
+│   │   │   │   ├── cli.sh
+│   │   │   │   ├── logger.sh
+│   │   │   │   ├── renderer.sh
+│   │   │   │   ├── scanner.sh
+│   │   │   │   └── validator.sh
+│   │   │   ├── main.sh
+│   │   │   └── README.md
+│   │   ├── script_create_folders_batch
+│   │   │   ├── config.sh
+│   │   │   ├── lib
+│   │   │   │   ├── cli.sh
+│   │   │   │   ├── creator.sh
+│   │   │   │   ├── logger.sh
+│   │   │   │   ├── reader.sh
+│   │   │   │   ├── ui.sh
+│   │   │   │   └── validator.sh
+│   │   │   ├── main.sh
+│   │   │   └── README.md
+│   │   ├── script_hardlinks-creator
+│   │   │   ├── archivos.txt
+│   │   │   ├── config.py
+│   │   │   ├── lib
+│   │   │   │   ├── batch.py
+│   │   │   │   ├── cli.py
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── linker.py
+│   │   │   │   ├── logger.py
+│   │   │   │   ├── pipeline.py
+│   │   │   │   ├── reporter.py
+│   │   │   │   ├── scanner.py
+│   │   │   │   ├── ui.py
+│   │   │   │   └── validator.py
+│   │   │   ├── main.py
+│   │   │   └── README.md
+│   │   ├── script_hardlinks-detector
+│   │   │   ├── config.sh
+│   │   │   ├── lib
+│   │   │   │   ├── cli.sh
+│   │   │   │   ├── logger.sh
+│   │   │   │   ├── renderer.sh
+│   │   │   │   ├── report.sh
+│   │   │   │   ├── scanner.sh
+│   │   │   │   ├── ui.sh
+│   │   │   │   └── validator.sh
+│   │   │   ├── main.sh
+│   │   │   ├── README.md
+│   │   │   └── reports
+│   │   │       └── hardlinks-report.md
+│   │   └── script_proyect_tree
+│   │       ├── config.sh
+│   │       ├── lib
+│   │       │   ├── cli.sh
+│   │       │   ├── generator.sh
+│   │       │   ├── logger.sh
+│   │       │   ├── stats.sh
+│   │       │   ├── tree_utils.sh
+│   │       │   └── validator.sh
+│   │       ├── main.sh
+│   │       └── README.md
+│   ├── main.py
+│   ├── README.md
+│   ├── reports
+│   │   └── hardlinks-report-20260713-085517.md
+│   ├── requirements.txt
+│   ├── resources
+│   │   ├── icons
+│   │   │   ├── app.svg
+│   │   │   ├── console.svg
+│   │   │   ├── dashboard.svg
+│   │   │   ├── explorer.svg
+│   │   │   ├── folders.svg
+│   │   │   ├── links.svg
+│   │   │   ├── reports.svg
+│   │   │   ├── settings.svg
+│   │   │   ├── stats.svg
+│   │   │   └── tree.svg
+│   │   ├── resources.qrc
+│   │   └── themes
+│   │       ├── dark.qss
+│   │       └── light.qss
+│   └── tools
+│       └── build_resources.sh
+├── README.md
+├── script_backup_suite
+│   ├── config.sh
+│   ├── lib
+│   │   ├── analyzer.sh
+│   │   ├── cli.sh
+│   │   ├── logger.sh
+│   │   ├── processor.sh
+│   │   ├── summary.sh
+│   │   └── validator.sh
+│   ├── main.sh
+│   └── README.md
+├── script_git_download_respos
+│   ├── config.sh
+│   ├── lib
+│   │   ├── cli.sh
+│   │   ├── cloner.sh
+│   │   ├── github_api.sh
+│   │   ├── logger.sh
+│   │   └── validator.sh
+│   ├── main.sh
+│   └── README.md
+└── script_git_sync_respos
+    ├── install.sh
+    ├── lib
+    │   ├── config.sh
+    │   ├── git_ops.sh
+    │   ├── logging.sh
+    │   ├── status_reporter.sh
+    │   └── sync_engine.sh
+    ├── README.md
+    ├── repos-config.yml
+    ├── status.sh
+    └── sync.sh
 
-22 directories, 107 files
+34 directories, 140 files
