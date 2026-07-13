@@ -4,20 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repository is
 
-A collection of independent Linux CLI utilities (Bash and Python 3), one per `script_*` directory. There is no build system, package manager, linter config, or test suite — each tool is run directly from its directory. Documentation, code comments, and terminal output are written in **Spanish**; keep that convention when editing or adding code.
+A collection of independent Linux CLI utilities (Bash and Python 3), one per `script_*` directory, plus **`filesystem-studio/`**, a PySide6 desktop app that unifies five of them. There is no repo-wide build system, package manager, linter config, or test suite — each tool is run directly from its directory. Documentation, code comments, and terminal output are written in **Spanish**; keep that convention when editing or adding code.
+
+## filesystem-studio (desktop app)
+
+`filesystem-studio/` is a PySide6/Qt6 GUI that integrates five former top-level tools, which were **moved intact** into `filesystem-studio/backend/` and are still runnable from the CLI there: `script_proyect_tree`, `script_count_files_by_extension`, `script_create_folders_batch`, `script_hardlinks-creator`, `script_hardlinks-detector`. Run the app with `python3 filesystem-studio/main.py` (or `--smoke` for a construction test). Its architecture (controllers → services → backend, workers for QThread, .ui files loaded via QUiLoader) is documented in `filesystem-studio/README.md` — read it before modifying the app, and never make the UI touch the filesystem directly: that belongs in `app/services/`.
 
 ## Running the tools
 
 Each tool is executed via its entry point:
 
 ```bash
-# Modular Bash tools (backup_suite, pdf-suite, proyect_tree, hardlinks-detector,
-# git_sync_respos, count_files_by_extension, create_folders_batch, git_download_respos)
+# Modular Bash tools (backup_suite, pdf-suite, git_sync_respos, git_download_respos)
 ./script_backup_suite/main.sh --help
-./script_create_folders_batch/main.sh -f lista.txt -d
+
+# Tools that now live under filesystem-studio/backend/
+./filesystem-studio/backend/script_create_folders_batch/main.sh -f lista.txt -d
+python3 filesystem-studio/backend/script_hardlinks-creator/main.py <filename> --dry-run
 
 # Python tools
-python3 script_hardlinks-creator/main.py <filename> --dry-run
 python3 script_pdf_page_counter/main.py --listar
 ```
 

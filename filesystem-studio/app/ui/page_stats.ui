@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageStats</class>
+ <widget class="QWidget" name="PageStats">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Estadísticas por extensión</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridOptions">
+     <item row="0" column="0">
+      <widget class="QLabel" name="lblDir"><property name="text"><string>Carpeta:</string></property></widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="editDirectory"/>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="btnBrowse"><property name="text"><string>Examinar…</string></property></widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="btnScan"><property name="text"><string>Escanear</string></property></widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="lblExclude"><property name="text"><string>Excluir carpetas:</string></property></widget>
+     </item>
+     <item row="1" column="1" colspan="3">
+      <widget class="QLineEdit" name="editExcludeDirs">
+       <property name="placeholderText"><string>separadas por coma, p. ej.: .git, node_modules</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblSummary">
+     <property name="text"><string>Sin datos. Selecciona una carpeta y pulsa Escanear.</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <widget class="QWidget" name="tableSide">
+      <layout class="QVBoxLayout" name="tableLayout">
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+       <item>
+        <widget class="QLineEdit" name="editFilter">
+         <property name="placeholderText"><string>Filtrar extensiones (p. ej. pdf)…</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTableView" name="tableView">
+         <property name="sortingEnabled"><bool>true</bool></property>
+         <property name="alternatingRowColors"><bool>true</bool></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="chartContainer">
+      <layout class="QVBoxLayout" name="chartLayout">
+       <property name="leftMargin"><number>0</number></property>
+       <property name="topMargin"><number>0</number></property>
+       <property name="rightMargin"><number>0</number></property>
+       <property name="bottomMargin"><number>0</number></property>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="exportLayout">
+     <item>
+      <widget class="QPushButton" name="btnExportCsv"><property name="text"><string>Exportar CSV</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnExportMd"><property name="text"><string>Exportar Markdown</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnExportXlsx"><property name="text"><string>Exportar Excel</string></property></widget>
+     </item>
+     <item>
+      <spacer name="exportSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

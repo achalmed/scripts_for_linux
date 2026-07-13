@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageTree</class>
+ <widget class="QWidget" name="PageTree">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Árbol de directorios</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupOptions">
+     <property name="title"><string>Opciones de generación</string></property>
+     <layout class="QGridLayout" name="gridOptions">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblDir"><property name="text"><string>Carpeta:</string></property></widget>
+      </item>
+      <item row="0" column="1" colspan="3">
+       <widget class="QLineEdit" name="editDirectory"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="btnBrowse"><property name="text"><string>Examinar…</string></property></widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblDepth"><property name="text"><string>Profundidad:</string></property></widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="spinDepth">
+        <property name="minimum"><number>1</number></property>
+        <property name="maximum"><number>99</number></property>
+        <property name="value"><number>6</number></property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="lblFormat"><property name="text"><string>Formato:</string></property></widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QComboBox" name="comboFormat">
+        <item><property name="text"><string>txt</string></property></item>
+        <item><property name="text"><string>md</string></property></item>
+        <item><property name="text"><string>json</string></property></item>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QCheckBox" name="checkMeta">
+        <property name="text"><string>Tamaños y fechas</string></property>
+        <property name="checked"><bool>true</bool></property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblExcludeDirs"><property name="text"><string>Excluir carpetas:</string></property></widget>
+      </item>
+      <item row="2" column="1" colspan="4">
+       <widget class="QLineEdit" name="editExcludeDirs">
+        <property name="placeholderText"><string>separadas por coma, p. ej.: .git, node_modules, _site</string></property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="lblExcludeFiles"><property name="text"><string>Excluir archivos:</string></property></widget>
+      </item>
+      <item row="3" column="1" colspan="4">
+       <widget class="QLineEdit" name="editExcludeFiles">
+        <property name="placeholderText"><string>patrones separados por coma, p. ej.: *.log, *.aux</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="actionsLayout">
+     <item>
+      <widget class="QPushButton" name="btnPreview"><property name="text"><string>Vista previa</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSaveHere"><property name="text"><string>Guardar en la carpeta</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnExport"><property name="text"><string>Exportar como…</string></property></widget>
+     </item>
+     <item>
+      <spacer name="actionsSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPlainTextEdit" name="previewText">
+     <property name="readOnly"><bool>true</bool></property>
+     <property name="placeholderText"><string>La vista previa del árbol aparecerá aquí…</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBackend">
+     <property name="title"><string>Proyectos de ~/Documents (backend script_proyect_tree)</string></property>
+     <layout class="QHBoxLayout" name="backendLayout">
+      <item>
+       <widget class="QLabel" name="lblTarget"><property name="text"><string>Target:</string></property></widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboTarget">
+        <item><property name="text"><string>all</string></property></item>
+        <item><property name="text"><string>pub</string></property></item>
+        <item><property name="text"><string>scripts</string></property></item>
+        <item><property name="text"><string>campustex</string></property></item>
+        <item><property name="text"><string>website</string></property></item>
+        <item><property name="text"><string>extra</string></property></item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBackendDry">
+        <property name="text"><string>Simulación (dry-run)</string></property>
+        <property name="checked"><bool>true</bool></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnBackendRun">
+        <property name="text"><string>Actualizar estructuras</string></property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="backendSpacer">
+        <property name="orientation"><enum>Qt::Horizontal</enum></property>
+        <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
