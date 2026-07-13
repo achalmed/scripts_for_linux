@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogPreferences</class>
+ <widget class="QDialog" name="DialogPreferences">
+  <property name="windowTitle"><string>Preferencias — Filesystem Studio</string></property>
+  <property name="minimumSize"><size><width>620</width><height>520</height></size></property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QTabWidget" name="tabs">
+     <property name="currentIndex"><number>0</number></property>
+
+     <widget class="QWidget" name="tabGeneral">
+      <attribute name="title"><string>General</string></attribute>
+      <layout class="QFormLayout" name="formGeneral">
+       <item row="0" column="0">
+        <widget class="QLabel" name="lblDepth"><property name="text"><string>Profundidad predeterminada:</string></property></widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="spinDepth">
+         <property name="minimum"><number>1</number></property>
+         <property name="maximum"><number>99</number></property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblExport"><property name="text"><string>Formato de exportación:</string></property></widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QComboBox" name="comboExport">
+         <item><property name="text"><string>csv</string></property></item>
+         <item><property name="text"><string>json</string></property></item>
+         <item><property name="text"><string>md</string></property></item>
+         <item><property name="text"><string>xlsx</string></property></item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="lblLanguage"><property name="text"><string>Idioma:</string></property></widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="comboLanguage">
+         <item><property name="text"><string>Español</string></property></item>
+         <item><property name="text"><string>English</string></property></item>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="lblTheme"><property name="text"><string>Tema:</string></property></widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QComboBox" name="comboTheme">
+         <item><property name="text"><string>oscuro</string></property></item>
+         <item><property name="text"><string>claro</string></property></item>
+         <item><property name="text"><string>sistema</string></property></item>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="lblIconSize"><property name="text"><string>Tamaño de iconos:</string></property></widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="spinIconSize">
+         <property name="minimum"><number>16</number></property>
+         <property name="maximum"><number>48</number></property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="lblThreads"><property name="text"><string>Número de hilos:</string></property></widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QSpinBox" name="spinThreads">
+         <property name="minimum"><number>1</number></property>
+         <property name="maximum"><number>64</number></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+
+     <widget class="QWidget" name="tabPaths">
+      <attribute name="title"><string>Rutas</string></attribute>
+      <layout class="QVBoxLayout" name="pathsLayout">
+       <item>
+        <widget class="QGroupBox" name="groupFavs">
+         <property name="title"><string>Rutas favoritas</string></property>
+         <layout class="QVBoxLayout" name="favsLayout">
+          <item>
+           <widget class="QListWidget" name="listFavorites"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="favsButtons">
+            <item>
+             <widget class="QPushButton" name="btnAddFav"><property name="text"><string>Añadir…</string></property></widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRemoveFav"><property name="text"><string>Quitar</string></property></widget>
+            </item>
+            <item>
+             <spacer name="favsSpacer">
+              <property name="orientation"><enum>Qt::Horizontal</enum></property>
+              <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="dirsGrid">
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblReports"><property name="text"><string>Carpeta de reportes:</string></property></widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="editReportsDir"/>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="btnReportsBrowse"><property name="text"><string>…</string></property></widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lblTemp"><property name="text"><string>Carpeta temporal:</string></property></widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="editTempDir"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QPushButton" name="btnTempBrowse"><property name="text"><string>…</string></property></widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+
+     <widget class="QWidget" name="tabExclusions">
+      <attribute name="title"><string>Exclusiones</string></attribute>
+      <layout class="QVBoxLayout" name="exclLayout">
+       <item>
+        <widget class="QLabel" name="lblExclDirs"><property name="text"><string>Carpetas excluidas por defecto (una por línea):</string></property></widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="editExcludeDirs"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblExclFiles"><property name="text"><string>Patrones de archivo excluidos por defecto (uno por línea):</string></property></widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="editExcludeFiles"/>
+       </item>
+      </layout>
+     </widget>
+
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons"><set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

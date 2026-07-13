@@ -1,0 +1,19 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+  <qresource prefix="/icons">
+    <file alias="app.svg">icons/app.svg</file>
+    <file alias="dashboard.svg">icons/dashboard.svg</file>
+    <file alias="explorer.svg">icons/explorer.svg</file>
+    <file alias="tree.svg">icons/tree.svg</file>
+    <file alias="stats.svg">icons/stats.svg</file>
+    <file alias="folders.svg">icons/folders.svg</file>
+    <file alias="links.svg">icons/links.svg</file>
+    <file alias="reports.svg">icons/reports.svg</file>
+    <file alias="console.svg">icons/console.svg</file>
+    <file alias="settings.svg">icons/settings.svg</file>
+  </qresource>
+  <qresource prefix="/themes">
+    <file alias="dark.qss">themes/dark.qss</file>
+    <file alias="light.qss">themes/light.qss</file>
+  </qresource>
+</RCC>

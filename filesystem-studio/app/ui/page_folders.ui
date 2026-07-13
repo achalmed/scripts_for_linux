@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageFolders</class>
+ <widget class="QWidget" name="PageFolders">
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Creación masiva de carpetas</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="baseDirLayout">
+     <item>
+      <widget class="QLabel" name="lblBase"><property name="text"><string>Directorio base:</string></property></widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="editBaseDir"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBrowse"><property name="text"><string>Examinar…</string></property></widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation"><enum>Qt::Horizontal</enum></property>
+     <widget class="QGroupBox" name="groupNames">
+      <property name="title"><string>Lista de carpetas (una por línea; # = comentario)</string></property>
+      <layout class="QVBoxLayout" name="namesLayout">
+       <item>
+        <layout class="QHBoxLayout" name="importLayout">
+         <item>
+          <widget class="QPushButton" name="btnImport">
+           <property name="text"><string>Importar TXT / CSV / Markdown…</string></property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="importSpacer">
+           <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="editNames">
+         <property name="placeholderText"><string>proyecto-2026/datos
+proyecto-2026/notas
+# esta línea se ignora</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QGroupBox" name="groupPreview">
+      <property name="title"><string>Vista previa</string></property>
+      <layout class="QVBoxLayout" name="previewLayout">
+       <item>
+        <widget class="QTreeWidget" name="treePlan">
+         <property name="rootIsDecorated"><bool>false</bool></property>
+         <property name="alternatingRowColors"><bool>true</bool></property>
+         <column><property name="text"><string>Carpeta</string></property></column>
+         <column><property name="text"><string>Estado</string></property></column>
+         <column><property name="text"><string>Nota</string></property></column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblPlanSummary">
+         <property name="text"><string>Sin vista previa.</string></property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="actionsLayout">
+     <item>
+      <widget class="QCheckBox" name="checkDryRun">
+       <property name="text"><string>Simulación (dry-run)</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPreview"><property name="text"><string>Vista previa</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCreate"><property name="text"><string>Crear carpetas</string></property></widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnUndo">
+       <property name="text"><string>Deshacer última creación</string></property>
+       <property name="enabled"><bool>false</bool></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="actionsSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>10</height></size></property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
