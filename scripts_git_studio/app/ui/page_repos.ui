@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageRepos</class>
+ <widget class="QWidget" name="PageRepos">
+  <layout class="QVBoxLayout" name="rootLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Repositorios</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblSubtitle">
+     <property name="text"><string>Registro central de repos-config.yml — compartido con los scripts CLI sync.sh y status.sh</string></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="baseDirRow">
+     <item>
+      <widget class="QLabel" name="lblBaseDir">
+       <property name="text"><string>Directorio base:</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="editBaseDir"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBrowseBase">
+       <property name="text"><string>Examinar…</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkFetch">
+       <property name="text"><string>Hacer fetch al analizar</string></property>
+       <property name="checked"><bool>true</bool></property>
+       <property name="toolTip"><string>Sin fetch los contadores de commits remotos pueden quedar desactualizados</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAnalyze">
+       <property name="text"><string>Analizar estado</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableView" name="tableRepos">
+     <property name="selectionBehavior"><enum>QAbstractItemView::SelectRows</enum></property>
+     <property name="selectionMode"><enum>QAbstractItemView::ExtendedSelection</enum></property>
+     <property name="alternatingRowColors"><bool>true</bool></property>
+     <property name="sortingEnabled"><bool>false</bool></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="actionsRow">
+     <item>
+      <widget class="QPushButton" name="btnAddRepo">
+       <property name="text"><string>Añadir repo…</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnRemoveRepo">
+       <property name="text"><string>Quitar del registro</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnToggleEnabled">
+       <property name="text"><string>Habilitar/Deshabilitar</string></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="actionsSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnOpenFolder">
+       <property name="text"><string>Abrir carpeta</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSyncSelected">
+       <property name="text"><string>Sincronizar seleccionados →</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

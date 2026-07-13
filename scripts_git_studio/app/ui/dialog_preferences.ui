@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogPreferences</class>
+ <widget class="QWidget" name="DialogPreferences">
+  <property name="windowTitle"><string>Preferencias — Git Studio</string></property>
+  <property name="minimumSize"><size><width>520</width><height>420</height></size></property>
+  <layout class="QVBoxLayout" name="rootLayout">
+   <item>
+    <widget class="QGroupBox" name="groupGitHub">
+     <property name="title"><string>GitHub</string></property>
+     <layout class="QFormLayout" name="githubForm">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblUser">
+        <property name="text"><string>Usuario por defecto:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="editUser"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblProtocol">
+        <property name="text"><string>Protocolo de clonado:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboProtocol">
+        <item><property name="text"><string>ssh</string></property></item>
+        <item><property name="text"><string>https</string></property></item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblDepth">
+        <property name="text"><string>Profundidad por defecto:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="comboDepth">
+        <property name="editable"><bool>true</bool></property>
+        <item><property name="text"><string>1</string></property></item>
+        <item><property name="text"><string>5</string></property></item>
+        <item><property name="text"><string>full</string></property></item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupStatus">
+     <property name="title"><string>Estado y reportes</string></property>
+     <layout class="QFormLayout" name="statusForm">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblDays">
+        <property name="text"><string>Días de actividad:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="spinDays">
+        <property name="minimum"><number>1</number></property>
+        <property name="maximum"><number>365</number></property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblFormat">
+        <property name="text"><string>Formato de reporte:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="comboFormat">
+        <item><property name="text"><string>md</string></property></item>
+        <item><property name="text"><string>csv</string></property></item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="lblReportsDir">
+        <property name="text"><string>Carpeta de reportes:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <layout class="QHBoxLayout" name="reportsRow">
+        <item>
+         <widget class="QLineEdit" name="editReportsDir"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnReportsBrowse">
+          <property name="text"><string>…</string></property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="chkFetch">
+        <property name="text"><string>Hacer fetch al analizar estado</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupUi">
+     <property name="title"><string>Interfaz</string></property>
+     <layout class="QFormLayout" name="uiForm">
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblTheme">
+        <property name="text"><string>Tema:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboTheme">
+        <item><property name="text"><string>oscuro</string></property></item>
+        <item><property name="text"><string>claro</string></property></item>
+        <item><property name="text"><string>sistema</string></property></item>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="lblIconSize">
+        <property name="text"><string>Tamaño de iconos:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="spinIconSize">
+        <property name="minimum"><number>16</number></property>
+        <property name="maximum"><number>48</number></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons"><set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set></property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

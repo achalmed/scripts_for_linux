@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageSync</class>
+ <widget class="QWidget" name="PageSync">
+  <layout class="QVBoxLayout" name="rootLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Sincronizar</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblSubtitle">
+     <property name="text"><string>pull → add → commit → push sobre los repositorios seleccionados</string></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="mainRow">
+     <item>
+      <widget class="QGroupBox" name="groupRepos">
+       <property name="title"><string>Repositorios (habilitados en el registro)</string></property>
+       <layout class="QVBoxLayout" name="reposLayout">
+        <item>
+         <widget class="QListWidget" name="listRepos">
+          <property name="alternatingRowColors"><bool>true</bool></property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="selectRow">
+          <item>
+           <widget class="QPushButton" name="btnSelectAll">
+            <property name="text"><string>Todos</string></property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSelectNone">
+            <property name="text"><string>Ninguno</string></property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="selectSpacer">
+            <property name="orientation"><enum>Qt::Horizontal</enum></property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupOptions">
+       <property name="title"><string>Opciones</string></property>
+       <layout class="QVBoxLayout" name="optionsLayout">
+        <item>
+         <widget class="QLabel" name="lblMessage">
+          <property name="text"><string>Mensaje de commit (vacío = mensaje por defecto del registro):</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="editMessage">
+          <property name="placeholderText"><string>update: sincronización automática de contenidos</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkCheckOnly">
+          <property name="text"><string>Solo verificar (no hace commit ni push)</string></property>
+          <property name="toolTip"><string>Equivale a sync.sh --check: muestra qué cambió y detecta commits remotos pendientes</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="chkNoPull">
+          <property name="text"><string>No hacer git pull antes de sincronizar</string></property>
+          <property name="toolTip"><string>Equivale a sync.sh --no-pull</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="optionsSpacer">
+          <property name="orientation"><enum>Qt::Vertical</enum></property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnSync">
+          <property name="text"><string>Sincronizar</string></property>
+          <property name="minimumHeight"><number>36</number></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnRunCli">
+          <property name="text"><string>Ejecutar sync.sh en la consola (CLI)</string></property>
+          <property name="toolTip"><string>Ejecuta el script Bash original de backend/ con estas mismas opciones; la salida completa aparece en la Consola</string></property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupResult">
+     <property name="title"><string>Resumen de la última sincronización</string></property>
+     <layout class="QVBoxLayout" name="resultLayout">
+      <item>
+       <widget class="QTableWidget" name="tableResult">
+        <property name="columnCount"><number>3</number></property>
+        <property name="alternatingRowColors"><bool>true</bool></property>
+        <property name="editTriggers"><set>QAbstractItemView::NoEditTriggers</set></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lblSummary">
+        <property name="text"><string>—</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

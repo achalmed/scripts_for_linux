@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PageReports</class>
+ <widget class="QWidget" name="PageReports">
+  <layout class="QVBoxLayout" name="rootLayout">
+   <item>
+    <widget class="QLabel" name="lblTitle">
+     <property name="text"><string>Reportes</string></property>
+     <property name="styleSheet"><string>font-size: 18px; font-weight: bold;</string></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="lblSubtitle">
+     <property name="text"><string>Genera reportes del estado de los repositorios en Markdown o CSV</string></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="optionsRow">
+     <item>
+      <widget class="QLabel" name="lblFormat">
+       <property name="text"><string>Formato:</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboFormat">
+       <item><property name="text"><string>md</string></property></item>
+       <item><property name="text"><string>csv</string></property></item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblDays">
+       <property name="text"><string>Días de actividad:</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spinDays">
+       <property name="minimum"><number>1</number></property>
+       <property name="maximum"><number>365</number></property>
+       <property name="value"><number>7</number></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkFetch">
+       <property name="text"><string>Hacer fetch antes de analizar</string></property>
+       <property name="checked"><bool>true</bool></property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="optionsSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnGenerate">
+       <property name="text"><string>Generar reporte</string></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupHistory">
+     <property name="title"><string>Reportes generados (doble clic → abrir)</string></property>
+     <layout class="QVBoxLayout" name="historyLayout">
+      <item>
+       <widget class="QListWidget" name="listReports">
+        <property name="alternatingRowColors"><bool>true</bool></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="historyButtons">
+        <item>
+         <widget class="QPushButton" name="btnOpenReport">
+          <property name="text"><string>Abrir</string></property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnDeleteReport">
+          <property name="text"><string>Eliminar</string></property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="historySpacer">
+          <property name="orientation"><enum>Qt::Horizontal</enum></property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
