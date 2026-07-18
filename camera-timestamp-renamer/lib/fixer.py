@@ -30,7 +30,7 @@ from lib import audit
 
 # Patrones (ver lib/audit._PATTERNS) cuyo nombre se normaliza al estándar.
 _RENAMEABLE = {"facebook-epoch", "whatsapp-original", "IMG_", "captura",
-               "pixiz", "chatgpt", "12h", "telefono-fecha"}
+               "pixiz", "chatgpt", "12h", "telefono-fecha", "twitter"}
 _WA_ORIGINAL = re.compile(r"^(?:IMG|VID)-(\d{8})-WA(\d+)", re.I)
 # Sufijos de zona horaria pegados a un nombre estándar ('..._utc8'): la hora
 # del nombre ya está en 24h y coincide con el EXIF; el sufijo es solo ruido.
