@@ -122,6 +122,8 @@ class Settings:
     # tal cual (p.ej. relojes reiniciados con fecha imposible pero real
     # desconocida). Un nombre por línea; '#' comenta.
     audit_ignore_name: str = "date_audit_ignore.txt"
+    # Base de datos de digiKam (sync-digikam la lee EN COPIA, jamás la toca).
+    digikam_db_name: str = "digikam4.db"
     # fix-names: renombrar desde el EXIF cuando el nombre no trae fecha o
     # cuando el EXIF es anterior al nombre (el nombre vino de una exportación).
     rename_from_metadata: bool = True

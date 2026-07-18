@@ -124,6 +124,15 @@ def build_argument_parser() -> argparse.ArgumentParser:
     fix_parser.add_argument("--log-file")
     fix_parser.add_argument("--execute", action="store_true",
                             help="Renombrar de verdad (sin esto solo simula)")
+
+    sync_parser = subparsers.add_parser(
+        "sync-digikam",
+        help="Escribir en el EXIF las fechas corregidas en digiKam (BD en copia)")
+    sync_parser.add_argument("folder", help="Carpeta/álbum a sincronizar")
+    sync_parser.add_argument("-v", "--verbose", action="store_true")
+    sync_parser.add_argument("--log-file")
+    sync_parser.add_argument("--execute", action="store_true",
+                             help="Escribir de verdad (sin esto solo simula)")
     return parser
 
 
