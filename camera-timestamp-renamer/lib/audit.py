@@ -75,6 +75,36 @@ class AuditRow:
     file_date: str        # FileModifyDate (referencia, poco confiable)
     status: str           # OK / HORA_DISTINTA / FECHA_DISTINTA / ...
     suggestion: str       # acción recomendada
+    evidence: str = ""    # señales para decidir en conflictos
+
+
+@dataclass
+class Evidence:
+    """Señales del patrón de toma para juzgar un EXIF en conflicto.
+
+    Los nombres puestos a mano "a ojo" hacen que anterior/posterior no baste:
+    hace falta evidencia de si el EXIF es una captura real o un artefacto.
+    """
+
+    camera: str           # 'Make Model' si el EXIF trae cámara, '' si no
+    batch_count: int      # cuántos archivos comparten este EXIF exacto
+    session_count: int    # cuántos otros EXIF de la carpeta caen a ±1 h
+
+    def is_artifact(self) -> bool:
+        """EXIF escrito en lote: mismo segundo en 3+ archivos y sin cámara."""
+        return not self.camera and self.batch_count >= 3
+
+    def looks_real(self) -> bool:
+        """EXIF con pinta de captura: trae cámara o encaja en una sesión."""
+        return bool(self.camera) or self.session_count >= 2
+
+    def describe(self) -> str:
+        parts = [f"cámara:{self.camera}" if self.camera else "sin cámara"]
+        if self.batch_count >= 2:
+            parts.append(f"lote×{self.batch_count}")
+        if self.session_count:
+            parts.append(f"sesión:{self.session_count}±1h")
+        return "; ".join(parts)
 
 
 def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
@@ -134,14 +164,31 @@ def read_metadata(folder: Path, settings: Settings) -> list[dict]:
     return json.loads(result.stdout)
 
 
+def gather_evidence(meta: dict, all_meta_dates: list[datetime]) -> Evidence:
+    """Reúne las señales de patrón de toma para el EXIF de un archivo."""
+    meta_dt = primary_meta_date(meta)
+    camera = " ".join(part for part in (meta.get("Make"), meta.get("Model"))
+                      if part).strip()
+    batch = session = 0
+    if meta_dt is not None:
+        for other in all_meta_dates:
+            seconds = abs((other - meta_dt).total_seconds())
+            if seconds == 0:
+                batch += 1
+            elif seconds <= 3600:
+                session += 1
+    return Evidence(camera=camera, batch_count=batch, session_count=session)
+
+
 def _classify(name: str, meta: dict, expected_year: int | None,
-              tolerance: int) -> AuditRow:
+              tolerance: int, evidence: Evidence) -> AuditRow:
     """Compara la fecha del nombre con los metadatos y decide el estado."""
     pattern, name_dt, precision = parse_name_date(name)
     meta_dt = primary_meta_date(meta)
     row = AuditRow(name=name, pattern=pattern,
                    name_date=str(name_dt or ""), meta_date=str(meta_dt or ""),
-                   file_date=meta.get("FileModifyDate", ""), status="", suggestion="")
+                   file_date=meta.get("FileModifyDate", ""), status="",
+                   suggestion="", evidence=evidence.describe() if meta_dt else "")
     if name_dt is None:
         row.status = "SIN_FECHA_NOMBRE"
         row.suggestion = ("renombrar usando metadatos" if meta_dt
@@ -157,13 +204,23 @@ def _classify(name: str, meta: dict, expected_year: int | None,
             row.suggestion = "revisar cuál hora es la correcta"
     else:
         row.status = "FECHA_DISTINTA"
-        # Una foto no puede capturarse DESPUÉS de recibirse/nombrarse: un EXIF
-        # posterior al día del nombre es un artefacto de copia y el nombre manda.
-        # Un EXIF anterior podría ser la captura real: se respeta y se revisa.
+        # Anterior/posterior no basta por sí solo: hay nombres puestos a mano
+        # "a ojo". Se decide con la evidencia del patrón de toma; sin
+        # evidencia clara, el caso queda para revisión manual.
         if meta_dt.date() > name_dt.date():
-            row.suggestion = "embed-date: el nombre manda (EXIF posterior = copia)"
+            if evidence.is_artifact():
+                row.suggestion = ("embed-date: el nombre manda "
+                                  "(EXIF posterior escrito en lote)")
+            elif evidence.looks_real():
+                row.suggestion = ("REVISAR: EXIF posterior pero con pinta de "
+                                  "captura real; ¿el nombre fue estimado a mano?")
+            else:
+                row.suggestion = "revisar a mano: sin evidencia clara"
         else:
-            row.suggestion = "revisar a mano: el EXIF podría ser la captura real"
+            if evidence.camera:
+                row.suggestion = "fix-names: el EXIF manda (captura de cámara)"
+            else:
+                row.suggestion = "revisar a mano: sin evidencia clara"
     # Extensión que no corresponde al formato real: exiftool no puede
     # escribir ahí, así que es lo primero que hay que arreglar.
     fixed_ext = correct_extension(name, meta.get("FileType", ""))
@@ -183,13 +240,15 @@ def audit_folder(folder: Path, settings: Settings,
     """Audita todos los archivos de la carpeta (no recursivo, solo lectura)."""
     known = set(settings.image_extensions) | set(settings.video_extensions) \
         | set(settings.extra_audit_extensions)
+    metas = [meta for meta in read_metadata(folder, settings)
+             if Path(meta.get("FileName", "")).suffix.lower() in known]
+    all_meta_dates = [dt for meta in metas
+                      if (dt := primary_meta_date(meta)) is not None]
     rows = []
-    for meta in read_metadata(folder, settings):
-        name = meta.get("FileName", "")
-        if Path(name).suffix.lower() not in known:
-            continue
-        rows.append(_classify(name, meta, expected_year,
-                              settings.audit_tolerance_seconds))
+    for meta in metas:
+        evidence = gather_evidence(meta, all_meta_dates)
+        rows.append(_classify(meta.get("FileName", ""), meta, expected_year,
+                              settings.audit_tolerance_seconds, evidence))
     return sorted(rows, key=lambda row: (row.status, row.name))
 
 
@@ -198,10 +257,11 @@ def write_audit_csv(rows: list[AuditRow], destination: Path) -> None:
     with destination.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
         writer.writerow(["archivo", "patrón", "fecha_nombre", "fecha_metadatos",
-                         "fecha_archivo", "estado", "sugerencia"])
+                         "fecha_archivo", "estado", "sugerencia", "evidencia"])
         for row in rows:
             writer.writerow([row.name, row.pattern, row.name_date, row.meta_date,
-                             row.file_date, row.status, row.suggestion])
+                             row.file_date, row.status, row.suggestion,
+                             row.evidence])
 
 
 def summarize(rows: list[AuditRow]) -> Counter:

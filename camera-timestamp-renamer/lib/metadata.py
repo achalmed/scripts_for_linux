@@ -66,13 +66,16 @@ def _write_condition(settings: Settings, day: str | None = None) -> str:
     """Condición perl de escritura: ¿cuándo manda la fecha del nombre?
 
     Se escribe si no hay fecha EXIF, o si la existente es POSTERIOR al día
-    del nombre (una foto no puede capturarse después de recibirse: un EXIF
-    posterior es un artefacto de copia). Un EXIF anterior se respeta (podría
-    ser la captura real). `day` son dígitos 'AAAAMMDD' cuando ya se conoce
-    (pase especial); si es None se extrae del propio nombre.
+    del nombre Y no trae cámara (Make/Model): sin cámara es un artefacto de
+    copia. Con Make/Model podría ser la captura real aunque sea posterior —
+    los nombres puestos a mano "a ojo" no son confiables como cota — así que
+    se respeta y la auditoría lo deja para revisión. Un EXIF anterior se
+    respeta siempre. `day` son dígitos 'AAAAMMDD' cuando ya se conoce (pase
+    especial); si es None se extrae del propio nombre.
     """
     name_day = f'"{day}"' if day else "substr($filename,0,8)"
-    later = f"{_PRIMARY_DAY} gt {name_day}"
+    later = (f"({_PRIMARY_DAY} gt {name_day}"
+             f" and not $Make and not $Model)")
     if not settings.overwrite_later_exif:
         later = "0"
     return f"({_PRIMARY_MISSING} or {later})"
