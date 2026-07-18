@@ -221,14 +221,15 @@ def _classify(name: str, meta: dict, expected_year: int | None,
         # "a ojo". Se decide con la evidencia del patrón de toma; sin
         # evidencia clara, el caso queda para revisión manual.
         if meta_dt.date() > name_dt.date():
-            if evidence.is_artifact():
-                row.suggestion = ("embed-date: el nombre manda "
-                                  "(EXIF posterior escrito en lote)")
-            elif evidence.looks_real():
-                row.suggestion = ("REVISAR: EXIF posterior pero con pinta de "
-                                  "captura real; ¿el nombre fue estimado a mano?")
+            # Sin cámara, un EXIF posterior es de guardado/copia y embed-date
+            # lo sobreescribe; con cámara podría ser la captura real (nombres
+            # estimados a mano) y NUNCA se pisa automáticamente.
+            if evidence.camera:
+                row.suggestion = ("REVISAR: EXIF de cámara posterior al nombre; "
+                                  "¿el nombre fue estimado a mano?")
             else:
-                row.suggestion = "revisar a mano: sin evidencia clara"
+                row.suggestion = ("embed-date: el nombre manda "
+                                  "(EXIF posterior sin cámara)")
         else:
             if evidence.camera:
                 row.suggestion = "fix-names: el EXIF manda (captura de cámara)"
