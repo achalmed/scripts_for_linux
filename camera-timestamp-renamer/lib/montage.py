@@ -10,6 +10,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 from config import Settings
+from lib import media
 from lib.ocr import crop_for_display
 
 _FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
@@ -28,7 +29,7 @@ def _load_font(size: int) -> ImageFont.ImageFont:
 
 def _row_crop(path: Path, settings: Settings) -> Image.Image:
     """Recorta y escala la franja de la marca a la altura de una fila."""
-    crop = crop_for_display(Image.open(path).convert("RGB"), settings)
+    crop = crop_for_display(media.load_image(path, settings), settings)
     scale = (_ROW_HEIGHT - 8) / crop.height
     resized = crop.resize((int(crop.width * scale), _ROW_HEIGHT - 8),
                           Image.Resampling.LANCZOS)

@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 APP_NAME = "camera-timestamp-renamer"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # --- Códigos de salida del proyecto (126/127 los reserva el shell) ---
 EXIT_OK = 0
@@ -54,6 +54,14 @@ class Settings:
 
     # --- Archivos que se consideran fotos ---
     image_extensions: tuple = (".jpg", ".jpeg", ".png")
+
+    # --- Videos: se extrae un fotograma y se le aplica el MISMO OCR ---
+    video_extensions: tuple = (".mp4", ".mov", ".avi", ".mkv")
+    ffmpeg_binary: str = "ffmpeg"
+    # Segundos a probar para sacar el fotograma; el primero legible gana. El
+    # fotograma en "0" contiene la hora de INICIO de la grabación (la que
+    # queremos); los siguientes son respaldo si el primero es negro/transición.
+    ffmpeg_frame_times: list = field(default_factory=lambda: ["0", "1", "2"])
 
     # --- Ejecución ---
     workers: int = 0  # 0 => usar todos los núcleos
