@@ -28,6 +28,8 @@ def _dispatch(args, settings, logger) -> int:
         return commands.cmd_verify(args.folder, settings, logger, args.from_plan)
     if args.command == "embed-date":
         return commands.cmd_embed_date(args.folder, settings, logger, args.execute)
+    if args.command == "audit-dates":
+        return commands.cmd_audit_dates(args.folder, settings, logger, args.year)
     return commands.cmd_undo(args.folder, settings, logger, args.execute)
 
 

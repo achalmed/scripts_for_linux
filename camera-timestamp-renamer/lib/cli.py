@@ -34,6 +34,9 @@ Ejemplos:
   # 7) Escribir la fecha EXIF/QuickTime desde el nombre (arregla digiKam)
   python main.py embed-date ./fotos --execute
 
+  # 8) Auditar (solo lectura): ¿la fecha del nombre coincide con la EXIF?
+  python main.py audit-dates ~/Pictures/2026
+
   # Ajustar la POSICION del analisis (ej. franja superior completa):
   python main.py analyze ./fotos --crop-left 0 --crop-width 1 --crop-height 0.10
 """
@@ -95,6 +98,16 @@ def build_argument_parser() -> argparse.ArgumentParser:
     embed_parser.add_argument("--log-file")
     embed_parser.add_argument("--execute", action="store_true",
                               help="Escribir de verdad (sin esto solo simula)")
+
+    audit_parser = subparsers.add_parser(
+        "audit-dates",
+        help="Comparar (solo lectura) la fecha del nombre con los metadatos")
+    audit_parser.add_argument("folder", help="Carpeta con los archivos")
+    audit_parser.add_argument("-v", "--verbose", action="store_true")
+    audit_parser.add_argument("--log-file")
+    audit_parser.add_argument(
+        "--year", type=int,
+        help="Año esperado para detectar intrusos (def: el nombre de la carpeta)")
     return parser
 
 
