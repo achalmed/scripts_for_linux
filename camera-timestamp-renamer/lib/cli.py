@@ -102,6 +102,9 @@ def build_argument_parser() -> argparse.ArgumentParser:
     embed_parser.add_argument("--log-file")
     embed_parser.add_argument("--execute", action="store_true",
                               help="Escribir de verdad (sin esto solo simula)")
+    embed_parser.add_argument(
+        "--trust-name", action="store_true", default=None,
+        help="Fotos escaneadas: el nombre manda SIEMPRE (pisa cualquier EXIF)")
 
     audit_parser = subparsers.add_parser(
         "audit-dates",
@@ -129,6 +132,7 @@ def settings_from_args(args: argparse.Namespace) -> Settings:
     # getattr con default None: subcomandos como `undo` no declaran todas
     # estas flags, y su ausencia debe significar "usar el valor por defecto".
     overrides = {
+        "trust_name": getattr(args, "trust_name", None),
         "workers": getattr(args, "workers", None),
         "limit": getattr(args, "limit", None),
         "media_filter": getattr(args, "only", None),
