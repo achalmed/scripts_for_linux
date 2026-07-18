@@ -30,6 +30,11 @@ _PATTERNS: tuple = (
     ("whatsapp-original", re.compile(r"^(?:IMG|VID)-(\d{8})-WA\d+", re.I), "día"),
     ("captura", re.compile(r"^Screenshot_(\d{8})-(\d{6})", re.I), "segundos"),
     ("facebook-epoch", re.compile(r"^fb_(\d{13})(?:\D|$)"), "segundos"),
+    ("pixiz", re.compile(  # pixiz-DD-MM-AAAA-HH-MM-SS (montajes de pixiz.com)
+        r"^pixiz-(\d{2})-(\d{2})-(\d{4})-(\d{2})-(\d{2})-(\d{2})"), "segundos"),
+    ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
+        r"^chatgpt_image_([a-z]{3})_(\d{1,2})_(\d{4})_(\d{1,2})_(\d{2})_(\d{2})_([ap]m)",
+        re.I), "segundos"),
     ("fecha-parcial", re.compile(r"^(\d{8})[_-]"), "día"),
 )
 # Descargas de Facebook/Instagram: '<id>_<id>_<id>_n.jpg' (sin fecha alguna).
@@ -42,6 +47,20 @@ _EXPECTED_FILETYPE = {
     ".heic": {"HEIC", "HEIF"}, ".webp": {"WEBP", "Extended WEBP"}, ".mp4": {"MP4"},
     ".mov": {"MOV"}, ".avi": {"AVI"}, ".mkv": {"MKV"},
 }
+# Extensión correcta para cada FileType real (para poder corregirla).
+_EXT_FOR_FILETYPE = {
+    "JPEG": ".jpg", "PNG": ".png", "HEIC": ".heic", "HEIF": ".heic",
+    "WEBP": ".webp", "Extended WEBP": ".webp", "MP4": ".mp4", "MOV": ".mov",
+    "AVI": ".avi", "MKV": ".mkv",
+}
+
+
+def correct_extension(name: str, filetype: str) -> str | None:
+    """Extensión que debería tener el archivo, o None si ya es correcta."""
+    expected = _EXPECTED_FILETYPE.get(Path(name).suffix.lower())
+    if expected and filetype and filetype not in expected:
+        return _EXT_FOR_FILETYPE.get(filetype)
+    return None
 
 
 @dataclass
@@ -66,6 +85,12 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
         try:
             if label == "facebook-epoch":
                 return label, datetime.fromtimestamp(int(match.group(1)) / 1000), precision
+            if label == "pixiz":
+                return label, datetime.strptime("".join(match.groups()),
+                                                "%d%m%Y%H%M%S"), precision
+            if label == "chatgpt":
+                return label, datetime.strptime(" ".join(match.groups()),
+                                                "%b %d %Y %I %M %S %p"), precision
             digits = "".join(match.groups())
             fmt = "%Y%m%d%H%M%S" if precision == "segundos" else "%Y%m%d"
             return label, datetime.strptime(digits[:14], fmt), precision
@@ -127,11 +152,10 @@ def _classify(name: str, meta: dict, expected_year: int | None,
         row.suggestion = "revisar cuál fecha es la correcta"
     # Extensión que no corresponde al formato real: exiftool no puede
     # escribir ahí, así que es lo primero que hay que arreglar.
-    expected = _EXPECTED_FILETYPE.get(Path(name).suffix.lower())
-    filetype = meta.get("FileType", "")
-    if expected and filetype and filetype not in expected:
+    fixed_ext = correct_extension(name, meta.get("FileType", ""))
+    if fixed_ext:
         row.status = "EXTENSIÓN_INCORRECTA"
-        row.suggestion = f"el formato real es {filetype}: corregir la extensión"
+        row.suggestion = f"fix-names: corregir extensión a {fixed_ext}"
     # El año del nombre manda para detectar archivos en la carpeta equivocada.
     year = name_dt.year if name_dt else (meta_dt.year if meta_dt else None)
     if expected_year and year and year != expected_year:

@@ -37,6 +37,10 @@ Ejemplos:
   # 8) Auditar (solo lectura): ¿la fecha del nombre coincide con la EXIF?
   python main.py audit-dates ~/Pictures/2026
 
+  # 9) Corregir extensiones equivocadas y normalizar nombres decodificables
+  #    (fb_<epoch>, IMG-...-WA, IMG_, Screenshot_, pixiz, chatgpt)
+  python main.py fix-names ~/Pictures/2026 --execute
+
   # Ajustar la POSICION del analisis (ej. franja superior completa):
   python main.py analyze ./fotos --crop-left 0 --crop-width 1 --crop-height 0.10
 """
@@ -108,6 +112,15 @@ def build_argument_parser() -> argparse.ArgumentParser:
     audit_parser.add_argument(
         "--year", type=int,
         help="Año esperado para detectar intrusos (def: el nombre de la carpeta)")
+
+    fix_parser = subparsers.add_parser(
+        "fix-names",
+        help="Corregir extensiones equivocadas y nombres con fecha decodificable")
+    fix_parser.add_argument("folder", help="Carpeta con los archivos")
+    fix_parser.add_argument("-v", "--verbose", action="store_true")
+    fix_parser.add_argument("--log-file")
+    fix_parser.add_argument("--execute", action="store_true",
+                            help="Renombrar de verdad (sin esto solo simula)")
     return parser
 
 
