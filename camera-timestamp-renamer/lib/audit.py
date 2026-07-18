@@ -39,6 +39,12 @@ _PATTERNS: tuple = (
     ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
         r"^chatgpt_image_([a-z]{3})_(\d{1,2})_(\d{4})_(\d{1,2})_(\d{2})_(\d{2})_([ap]m)",
         re.I), "segundos"),
+    # 'c360<AAAAMMDD><HHMMSS><ms>': fotos de la app Camera360.
+    ("camera360", re.compile(r"^c360(\d{8})(\d{6})\d*\.[^.]+$", re.I),
+     "segundos"),
+    # '<epoch-ms>.jpg' pelado (13 dígitos, sin prefijo): nombres de Android.
+    # El rango se valida al decodificar (2002-2035).
+    ("epoch", re.compile(r"^(\d{13})\.[^.]+$"), "segundos"),
     # '<snowflake>dmdmhlq...': imagen de Twitter/X = ID del tweet (codifica
     # la fecha de publicación) + nombre del archivo de imagen. La letra tras
     # el ID lo distingue de los concatenados de Facebook (ahí siguen dígitos).
@@ -52,6 +58,18 @@ _PATTERNS: tuple = (
 )
 # Descargas de Facebook/Instagram: '<id>_<id>_<id>_n.jpg' (sin fecha alguna).
 _FACEBOOK_NAME = re.compile(r"_n\.(jpe?g|png|webp)$", re.I)
+
+# Firmas 'mes-día hora' de escrituras en lote vistas en varios años de esta
+# colección (p.ej. 2018/2019/2020/2023-10-20 18:36:52): un EXIF con esta
+# marca es artefacto aunque en su carpeta quede un solo archivo con ella.
+_ARTIFACT_STAMPS = frozenset({
+    "10-20 18:36:52", "10-21 18:36:52", "10-20 18:44:55",
+})
+
+
+def is_artifact_stamp(moment: datetime) -> bool:
+    """True si la fecha EXIF coincide con una firma de lote conocida."""
+    return moment.strftime("%m-%d %H:%M:%S") in _ARTIFACT_STAMPS
 
 # Tipo real (FileType de exiftool) esperado para cada extensión. Si no
 # coinciden, exiftool se niega a escribir y hay que corregir la extensión.
@@ -130,6 +148,11 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
                 digits = match.group(1)
                 divisor = 1000 if len(digits) == 13 else 100
                 return label, datetime.fromtimestamp(int(digits) / divisor), precision
+            if label == "epoch":
+                stamp = datetime.fromtimestamp(int(match.group(1)) / 1000)
+                if not 2002 <= stamp.year <= 2035:
+                    return label, None, precision
+                return label, stamp, precision
             if label == "twitter":
                 # Snowflake: milisegundos desde el epoch de Twitter (2010-11-04).
                 stamp = datetime.fromtimestamp(
@@ -219,6 +242,8 @@ def _classify(name: str, meta: dict, expected_year: int | None,
         row.status = "SIN_FECHA_NOMBRE"
         if meta_dt is None:
             row.suggestion = "revisar a mano (sin fecha en nombre ni metadatos)"
+        elif is_artifact_stamp(meta_dt) and not evidence.camera:
+            row.suggestion = "revisar a mano: EXIF con firma de lote conocida"
         elif evidence.batch_count >= 2 and not evidence.camera:
             row.suggestion = "revisar a mano: EXIF repetido en lote (no confiable)"
         else:

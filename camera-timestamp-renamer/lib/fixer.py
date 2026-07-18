@@ -30,7 +30,8 @@ from lib import audit
 
 # Patrones (ver lib/audit._PATTERNS) cuyo nombre se normaliza al estándar.
 _RENAMEABLE = {"facebook-epoch", "whatsapp-original", "IMG_", "captura",
-               "pixiz", "chatgpt", "12h", "telefono-fecha", "twitter"}
+               "pixiz", "chatgpt", "12h", "telefono-fecha", "twitter",
+               "camera360", "epoch"}
 _WA_ORIGINAL = re.compile(r"^(?:IMG|VID)-(\d{8})-WA(\d+)", re.I)
 # Sufijos de zona horaria pegados a un nombre estándar ('..._utc8'): la hora
 # del nombre ya está en 24h y coincide con el EXIF; el sufijo es solo ruido.
@@ -78,8 +79,11 @@ def _exif_based_name(name: str, meta: dict, settings: Settings,
     # sufijo original del nombre (código wa, correlativo de la cámara).
     if (meta_dt.hour, meta_dt.minute, meta_dt.second) == (0, 0, 0):
         return None
-    pattern, name_dt, precision = audit.parse_name_date(name)
     real_camera = bool(meta.get("Make") or meta.get("Model"))
+    # Firma de lote conocida (cruza años y carpetas): jamás renombrar con ella.
+    if audit.is_artifact_stamp(meta_dt) and not real_camera:
+        return None
+    pattern, name_dt, precision = audit.parse_name_date(name)
     # Se exige evidencia: EXIF de cámara real, o un EXIF único en la carpeta.
     # Un mismo segundo repetido en 2+ archivos sin cámara huele a escritura
     # en lote (aunque el lote se haya reducido al corregir sus vecinos). Los
