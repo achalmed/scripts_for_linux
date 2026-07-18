@@ -114,6 +114,9 @@ class Settings:
     # --- Nombres de salida (se crean dentro de la carpeta objetivo) ---
     audit_csv_name: str = "date_audit.csv"
     fix_log_name: str = "_fix_log.csv"
+    # fix-names: renombrar desde el EXIF cuando el nombre no trae fecha o
+    # cuando el EXIF es anterior al nombre (el nombre vino de una exportación).
+    rename_from_metadata: bool = True
     plan_csv_name: str = "rename_plan.csv"
     analysis_json_name: str = "analysis.json"
     log_csv_name: str = "_rename_log.csv"
