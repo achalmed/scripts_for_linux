@@ -31,6 +31,9 @@ from lib import audit
 _RENAMEABLE = {"facebook-epoch", "whatsapp-original", "IMG_", "captura",
                "pixiz", "chatgpt"}
 _WA_ORIGINAL = re.compile(r"^(?:IMG|VID)-(\d{8})-WA(\d+)", re.I)
+# Patrones cuyo nombre solo codifica el día; si el archivo trae EXIF de
+# cámara real, el EXIF tiene la fecha/hora buena y manda sobre el nombre.
+_DAY_PATTERNS = {"whatsapp", "whatsapp-original", "fecha-parcial"}
 
 
 def _decoded_name(name: str) -> str | None:
@@ -48,10 +51,14 @@ def _decoded_name(name: str) -> str | None:
 def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
     """Nombre estándar desde el EXIF cuando el EXIF manda, o None.
 
-    El EXIF manda en dos casos: el nombre no trae fecha alguna, o el nombre
+    El EXIF manda en tres casos: el nombre no trae fecha alguna; el nombre
     es estándar pero el EXIF es ANTERIOR (el nombre vino de una exportación;
     una captura no puede ser posterior al nombre, ver metadata.py para el
-    caso inverso). Solo con `rename_from_metadata` activado.
+    caso inverso); o el nombre solo codifica el día (WhatsApp) pero el
+    archivo conserva EXIF de cámara real (Make/Model presentes, típico de
+    fotos enviadas como documento) con fecha no posterior al nombre. El
+    Make/Model distingue la captura real del EXIF que nosotros mismos
+    embebimos desde el nombre. Solo con `rename_from_metadata` activado.
     """
     if not settings.rename_from_metadata:
         return None
@@ -59,10 +66,13 @@ def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
     if meta_dt is None:
         return None
     pattern, name_dt, precision = audit.parse_name_date(name)
+    real_camera = bool(meta.get("Make") or meta.get("Model"))
     exif_wins = (name_dt is None
                  or (pattern == "estándar" and precision == "segundos"
                      and (name_dt - meta_dt).total_seconds()
-                     > settings.audit_tolerance_seconds))
+                     > settings.audit_tolerance_seconds)
+                 or (pattern in _DAY_PATTERNS and real_camera
+                     and meta_dt.date() <= name_dt.date()))
     if not exif_wins:
         return None
     return f"{meta_dt:%Y%m%d_%H%M%S}{Path(name).suffix}"
