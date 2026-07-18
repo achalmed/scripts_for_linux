@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 APP_NAME = "camera-timestamp-renamer"
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 # --- Códigos de salida del proyecto (126/127 los reserva el shell) ---
 EXIT_OK = 0
@@ -95,7 +95,16 @@ class Settings:
     progress_every: int = 20
     limit: int = 0  # 0 => sin límite (útil para pruebas rápidas)
 
+    # --- Auditoría de fechas (audit-dates): nombre vs metadatos ---
+    # Tolerancia en segundos entre la fecha del nombre y la EXIF para dar OK
+    # (cámaras y relojes suelen diferir 1-2 s al guardar).
+    audit_tolerance_seconds: int = 60
+    # Extensiones adicionales que la auditoría revisa aunque el renombrador
+    # no las procese (fotos de iPhone y stickers/exportados de WhatsApp).
+    extra_audit_extensions: tuple = (".heic", ".webp")
+
     # --- Nombres de salida (se crean dentro de la carpeta objetivo) ---
+    audit_csv_name: str = "date_audit.csv"
     plan_csv_name: str = "rename_plan.csv"
     analysis_json_name: str = "analysis.json"
     log_csv_name: str = "_rename_log.csv"

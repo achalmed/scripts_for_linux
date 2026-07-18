@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 
 from config import Settings
-from lib import metadata, montage, planner, renamer, scanner, validator
+from lib import audit, metadata, montage, planner, renamer, scanner, validator
 from lib.planner import PlanEntry
 
 _REVIEW_STATUSES = {"weak", "dark", "fail", "error"}
@@ -168,4 +168,24 @@ def cmd_embed_date(folder_arg: str, settings: Settings, logger: logging.Logger,
         logger.info("Fecha de archivo: %s", metadata.summarize(
             metadata.embed_file_modify_date(folder, settings, extensions)))
     logger.info("Fecha embebida. En digiKam: 'Volver a leer metadatos'.")
+    return 0
+
+
+def cmd_audit_dates(folder_arg: str, settings: Settings, logger: logging.Logger,
+                    year: int | None) -> int:
+    """Compara la fecha del nombre con los metadatos. No modifica nada."""
+    validator.require_exiftool(settings.exiftool_binary)
+    folder = validator.validate_folder(folder_arg)
+    if year is None and folder.name.isdigit() and len(folder.name) == 4:
+        year = int(folder.name)  # carpetas tipo ~/Pictures/2026
+    rows = audit.audit_folder(folder, settings, year)
+    counts = audit.summarize(rows)
+    logger.info("── Auditoría de fechas (%s, año esperado: %s) ──",
+                folder.name, year or "sin definir")
+    for status, total in counts.most_common():
+        logger.info("%-18s: %d", status, total)
+    logger.info("Total auditados   : %d", len(rows))
+    destination = folder / settings.audit_csv_name
+    audit.write_audit_csv(rows, destination)
+    logger.info("Detalle por archivo en: %s", destination)
     return 0
