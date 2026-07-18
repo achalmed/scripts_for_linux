@@ -68,6 +68,9 @@ class Settings:
     # de respaldo para formatos sin metadatos escribibles (p.ej. M2TS con
     # extensión .mp4) y deja el mtime coherente con la fecha de captura.
     set_file_modify_date: bool = True
+    # Escribir la fecha SOLO donde falten DateTimeOriginal y CreateDate.
+    # Evita pisar el EXIF de las fotos que ya están correctas.
+    embed_only_missing: bool = True
 
     image_date_tags: tuple = ("AllDates",)  # DateTimeOriginal + CreateDate + ModifyDate
     # Los videos de la cámara guardan la fecha en QuickTime Y en varios bloques

@@ -150,11 +150,18 @@ def cmd_embed_date(folder_arg: str, settings: Settings, logger: logging.Logger,
     validator.require_exiftool(settings.exiftool_binary)
     folder = validator.validate_folder(folder_arg)
     scope = _count_scope(folder, settings)
+    special = metadata.special_targets(folder, settings)
     do_images = settings.media_filter in ("all", "images") and scope["images"]
     do_videos = settings.media_filter in ("all", "videos") and scope["videos"]
     if not execute:
         logger.warning("[SIMULACIÓN] recibirían la fecha del nombre: %d fotos, %d "
-                       "videos. Añade --execute.", scope["images"], scope["videos"])
+                       "videos y %d especiales (WhatsApp/fb/parcial); solo se "
+                       "escribe donde falte EXIF. Añade --execute.",
+                       scope["images"], scope["videos"], len(special))
+        for path, stamp in special[:15]:
+            logger.info("  especial: %s -> %s", path.name, stamp)
+        if len(special) > 15:
+            logger.info("  ... y %d especiales más", len(special) - 15)
         return 0
     if do_images:
         logger.info("Fotos: %s", metadata.summarize(
@@ -162,6 +169,10 @@ def cmd_embed_date(folder_arg: str, settings: Settings, logger: logging.Logger,
     if do_videos:
         logger.info("Videos: %s", metadata.summarize(
             metadata.embed_video_dates(folder, settings)))
+    if special:
+        logger.info("Especiales (WhatsApp/fb/parcial): %s",
+                    metadata.summarize_special(
+                        metadata.embed_special_dates(folder, settings)))
     if settings.set_file_modify_date:
         # Respaldo para formatos sin metadatos (M2TS) y mtime coherente.
         extensions = tuple(scanner.selected_extensions(settings))
