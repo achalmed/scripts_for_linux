@@ -8,7 +8,8 @@ import re
 from pathlib import Path
 
 from config import Settings
-from lib import audit, metadata, montage, planner, renamer, scanner, validator
+from lib import (audit, fixer, metadata, montage, planner, renamer, scanner,
+                 validator)
 from lib.planner import PlanEntry
 
 _REVIEW_STATUSES = {"weak", "dark", "fail", "error"}
@@ -199,4 +200,24 @@ def cmd_audit_dates(folder_arg: str, settings: Settings, logger: logging.Logger,
     destination = folder / settings.audit_csv_name
     audit.write_audit_csv(rows, destination)
     logger.info("Detalle por archivo en: %s", destination)
+    return 0
+
+
+def cmd_fix_names(folder_arg: str, settings: Settings, logger: logging.Logger,
+                  execute: bool) -> int:
+    """Corrige extensiones y normaliza nombres decodificables. Simula por defecto."""
+    validator.require_exiftool(settings.exiftool_binary)
+    folder = validator.validate_folder(folder_arg)
+    fixes = fixer.build_fixes(folder, settings)
+    if not fixes:
+        logger.info("Nada que corregir: extensiones y nombres ya están bien.")
+        return 0
+    done = fixer.apply_fixes(folder, fixes, settings, execute)
+    for old, new in done:
+        logger.info("  %s -> %s", old, new)
+    if execute:
+        logger.info("Renombrados %d archivos (registro en %s). Considera correr "
+                    "embed-date después.", len(done), folder / settings.fix_log_name)
+    else:
+        logger.warning("[SIMULACIÓN] %d se renombrarían. Añade --execute.", len(done))
     return 0

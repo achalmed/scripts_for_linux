@@ -123,14 +123,18 @@ def embed_special_dates(folder: Path, settings: Settings
         if settings.set_file_modify_date:
             lines.append(f"-FileModifyDate={stamp}")
         lines += [str(path), "-execute"]
-    lines += ["-common_args", "-overwrite_original", "-api", "QuickTimeUTC=0"]
     with tempfile.NamedTemporaryFile("w", suffix=".args", delete=False,
                                      encoding="utf-8") as handle:
         handle.write("\n".join(lines))
         argfile = handle.name
     try:
-        return subprocess.run([settings.exiftool_binary, "-@", argfile],
-                              capture_output=True, text=True, check=False)
+        # OJO: -common_args NO funciona dentro de un argfile (exiftool lo
+        # ignora y crearía respaldos *_original); debe ir en la línea de
+        # comandos, después de -@.
+        command = [settings.exiftool_binary, "-@", argfile,
+                   "-common_args", "-overwrite_original",
+                   "-api", "QuickTimeUTC=0"]
+        return subprocess.run(command, capture_output=True, text=True, check=False)
     finally:
         Path(argfile).unlink(missing_ok=True)
 

@@ -30,6 +30,8 @@ def _dispatch(args, settings, logger) -> int:
         return commands.cmd_embed_date(args.folder, settings, logger, args.execute)
     if args.command == "audit-dates":
         return commands.cmd_audit_dates(args.folder, settings, logger, args.year)
+    if args.command == "fix-names":
+        return commands.cmd_fix_names(args.folder, settings, logger, args.execute)
     return commands.cmd_undo(args.folder, settings, logger, args.execute)
 
 
