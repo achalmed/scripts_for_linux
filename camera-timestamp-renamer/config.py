@@ -71,6 +71,11 @@ class Settings:
     # Escribir la fecha SOLO donde falten DateTimeOriginal y CreateDate.
     # Evita pisar el EXIF de las fotos que ya están correctas.
     embed_only_missing: bool = True
+    # Además, sobreescribir cuando el EXIF existente sea POSTERIOR al día del
+    # nombre: una foto no puede capturarse después de recibirse/nombrarse, así
+    # que ese EXIF es un artefacto (copias, guardados en lote). Un EXIF
+    # anterior al nombre se respeta siempre (podría ser la captura real).
+    overwrite_later_exif: bool = True
 
     image_date_tags: tuple = ("AllDates",)  # DateTimeOriginal + CreateDate + ModifyDate
     # Los videos de la cámara guardan la fecha en QuickTime Y en varios bloques

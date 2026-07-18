@@ -29,7 +29,8 @@ _PATTERNS: tuple = (
     ("IMG_", re.compile(r"^IMG_(\d{8})_(\d{6})", re.I), "segundos"),
     ("whatsapp-original", re.compile(r"^(?:IMG|VID)-(\d{8})-WA\d+", re.I), "día"),
     ("captura", re.compile(r"^Screenshot_(\d{8})-(\d{6})", re.I), "segundos"),
-    ("facebook-epoch", re.compile(r"^fb_(\d{13})(?:\D|$)"), "segundos"),
+    # fb_<epoch>: 13 dígitos = milisegundos; 12 dígitos = centisegundos.
+    ("facebook-epoch", re.compile(r"^fb_(\d{12,13})(?:\D|$)"), "segundos"),
     ("pixiz", re.compile(  # pixiz-DD-MM-AAAA-HH-MM-SS (montajes de pixiz.com)
         r"^pixiz-(\d{2})-(\d{2})-(\d{4})-(\d{2})-(\d{2})-(\d{2})"), "segundos"),
     ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
@@ -84,7 +85,9 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
             continue
         try:
             if label == "facebook-epoch":
-                return label, datetime.fromtimestamp(int(match.group(1)) / 1000), precision
+                digits = match.group(1)
+                divisor = 1000 if len(digits) == 13 else 100
+                return label, datetime.fromtimestamp(int(digits) / divisor), precision
             if label == "pixiz":
                 return label, datetime.strptime("".join(match.groups()),
                                                 "%d%m%Y%H%M%S"), precision
@@ -149,7 +152,13 @@ def _classify(name: str, meta: dict, expected_year: int | None,
             row.suggestion = "revisar cuál hora es la correcta"
     else:
         row.status = "FECHA_DISTINTA"
-        row.suggestion = "revisar cuál fecha es la correcta"
+        # Una foto no puede capturarse DESPUÉS de recibirse/nombrarse: un EXIF
+        # posterior al día del nombre es un artefacto de copia y el nombre manda.
+        # Un EXIF anterior podría ser la captura real: se respeta y se revisa.
+        if meta_dt.date() > name_dt.date():
+            row.suggestion = "embed-date: el nombre manda (EXIF posterior = copia)"
+        else:
+            row.suggestion = "revisar a mano: el EXIF podría ser la captura real"
     # Extensión que no corresponde al formato real: exiftool no puede
     # escribir ahí, así que es lo primero que hay que arreglar.
     fixed_ext = correct_extension(name, meta.get("FileType", ""))

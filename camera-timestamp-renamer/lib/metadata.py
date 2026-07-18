@@ -23,8 +23,13 @@ from lib import audit
 
 # Solo se tocan archivos cuyo nombre empieza por AAAAMMDD_HHMMSS.
 _NAME_CONDITION = r"$filename =~ /^\d{8}_\d{6}/"
-# No pisar fechas existentes: solo escribir donde falten los metadatos.
-_MISSING_CONDITION = "not $DateTimeOriginal and not $CreateDate"
+# Fecha principal existente según exiftool ('0000...' cuenta como ausente).
+_PRIMARY = "($DateTimeOriginal || $CreateDate)"
+_PRIMARY_MISSING = f'({_PRIMARY} || "0000") =~ /^0000/'
+# Día de la fecha principal como dígitos 'AAAAMMDD' (evita usar $1/$2: exiftool
+# interpola los $n de -if como etiquetas y rompe la expresión).
+_PRIMARY_DAY = (f"substr({_PRIMARY},0,4) . substr({_PRIMARY},5,2)"
+                f" . substr({_PRIMARY},8,2)")
 _SUMMARY = re.compile(r"\d+ (?:image|video)? ?files? (?:updated|unchanged)")
 
 # Patrones de nombre (ver lib/audit.py) que atiende el pase especial.
@@ -57,10 +62,26 @@ def _run(folder: Path, tags: tuple, extensions: tuple, settings: Settings,
     return subprocess.run(command, capture_output=True, text=True, check=False)
 
 
+def _write_condition(settings: Settings, day: str | None = None) -> str:
+    """Condición perl de escritura: ¿cuándo manda la fecha del nombre?
+
+    Se escribe si no hay fecha EXIF, o si la existente es POSTERIOR al día
+    del nombre (una foto no puede capturarse después de recibirse: un EXIF
+    posterior es un artefacto de copia). Un EXIF anterior se respeta (podría
+    ser la captura real). `day` son dígitos 'AAAAMMDD' cuando ya se conoce
+    (pase especial); si es None se extrae del propio nombre.
+    """
+    name_day = f'"{day}"' if day else "substr($filename,0,8)"
+    later = f"{_PRIMARY_DAY} gt {name_day}"
+    if not settings.overwrite_later_exif:
+        later = "0"
+    return f"({_PRIMARY_MISSING} or {later})"
+
+
 def _missing_only(settings: Settings) -> list[str]:
-    """Flags '-if' extra para no pisar fechas ya presentes (si está activado)."""
+    """Flags '-if' extra si solo debe escribirse donde falte la fecha."""
     if settings.embed_only_missing:
-        return ["-if", _MISSING_CONDITION]
+        return ["-if", _write_condition(settings)]
     return []
 
 
@@ -118,7 +139,8 @@ def embed_special_dates(folder: Path, settings: Settings
         tags = (settings.video_date_tags
                 if path.suffix.lower() in settings.video_extensions
                 else settings.image_date_tags)
-        lines += ["-if", _MISSING_CONDITION]
+        lines += ["-if", _write_condition(settings,
+                                          day=stamp[:10].replace(":", ""))]
         lines += [f"-{tag}={stamp}" for tag in tags]
         if settings.set_file_modify_date:
             lines.append(f"-FileModifyDate={stamp}")
@@ -166,4 +188,5 @@ def summarize_special(result: subprocess.CompletedProcess | None) -> str:
     updated = sum(int(n) for n in re.findall(r"(\d+) (?:image|video)? ?files? updated",
                                              text))
     skipped = sum(int(n) for n in re.findall(r"(\d+) files failed condition", text))
-    return f"{updated} actualizados; {skipped} saltados (ya tenían fecha)"
+    return (f"{updated} actualizados; {skipped} saltados "
+            f"(fecha existente correcta o anterior al nombre)")
