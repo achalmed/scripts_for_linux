@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import csv
 import re
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
 
@@ -48,7 +49,8 @@ def _decoded_name(name: str) -> str | None:
     return f"{stamp:%Y%m%d_%H%M%S}{extension}"
 
 
-def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
+def _exif_based_name(name: str, meta: dict, settings: Settings,
+                     batch_count: int) -> str | None:
     """Nombre estándar desde el EXIF cuando el EXIF manda, o None.
 
     El EXIF manda en tres casos: el nombre no trae fecha alguna; el nombre
@@ -67,8 +69,11 @@ def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
         return None
     pattern, name_dt, precision = audit.parse_name_date(name)
     real_camera = bool(meta.get("Make") or meta.get("Model"))
-    # En todos los casos con fecha en el nombre se exige EXIF de cámara real:
-    # los nombres puestos a mano "a ojo" no bastan para arbitrar sin evidencia.
+    # Se exige evidencia: EXIF de cámara real, y nunca un EXIF escrito en
+    # lote (mismo segundo en 3+ archivos) salvo que traiga cámara. Los
+    # nombres puestos a mano "a ojo" no bastan para arbitrar sin evidencia.
+    if batch_count >= 3 and not real_camera:
+        return None
     exif_wins = (name_dt is None
                  or (pattern == "estándar" and precision == "segundos"
                      and real_camera
@@ -85,12 +90,16 @@ def build_fixes(folder: Path, settings: Settings) -> list[tuple[str, str]]:
     """Pares (nombre_actual, nombre_corregido) de toda la carpeta."""
     known = (set(settings.image_extensions) | set(settings.video_extensions)
              | set(settings.extra_audit_extensions))
+    metas = [meta for meta in audit.read_metadata(folder, settings)
+             if Path(meta.get("FileName", "")).suffix.lower() in known]
+    batches = Counter(dt for meta in metas
+                      if (dt := audit.primary_meta_date(meta)) is not None)
     fixes = []
-    for meta in audit.read_metadata(folder, settings):
+    for meta in metas:
         name = meta.get("FileName", "")
-        if Path(name).suffix.lower() not in known:
-            continue
-        target = (_decoded_name(name) or _exif_based_name(name, meta, settings)
+        batch_count = batches.get(audit.primary_meta_date(meta), 0)
+        target = (_decoded_name(name)
+                  or _exif_based_name(name, meta, settings, batch_count)
                   or name)
         fixed_ext = audit.correct_extension(target, meta.get("FileType", ""))
         if fixed_ext:
