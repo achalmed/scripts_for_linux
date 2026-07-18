@@ -39,7 +39,11 @@ _PATTERNS: tuple = (
     ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
         r"^chatgpt_image_([a-z]{3})_(\d{1,2})_(\d{4})_(\d{1,2})_(\d{2})_(\d{2})_([ap]m)",
         re.I), "segundos"),
-    ("fecha-parcial", re.compile(r"^(\d{8})[_-]"), "día"),
+    # '+<teléfono><AAAAMMDDHHMMSS>': contactos de WhatsApp; los últimos 14
+    # dígitos son la fecha (el $ obliga a tomar los del final).
+    ("telefono-fecha", re.compile(r"^\+\d*?((?:19|20)\d{6})(\d{6})\.[^.]+$"),
+     "segundos"),
+    ("fecha-parcial", re.compile(r"^(\d{8})[_\-.]"), "día"),
 )
 # Descargas de Facebook/Instagram: '<id>_<id>_<id>_n.jpg' (sin fecha alguna).
 _FACEBOOK_NAME = re.compile(r"_n\.(jpe?g|png|webp)$", re.I)
