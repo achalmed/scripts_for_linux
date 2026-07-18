@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 APP_NAME = "camera-timestamp-renamer"
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 # --- Códigos de salida del proyecto (126/127 los reserva el shell) ---
 EXIT_OK = 0
@@ -57,6 +57,29 @@ class Settings:
 
     # Qué tipo de medios procesar: "all" | "images" | "videos".
     media_filter: str = "all"
+
+    # --- Metadatos (exiftool): escribir la fecha de captura desde el nombre ---
+    exiftool_binary: str = "exiftool"
+    # Convierte 'AAAAMMDD_HHMMSS[_N].ext' -> 'AAAA:MM:DD HH:MM:SS' (formato EXIF).
+    filename_date_expr: str = (
+        r"${filename;s/(\d{8})_(\d{6}).*/$1$2/;"
+        r"s/(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/$1:$2:$3 $4:$5:$6/}")
+    # Fijar además la fecha del sistema (FileModifyDate) desde el nombre: sirve
+    # de respaldo para formatos sin metadatos escribibles (p.ej. M2TS con
+    # extensión .mp4) y deja el mtime coherente con la fecha de captura.
+    set_file_modify_date: bool = True
+
+    image_date_tags: tuple = ("AllDates",)  # DateTimeOriginal + CreateDate + ModifyDate
+    # Los videos de la cámara guardan la fecha en QuickTime Y en varios bloques
+    # XMP; digiKam suele leer XMP-exif:DateTimeOriginal, así que hay que fijar
+    # todos para que la fecha real quede consistente en cualquier lector.
+    video_date_tags: tuple = (
+        "QuickTime:CreateDate", "QuickTime:ModifyDate",
+        "TrackCreateDate", "TrackModifyDate",
+        "MediaCreateDate", "MediaModifyDate",
+        "XMP-exif:DateTimeOriginal", "XMP-photoshop:DateCreated",
+        "XMP-tiff:DateTime", "XMP-xmp:CreateDate",
+        "XMP-xmp:ModifyDate", "XMP-xmp:MetadataDate")
 
     # --- Videos: se extrae un fotograma y se le aplica el MISMO OCR ---
     video_extensions: tuple = (".mp4", ".mov", ".avi", ".mkv")

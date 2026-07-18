@@ -45,6 +45,8 @@ tras exportaciones masivas, ordenar cronológicamente por nombre.
   `sudo apt install tesseract-ocr`
 - **ffmpeg** — extraer fotogramas de video (solo necesario si procesas videos).
   `sudo apt install ffmpeg`
+- **exiftool** — escribir la fecha en metadatos (solo para el subcomando `embed-date`).
+  `sudo apt install libimage-exiftool-perl`
 
 ### Dependencias de Python
 
@@ -83,6 +85,7 @@ python main.py <subcomando> <carpeta> [OPCIONES]
 | `verify`  | Genera montajes PNG con las lecturas dudosas y las colisiones | No |
 | `apply`   | Renombra según el plan (**simula** salvo `--execute`) | Solo con `--execute` |
 | `undo`    | Revierte el último renombrado usando `_rename_log.csv` | Solo con `--execute` |
+| `embed-date` | Escribe la fecha de captura (EXIF/QuickTime + mtime) desde el nombre | Solo con `--execute` |
 
 ### Opciones
 
@@ -113,6 +116,9 @@ python main.py apply ./fotos --execute
 # Deshacer
 python main.py undo ./fotos --execute
 
+# Escribir la fecha en los metadatos desde el nombre (arregla el agrupado en digiKam)
+python main.py embed-date ./fotos --execute
+
 # La marca está en OTRA posición (franja superior completa, más alta):
 python main.py analyze ./fotos --crop-left 0 --crop-width 1 --crop-height 0.10
 ```
@@ -141,6 +147,8 @@ Todos los valores por defecto viven en [`config.py`](config.py) (clase
 | `image_extensions` | Qué archivos se consideran fotos | `.jpg .jpeg .png` |
 | `video_extensions` | Qué archivos se consideran videos | `.mp4 .mov .avi .mkv` |
 | `ffmpeg_frame_times` | Segundos a probar para sacar el fotograma del video | `["0","1","2"]` |
+| `image_date_tags` / `video_date_tags` | Qué etiquetas de fecha escribe `embed-date` | EXIF / QuickTime+XMP |
+| `set_file_modify_date` | Fijar también el `mtime` desde el nombre (respaldo M2TS) | `True` |
 | `confident_min_votes` | Votos para marcar una lectura como fiable | 3 |
 
 Regla: los valores ajustables van en `config.py`; nunca se codifican dentro de
@@ -162,6 +170,7 @@ camera-timestamp-renamer/
     ├── ocr.py           # NÚCLEO: recorte + binarización + tesseract + votación
     ├── video.py         # Extrae un fotograma del video con ffmpeg
     ├── media.py         # Despacha foto/video hacia el mismo OCR
+    ├── metadata.py      # Escribe fechas EXIF/QuickTime/mtime con exiftool
     ├── scanner.py       # Escaneo paralelo con progreso (fix OMP_THREAD_LIMIT)
     ├── planner.py       # Construye el plan y resuelve colisiones (_2, _3…)
     ├── renamer.py       # Renombrado en dos fases + log + script de deshacer
@@ -178,6 +187,7 @@ camera-timestamp-renamer/
 | `lib/ocr.py` | Leer la marca de una imagen (recorte, umbrales, votación) |
 | `lib/video.py` | Extraer un fotograma de un video con ffmpeg |
 | `lib/media.py` | Unificar fotos y videos sobre el mismo OCR |
+| `lib/metadata.py` | Escribir la fecha en metadatos (exiftool) desde el nombre |
 | `lib/scanner.py` | Recorrer la carpeta en paralelo |
 | `lib/planner.py` | Decidir el nombre destino y manejar duplicados |
 | `lib/renamer.py` | Aplicar/deshacer renombrados sin pérdida de datos |
@@ -263,4 +273,13 @@ Ajusta `--workers` al número de núcleos físicos si hace falta.
   Cada nuevo `apply` sobrescribe el log anterior: deshaz antes de re-aplicar.
 - **Seguridad**: el renombrado es en dos fases y nunca sobrescribe un archivo
   existente; ante cualquier conflicto, aborta sin modificar nada.
+- **`embed-date` y digiKam**: si tus fotos/videos aparecen agrupados por una
+  fecha equivocada (p.ej. el año en que los copiaste), suele ser porque no
+  tienen fecha de captura embebida y el visor usa una fecha del sistema de
+  archivos. `embed-date` escribe `DateTimeOriginal` (fotos), las fechas
+  QuickTime+XMP (videos) y el `mtime`, todo desde el nombre. Luego, en digiKam:
+  seleccionar todo → **"Volver a leer metadatos"**.
+- **Videos M2TS**: algunos `.mp4` son en realidad streams M2TS que no admiten
+  metadatos embebidos; para ellos `embed-date` deja al menos el `mtime`
+  correcto (por eso `set_file_modify_date` viene activado).
 ```

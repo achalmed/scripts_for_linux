@@ -31,6 +31,9 @@ Ejemplos:
   # 6) Deshacer el ultimo renombrado
   python main.py undo ./fotos --execute
 
+  # 7) Escribir la fecha EXIF/QuickTime desde el nombre (arregla digiKam)
+  python main.py embed-date ./fotos --execute
+
   # Ajustar la POSICION del analisis (ej. franja superior completa):
   python main.py analyze ./fotos --crop-left 0 --crop-width 1 --crop-height 0.10
 """
@@ -82,6 +85,16 @@ def build_argument_parser() -> argparse.ArgumentParser:
     undo_parser.add_argument("--log-file")
     undo_parser.add_argument("--execute", action="store_true",
                              help="Aplicar de verdad (sin esto solo simula)")
+
+    embed_parser = subparsers.add_parser(
+        "embed-date", help="Escribir la fecha de captura (EXIF/QuickTime) desde el nombre")
+    embed_parser.add_argument("folder", help="Carpeta con los archivos")
+    embed_parser.add_argument("-v", "--verbose", action="store_true")
+    embed_parser.add_argument("--only", choices=["all", "images", "videos"],
+                              help="Solo fotos, solo videos, o todo (def: todo)")
+    embed_parser.add_argument("--log-file")
+    embed_parser.add_argument("--execute", action="store_true",
+                              help="Escribir de verdad (sin esto solo simula)")
     return parser
 
 

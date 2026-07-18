@@ -11,7 +11,7 @@ from lib.media import read_timestamp
 from lib.ocr import OcrResult
 
 
-def _selected_extensions(settings: Settings) -> set[str]:
+def selected_extensions(settings: Settings) -> set[str]:
     """Extensiones a procesar según el filtro media_filter (all/images/videos)."""
     images = set(settings.image_extensions)
     videos = set(settings.video_extensions)
@@ -24,7 +24,7 @@ def _selected_extensions(settings: Settings) -> set[str]:
 
 def find_media(folder: Path, settings: Settings) -> list[Path]:
     """Lista los medios de la carpeta según el filtro (orden determinista)."""
-    extensions = _selected_extensions(settings)
+    extensions = selected_extensions(settings)
     media = [entry for entry in folder.iterdir()
              if entry.is_file() and entry.suffix.lower() in extensions]
     media.sort()
