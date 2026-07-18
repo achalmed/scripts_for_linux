@@ -1,8 +1,9 @@
 # camera-timestamp-renamer
 
-> Renombra fotos de cámara de seguridad según la **fecha y hora impresa dentro
-> de la imagen** (OCR de la marca), al formato `AAAAMMDD_HHMMSS`, de forma
-> segura, configurable y **reversible**.
+> Renombra **fotos y videos** de cámara de seguridad según la **fecha y hora
+> impresa en la imagen** (OCR de la marca), al formato `AAAAMMDD_HHMMSS`, de
+> forma segura, configurable y **reversible**. En los videos se lee la marca
+> del primer fotograma (la hora de inicio de la grabación).
 
 ## 📋 Tabla de Contenidos
 
@@ -42,6 +43,8 @@ tras exportaciones masivas, ordenar cronológicamente por nombre.
 
 - **tesseract-ocr** — motor de OCR.
   `sudo apt install tesseract-ocr`
+- **ffmpeg** — extraer fotogramas de video (solo necesario si procesas videos).
+  `sudo apt install ffmpeg`
 
 ### Dependencias de Python
 
@@ -60,8 +63,8 @@ cd /home/achalmaedison/Documents/scripts_for_linux/camera-timestamp-renamer
 ### Paso 2: Instalar dependencias
 
 ```bash
-sudo apt install tesseract-ocr        # dependencia del sistema
-pip install -r requirements.txt       # dependencias de Python
+sudo apt install tesseract-ocr ffmpeg   # dependencias del sistema (ffmpeg: videos)
+pip install -r requirements.txt         # dependencias de Python
 ```
 
 ## 💻 Uso
@@ -136,6 +139,8 @@ Todos los valores por defecto viven en [`config.py`](config.py) (clase
 | `timestamp_regex` | Patrón de la fecha/hora en el texto OCR | `AAAA-MM-DD HH:MM:SS` |
 | `year_min` / `year_max` | Rango válido de años (descarta lecturas absurdas) | 2015–2035 |
 | `image_extensions` | Qué archivos se consideran fotos | `.jpg .jpeg .png` |
+| `video_extensions` | Qué archivos se consideran videos | `.mp4 .mov .avi .mkv` |
+| `ffmpeg_frame_times` | Segundos a probar para sacar el fotograma del video | `["0","1","2"]` |
 | `confident_min_votes` | Votos para marcar una lectura como fiable | 3 |
 
 Regla: los valores ajustables van en `config.py`; nunca se codifican dentro de
@@ -155,6 +160,8 @@ camera-timestamp-renamer/
     ├── validator.py     # Valida dependencias, carpeta y parámetros de recorte
     ├── cli.py           # argparse: subcomandos y overrides de configuración
     ├── ocr.py           # NÚCLEO: recorte + binarización + tesseract + votación
+    ├── video.py         # Extrae un fotograma del video con ffmpeg
+    ├── media.py         # Despacha foto/video hacia el mismo OCR
     ├── scanner.py       # Escaneo paralelo con progreso (fix OMP_THREAD_LIMIT)
     ├── planner.py       # Construye el plan y resuelve colisiones (_2, _3…)
     ├── renamer.py       # Renombrado en dos fases + log + script de deshacer
@@ -169,6 +176,8 @@ camera-timestamp-renamer/
 | `main.py` | Único punto de arranque; traduce excepciones a códigos de salida |
 | `config.py` | Todo valor editable y los códigos de salida |
 | `lib/ocr.py` | Leer la marca de una imagen (recorte, umbrales, votación) |
+| `lib/video.py` | Extraer un fotograma de un video con ffmpeg |
+| `lib/media.py` | Unificar fotos y videos sobre el mismo OCR |
 | `lib/scanner.py` | Recorrer la carpeta en paralelo |
 | `lib/planner.py` | Decidir el nombre destino y manejar duplicados |
 | `lib/renamer.py` | Aplicar/deshacer renombrados sin pérdida de datos |
@@ -198,6 +207,12 @@ sudo apt install tesseract-ocr
 
 ```bash
 pip install -r requirements.txt
+```
+
+### `'ffmpeg' no está instalado` (al procesar videos)
+
+```bash
+sudo apt install ffmpeg
 ```
 
 ### El OCR lee mal o no encuentra la marca
@@ -240,8 +255,9 @@ Ajusta `--workers` al número de núcleos físicos si hace falta.
   **no se pierda ninguna foto**.
 - **Fotos sin marca** (p. ej. una imagen que no es de la cámara) se marcan
   `SKIP` y **no se tocan**.
-- **Videos**: por diseño solo se procesan imágenes (`image_extensions`); los
-  `.mp4` se ignoran.
+- **Videos**: se procesan igual que las fotos, leyendo la marca del primer
+  fotograma legible (la hora de inicio de la grabación). Requiere `ffmpeg`.
+  Ajusta `video_extensions` y `ffmpeg_frame_times` en `config.py` si hace falta.
 - **Reversibilidad**: `apply --execute` deja `_rename_log.csv` y
   `_undo_rename.sh` en la carpeta. `undo --execute` revierte y borra el log.
   Cada nuevo `apply` sobrescribe el log anterior: deshaz antes de re-aplicar.

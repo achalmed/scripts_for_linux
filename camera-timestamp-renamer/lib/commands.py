@@ -17,7 +17,11 @@ def _prepare(folder_arg: str, settings: Settings) -> Path:
     """Valida dependencias, carpeta y parámetros antes de cualquier lógica."""
     validator.require_tesseract()
     validator.validate_crop(settings)
-    return validator.validate_folder(folder_arg)
+    folder = validator.validate_folder(folder_arg)
+    if scanner.has_videos(folder, settings):
+        # ffmpeg solo es imprescindible cuando hay videos que procesar.
+        validator.require_ffmpeg(settings.ffmpeg_binary)
+    return folder
 
 
 def _progress(logger: logging.Logger):

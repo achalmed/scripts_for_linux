@@ -56,7 +56,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     """Construye el parser con los subcomandos analyze/apply/verify/undo."""
     parser = argparse.ArgumentParser(
         prog=APP_NAME,
-        description="Renombra fotos según la fecha/hora impresa en la imagen.",
+        description="Renombra fotos y videos por la fecha/hora impresa en la imagen.",
         epilog=_EPILOG, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--version", action="version", version=f"{APP_NAME} {VERSION}")
     subparsers = parser.add_subparsers(dest="command", required=True)

@@ -20,6 +20,18 @@ def require_tesseract() -> None:
             "sudo apt install tesseract-ocr")
 
 
+def require_ffmpeg(binary: str = "ffmpeg") -> None:
+    """Verifica que `ffmpeg` esté disponible (necesario solo para videos).
+
+    Raises:
+        DependencyError: Si ffmpeg no está instalado.
+    """
+    if shutil.which(binary) is None:
+        raise DependencyError(
+            f"'{binary}' no está instalado (se necesita para videos). "
+            "Instálalo con: sudo apt install ffmpeg")
+
+
 def validate_folder(folder: str | Path) -> Path:
     """Comprueba que la ruta exista y sea un directorio.
 
