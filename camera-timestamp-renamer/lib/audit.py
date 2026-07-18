@@ -59,17 +59,19 @@ _PATTERNS: tuple = (
 # Descargas de Facebook/Instagram: '<id>_<id>_<id>_n.jpg' (sin fecha alguna).
 _FACEBOOK_NAME = re.compile(r"_n\.(jpe?g|png|webp)$", re.I)
 
-# Firmas 'mes-día hora' de escrituras en lote vistas en varios años de esta
-# colección (p.ej. 2018/2019/2020/2023-10-20 18:36:52): un EXIF con esta
-# marca es artefacto aunque en su carpeta quede un solo archivo con ella.
-_ARTIFACT_STAMPS = frozenset({
-    "10-20 18:36:52", "10-21 18:36:52", "10-20 18:44:55",
+# Firmas de escrituras en lote vistas en VARIOS años de esta colección: la
+# misma hora exacta reaparece con fechas distintas (p.ej. 18:36:52 en
+# 2018/2019/2020/2023-10-20 y 2015-10-21; 12:14:52 en 2014-03-31 y
+# 2015-03-15). Un EXIF sin cámara con una de estas horas es artefacto
+# aunque en su carpeta quede un solo archivo con ella.
+_ARTIFACT_TIMES = frozenset({
+    "18:36:52", "18:43:24", "18:44:55", "12:14:52",
 })
 
 
 def is_artifact_stamp(moment: datetime) -> bool:
-    """True si la fecha EXIF coincide con una firma de lote conocida."""
-    return moment.strftime("%m-%d %H:%M:%S") in _ARTIFACT_STAMPS
+    """True si la hora EXIF coincide con una firma de lote conocida."""
+    return moment.strftime("%H:%M:%S") in _ARTIFACT_TIMES
 
 # Tipo real (FileType de exiftool) esperado para cada extensión. Si no
 # coinciden, exiftool se niega a escribir y hay que corregir la extensión.
