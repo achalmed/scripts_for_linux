@@ -67,8 +67,11 @@ def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
         return None
     pattern, name_dt, precision = audit.parse_name_date(name)
     real_camera = bool(meta.get("Make") or meta.get("Model"))
+    # En todos los casos con fecha en el nombre se exige EXIF de cámara real:
+    # los nombres puestos a mano "a ojo" no bastan para arbitrar sin evidencia.
     exif_wins = (name_dt is None
                  or (pattern == "estándar" and precision == "segundos"
+                     and real_camera
                      and (name_dt - meta_dt).total_seconds()
                      > settings.audit_tolerance_seconds)
                  or (pattern in _DAY_PATTERNS and real_camera
