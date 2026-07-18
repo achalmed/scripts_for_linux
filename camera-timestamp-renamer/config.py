@@ -55,6 +55,9 @@ class Settings:
     # --- Archivos que se consideran fotos ---
     image_extensions: tuple = (".jpg", ".jpeg", ".png")
 
+    # Qué tipo de medios procesar: "all" | "images" | "videos".
+    media_filter: str = "all"
+
     # --- Videos: se extrae un fotograma y se le aplica el MISMO OCR ---
     video_extensions: tuple = (".mp4", ".mov", ".avi", ".mkv")
     ffmpeg_binary: str = "ffmpeg"

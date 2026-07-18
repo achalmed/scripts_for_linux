@@ -11,9 +11,20 @@ from lib.media import read_timestamp
 from lib.ocr import OcrResult
 
 
+def _selected_extensions(settings: Settings) -> set[str]:
+    """Extensiones a procesar según el filtro media_filter (all/images/videos)."""
+    images = set(settings.image_extensions)
+    videos = set(settings.video_extensions)
+    if settings.media_filter == "images":
+        return images
+    if settings.media_filter == "videos":
+        return videos
+    return images | videos
+
+
 def find_media(folder: Path, settings: Settings) -> list[Path]:
-    """Lista fotos y videos de la carpeta (orden determinista)."""
-    extensions = set(settings.image_extensions) | set(settings.video_extensions)
+    """Lista los medios de la carpeta según el filtro (orden determinista)."""
+    extensions = _selected_extensions(settings)
     media = [entry for entry in folder.iterdir()
              if entry.is_file() and entry.suffix.lower() in extensions]
     media.sort()
@@ -21,7 +32,9 @@ def find_media(folder: Path, settings: Settings) -> list[Path]:
 
 
 def has_videos(folder: Path, settings: Settings) -> bool:
-    """Indica si la carpeta contiene al menos un video (para exigir ffmpeg)."""
+    """Indica si se procesará al menos un video (para exigir ffmpeg)."""
+    if settings.media_filter == "images":
+        return False
     video_extensions = set(settings.video_extensions)
     return any(entry.is_file() and entry.suffix.lower() in video_extensions
                for entry in folder.iterdir())

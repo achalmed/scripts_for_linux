@@ -44,7 +44,9 @@ def _add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workers", type=int,
                         help="Número de procesos en paralelo (0 = todos)")
     parser.add_argument("--limit", type=int,
-                        help="Procesar solo las primeras N imágenes (pruebas)")
+                        help="Procesar solo los primeros N archivos (pruebas)")
+    parser.add_argument("--only", choices=["all", "images", "videos"],
+                        help="Procesar solo fotos, solo videos, o todo (def: todo)")
     parser.add_argument("--log-file", help="Guardar los logs también en este archivo")
     parser.add_argument("--crop-left", type=float, help="Fracción X del recorte (0-1)")
     parser.add_argument("--crop-top", type=float, help="Fracción Y del recorte (0-1)")
@@ -90,6 +92,7 @@ def settings_from_args(args: argparse.Namespace) -> Settings:
     overrides = {
         "workers": getattr(args, "workers", None),
         "limit": getattr(args, "limit", None),
+        "media_filter": getattr(args, "only", None),
         "crop_left_frac": getattr(args, "crop_left", None),
         "crop_top_frac": getattr(args, "crop_top", None),
         "crop_width_frac": getattr(args, "crop_width", None),
