@@ -26,6 +26,8 @@ def _dispatch(args, settings, logger) -> int:
                                   args.execute, args.from_plan)
     if args.command == "verify":
         return commands.cmd_verify(args.folder, settings, logger, args.from_plan)
+    if args.command == "embed-date":
+        return commands.cmd_embed_date(args.folder, settings, logger, args.execute)
     return commands.cmd_undo(args.folder, settings, logger, args.execute)
 
 

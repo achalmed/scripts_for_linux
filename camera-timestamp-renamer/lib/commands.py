@@ -4,13 +4,15 @@ from __future__ import annotations
 import dataclasses
 import json
 import logging
+import re
 from pathlib import Path
 
 from config import Settings
-from lib import montage, planner, renamer, scanner, validator
+from lib import metadata, montage, planner, renamer, scanner, validator
 from lib.planner import PlanEntry
 
 _REVIEW_STATUSES = {"weak", "dark", "fail", "error"}
+_NAME_PATTERN = re.compile(r"^\d{8}_\d{6}")
 
 
 def _prepare(folder_arg: str, settings: Settings) -> Path:
@@ -123,4 +125,47 @@ def cmd_undo(folder_arg: str, settings: Settings, logger: logging.Logger,
         logger.info("Renombrado revertido: %d archivos.", len(pairs))
     else:
         logger.warning("[SIMULACIÓN] %d se revertirían. Añade --execute.", len(pairs))
+    return 0
+
+
+def _count_scope(folder: Path, settings: Settings) -> dict[str, int]:
+    """Cuenta fotos y videos con nombre AAAAMMDD_HHMMSS a los que se escribiría."""
+    images = set(settings.image_extensions)
+    videos = set(settings.video_extensions)
+    counts = {"images": 0, "videos": 0}
+    for entry in folder.iterdir():
+        if not (entry.is_file() and _NAME_PATTERN.match(entry.name)):
+            continue
+        suffix = entry.suffix.lower()
+        if suffix in images:
+            counts["images"] += 1
+        elif suffix in videos:
+            counts["videos"] += 1
+    return counts
+
+
+def cmd_embed_date(folder_arg: str, settings: Settings, logger: logging.Logger,
+                   execute: bool) -> int:
+    """Escribe en los metadatos la fecha de captura tomada del nombre del archivo."""
+    validator.require_exiftool(settings.exiftool_binary)
+    folder = validator.validate_folder(folder_arg)
+    scope = _count_scope(folder, settings)
+    do_images = settings.media_filter in ("all", "images") and scope["images"]
+    do_videos = settings.media_filter in ("all", "videos") and scope["videos"]
+    if not execute:
+        logger.warning("[SIMULACIÓN] recibirían la fecha del nombre: %d fotos, %d "
+                       "videos. Añade --execute.", scope["images"], scope["videos"])
+        return 0
+    if do_images:
+        logger.info("Fotos: %s", metadata.summarize(
+            metadata.embed_image_dates(folder, settings)))
+    if do_videos:
+        logger.info("Videos: %s", metadata.summarize(
+            metadata.embed_video_dates(folder, settings)))
+    if settings.set_file_modify_date:
+        # Respaldo para formatos sin metadatos (M2TS) y mtime coherente.
+        extensions = tuple(scanner.selected_extensions(settings))
+        logger.info("Fecha de archivo: %s", metadata.summarize(
+            metadata.embed_file_modify_date(folder, settings, extensions)))
+    logger.info("Fecha embebida. En digiKam: 'Volver a leer metadatos'.")
     return 0

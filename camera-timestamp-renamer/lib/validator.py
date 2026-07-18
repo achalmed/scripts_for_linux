@@ -32,6 +32,18 @@ def require_ffmpeg(binary: str = "ffmpeg") -> None:
             "Instálalo con: sudo apt install ffmpeg")
 
 
+def require_exiftool(binary: str = "exiftool") -> None:
+    """Verifica que `exiftool` esté disponible (necesario para embed-date).
+
+    Raises:
+        DependencyError: Si exiftool no está instalado.
+    """
+    if shutil.which(binary) is None:
+        raise DependencyError(
+            f"'{binary}' no está instalado (se necesita para embed-date). "
+            "Instálalo con: sudo apt install libimage-exiftool-perl")
+
+
 def validate_folder(folder: str | Path) -> Path:
     """Comprueba que la ruta exista y sea un directorio.
 
