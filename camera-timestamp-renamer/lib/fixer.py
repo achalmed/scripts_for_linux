@@ -8,6 +8,11 @@ Dos correcciones en un solo pase:
    estándar de la colección: fb_<epoch-ms> -> AAAAMMDD_HHMMSS,
    IMG/VID-AAAAMMDD-WAnnnn -> AAAAMMDD_wannnn, IMG_/Screenshot_/pixiz/chatgpt
    -> AAAAMMDD_HHMMSS.
+3. Renombrado desde el EXIF (el EXIF manda cuando es ANTERIOR al nombre o
+   cuando el nombre no trae fecha): archivos sin fecha en el nombre pero con
+   fecha de captura en los metadatos, y archivos estándar cuyo EXIF es
+   anterior a la fecha del nombre (el nombre vino de una exportación, p.ej.
+   iPhone '_0500'; la captura real es la del EXIF).
 
 Los cambios de mayúsculas/minúsculas NO se tocan (eso lo hace el usuario con
 otra herramienta). Cada renombrado queda registrado en _fix_log.csv.
@@ -40,6 +45,29 @@ def _decoded_name(name: str) -> str | None:
     return f"{stamp:%Y%m%d_%H%M%S}{extension}"
 
 
+def _exif_based_name(name: str, meta: dict, settings: Settings) -> str | None:
+    """Nombre estándar desde el EXIF cuando el EXIF manda, o None.
+
+    El EXIF manda en dos casos: el nombre no trae fecha alguna, o el nombre
+    es estándar pero el EXIF es ANTERIOR (el nombre vino de una exportación;
+    una captura no puede ser posterior al nombre, ver metadata.py para el
+    caso inverso). Solo con `rename_from_metadata` activado.
+    """
+    if not settings.rename_from_metadata:
+        return None
+    meta_dt = audit.primary_meta_date(meta)
+    if meta_dt is None:
+        return None
+    pattern, name_dt, precision = audit.parse_name_date(name)
+    exif_wins = (name_dt is None
+                 or (pattern == "estándar" and precision == "segundos"
+                     and (name_dt - meta_dt).total_seconds()
+                     > settings.audit_tolerance_seconds))
+    if not exif_wins:
+        return None
+    return f"{meta_dt:%Y%m%d_%H%M%S}{Path(name).suffix}"
+
+
 def build_fixes(folder: Path, settings: Settings) -> list[tuple[str, str]]:
     """Pares (nombre_actual, nombre_corregido) de toda la carpeta."""
     known = (set(settings.image_extensions) | set(settings.video_extensions)
@@ -49,7 +77,8 @@ def build_fixes(folder: Path, settings: Settings) -> list[tuple[str, str]]:
         name = meta.get("FileName", "")
         if Path(name).suffix.lower() not in known:
             continue
-        target = _decoded_name(name) or name
+        target = (_decoded_name(name) or _exif_based_name(name, meta, settings)
+                  or name)
         fixed_ext = audit.correct_extension(target, meta.get("FileType", ""))
         if fixed_ext:
             target = Path(target).stem + fixed_ext

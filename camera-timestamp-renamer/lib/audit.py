@@ -114,6 +114,12 @@ def _parse_meta(value: str | None) -> datetime | None:
         return None
 
 
+def primary_meta_date(meta: dict) -> datetime | None:
+    """Fecha principal de un registro de read_metadata (EXIF primero)."""
+    return (_parse_meta(meta.get("DateTimeOriginal"))
+            or _parse_meta(meta.get("CreateDate")))
+
+
 def read_metadata(folder: Path, settings: Settings) -> list[dict]:
     """Lee las fechas de todos los archivos de la carpeta en un pase de exiftool."""
     # Sin '-fast2': HEIC guarda los metadatos al final del archivo y el modo
@@ -132,8 +138,7 @@ def _classify(name: str, meta: dict, expected_year: int | None,
               tolerance: int) -> AuditRow:
     """Compara la fecha del nombre con los metadatos y decide el estado."""
     pattern, name_dt, precision = parse_name_date(name)
-    meta_dt = (_parse_meta(meta.get("DateTimeOriginal"))
-               or _parse_meta(meta.get("CreateDate")))
+    meta_dt = primary_meta_date(meta)
     row = AuditRow(name=name, pattern=pattern,
                    name_date=str(name_dt or ""), meta_date=str(meta_dt or ""),
                    file_date=meta.get("FileModifyDate", ""), status="", suggestion="")
