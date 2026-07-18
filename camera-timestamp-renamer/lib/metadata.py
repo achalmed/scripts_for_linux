@@ -78,7 +78,14 @@ def _write_condition(settings: Settings, day: str | None = None) -> str:
              f" and not $Make and not $Model)")
     if not settings.overwrite_later_exif:
         later = "0"
-    return f"({_PRIMARY_MISSING} or {later})"
+    conditions = [_PRIMARY_MISSING, later]
+    if day is None:
+        # Medianoche exacta = placeholder embebido cuando el nombre solo traía
+        # el día; si el nombre ahora tiene hora real (p.ej. tras convertir un
+        # nombre 12h con fix-names), la hora del nombre manda.
+        conditions.append(f'(substr({_PRIMARY},11,8) eq "00:00:00"'
+                          f' and substr($filename,9,6) ne "000000")')
+    return f"({' or '.join(conditions)})"
 
 
 def _missing_only(settings: Settings) -> list[str]:

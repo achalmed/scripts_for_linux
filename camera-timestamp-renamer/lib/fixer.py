@@ -30,8 +30,11 @@ from lib import audit
 
 # Patrones (ver lib/audit._PATTERNS) cuyo nombre se normaliza al estándar.
 _RENAMEABLE = {"facebook-epoch", "whatsapp-original", "IMG_", "captura",
-               "pixiz", "chatgpt"}
+               "pixiz", "chatgpt", "12h"}
 _WA_ORIGINAL = re.compile(r"^(?:IMG|VID)-(\d{8})-WA(\d+)", re.I)
+# Sufijos de zona horaria pegados a un nombre estándar ('..._utc8'): la hora
+# del nombre ya está en 24h y coincide con el EXIF; el sufijo es solo ruido.
+_UTC_SUFFIX = re.compile(r"^(\d{8}_\d{6})_utc\d+$", re.I)
 # Patrones cuyo nombre solo codifica el día; si el archivo trae EXIF de
 # cámara real, el EXIF tiene la fecha/hora buena y manda sobre el nombre.
 _DAY_PATTERNS = {"whatsapp", "whatsapp-original", "fecha-parcial"}
@@ -39,6 +42,9 @@ _DAY_PATTERNS = {"whatsapp", "whatsapp-original", "fecha-parcial"}
 
 def _decoded_name(name: str) -> str | None:
     """Nombre estándar derivado del actual, o None si no hay que renombrar."""
+    match = _UTC_SUFFIX.match(Path(name).stem)
+    if match:
+        return match.group(1) + Path(name).suffix
     pattern, stamp, _precision = audit.parse_name_date(name)
     if pattern not in _RENAMEABLE or stamp is None:
         return None
@@ -69,10 +75,11 @@ def _exif_based_name(name: str, meta: dict, settings: Settings,
         return None
     pattern, name_dt, precision = audit.parse_name_date(name)
     real_camera = bool(meta.get("Make") or meta.get("Model"))
-    # Se exige evidencia: EXIF de cámara real, y nunca un EXIF escrito en
-    # lote (mismo segundo en 3+ archivos) salvo que traiga cámara. Los
+    # Se exige evidencia: EXIF de cámara real, o un EXIF único en la carpeta.
+    # Un mismo segundo repetido en 2+ archivos sin cámara huele a escritura
+    # en lote (aunque el lote se haya reducido al corregir sus vecinos). Los
     # nombres puestos a mano "a ojo" no bastan para arbitrar sin evidencia.
-    if batch_count >= 3 and not real_camera:
+    if batch_count >= 2 and not real_camera:
         return None
     exif_wins = (name_dt is None
                  or (pattern == "estándar" and precision == "segundos"

@@ -24,6 +24,9 @@ from lib.errors import DependencyError
 # etiqueta del patrón, la regex que captura la fecha y la precisión con la que
 # tiene sentido comparar (WhatsApp solo codifica el día, no la hora).
 _PATTERNS: tuple = (
+    # 12h ANTES que estándar: '20231204_105920pm' no debe leerse como 10:59.
+    ("12h", re.compile(r"^(\d{8})_(\d{1,2})(\d{2})(\d{2})([ap]m)(?:\D|$)", re.I),
+     "segundos"),
     ("estándar", re.compile(r"^(\d{8})_(\d{6})"), "segundos"),
     ("whatsapp", re.compile(r"^(\d{8})_wa\d+", re.I), "día"),
     ("IMG_", re.compile(r"^IMG_(\d{8})_(\d{6})", re.I), "segundos"),
@@ -118,6 +121,12 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
                 digits = match.group(1)
                 divisor = 1000 if len(digits) == 13 else 100
                 return label, datetime.fromtimestamp(int(digits) / divisor), precision
+            if label == "12h":
+                day, hour, minute, second, half = match.groups()
+                hour = int(hour) % 12 + (12 if half.lower() == "pm" else 0)
+                base = datetime.strptime(day, "%Y%m%d")
+                return label, base.replace(hour=hour, minute=int(minute),
+                                           second=int(second)), precision
             if label == "pixiz":
                 return label, datetime.strptime("".join(match.groups()),
                                                 "%d%m%Y%H%M%S"), precision
@@ -193,8 +202,8 @@ def _classify(name: str, meta: dict, expected_year: int | None,
         row.status = "SIN_FECHA_NOMBRE"
         if meta_dt is None:
             row.suggestion = "revisar a mano (sin fecha en nombre ni metadatos)"
-        elif evidence.is_artifact():
-            row.suggestion = "revisar a mano: el EXIF es de lote (no confiable)"
+        elif evidence.batch_count >= 2 and not evidence.camera:
+            row.suggestion = "revisar a mano: EXIF repetido en lote (no confiable)"
         else:
             row.suggestion = "fix-names: renombrar usando metadatos"
     elif meta_dt is None:
