@@ -39,6 +39,11 @@ _PATTERNS: tuple = (
     ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
         r"^chatgpt_image_([a-z]{3})_(\d{1,2})_(\d{4})_(\d{1,2})_(\d{2})_(\d{2})_([ap]m)",
         re.I), "segundos"),
+    # '<snowflake>dmdmhlq...': imagen de Twitter/X = ID del tweet (codifica
+    # la fecha de publicación) + nombre del archivo de imagen. La letra tras
+    # el ID lo distingue de los concatenados de Facebook (ahí siguen dígitos).
+    ("twitter", re.compile(r"^(\d{18,19})(?=[a-z])[a-z0-9_-]+\.[^.]+$", re.I),
+     "segundos"),
     # '+<teléfono><AAAAMMDDHHMMSS>': contactos de WhatsApp; los últimos 14
     # dígitos son la fecha (el $ obliga a tomar los del final).
     ("telefono-fecha", re.compile(r"^\+\d*?((?:19|20)\d{6})(\d{6})\.[^.]+$"),
@@ -125,6 +130,13 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
                 digits = match.group(1)
                 divisor = 1000 if len(digits) == 13 else 100
                 return label, datetime.fromtimestamp(int(digits) / divisor), precision
+            if label == "twitter":
+                # Snowflake: milisegundos desde el epoch de Twitter (2010-11-04).
+                stamp = datetime.fromtimestamp(
+                    ((int(match.group(1)) >> 22) + 1288834974657) / 1000)
+                if not 2007 <= stamp.year <= 2035:
+                    return label, None, precision
+                return label, stamp, precision
             if label == "12h":
                 day, hour, minute, second, half = match.groups()
                 hour = int(hour) % 12 + (12 if half.lower() == "pm" else 0)
@@ -180,8 +192,9 @@ def read_metadata(folder: Path, settings: Settings) -> list[dict]:
 def gather_evidence(meta: dict, all_meta_dates: list[datetime]) -> Evidence:
     """Reúne las señales de patrón de toma para el EXIF de un archivo."""
     meta_dt = primary_meta_date(meta)
-    camera = " ".join(part for part in (meta.get("Make"), meta.get("Model"))
-                      if part).strip()
+    # exiftool puede devolver Make/Model numéricos en el JSON: forzar str.
+    camera = " ".join(str(part) for part in (meta.get("Make"), meta.get("Model"))
+                      if part not in (None, "")).strip()
     batch = session = 0
     if meta_dt is not None:
         for other in all_meta_dates:
@@ -246,7 +259,10 @@ def _classify(name: str, meta: dict, expected_year: int | None,
         row.status = "EXTENSIÓN_INCORRECTA"
         row.suggestion = f"fix-names: corregir extensión a {fixed_ext}"
     # El año del nombre manda para detectar archivos en la carpeta equivocada.
-    year = name_dt.year if name_dt else (meta_dt.year if meta_dt else None)
+    # Sin fecha en el nombre, el año del EXIF solo cuenta si trae cámara: un
+    # EXIF de lote diría 'mover' a un año que no es de nadie.
+    year = name_dt.year if name_dt else (
+        meta_dt.year if meta_dt and evidence.camera else None)
     if expected_year and year and year != expected_year:
         row.status = "AÑO_INTRUSO"
         row.suggestion = f"mover a la carpeta {year}"
