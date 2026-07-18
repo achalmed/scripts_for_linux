@@ -45,6 +45,9 @@ _PATTERNS: tuple = (
     # '<epoch-ms>.jpg' pelado (13 dígitos, sin prefijo): nombres de Android.
     # El rango se valida al decodificar (2002-2035).
     ("epoch", re.compile(r"^(\d{13})\.[^.]+$"), "segundos"),
+    # 'photostudio<epoch-ms>': exportes de la app PhotoStudio.
+    ("photostudio", re.compile(r"^photostudio(\d{13})(?:\D|$)", re.I),
+     "segundos"),
     # '<snowflake>dmdmhlq...': imagen de Twitter/X = ID del tweet (codifica
     # la fecha de publicación) + nombre del archivo de imagen. La letra tras
     # el ID lo distingue de los concatenados de Facebook (ahí siguen dígitos).
@@ -150,7 +153,7 @@ def parse_name_date(name: str) -> tuple[str, datetime | None, str]:
                 digits = match.group(1)
                 divisor = 1000 if len(digits) == 13 else 100
                 return label, datetime.fromtimestamp(int(digits) / divisor), precision
-            if label == "epoch":
+            if label in ("epoch", "photostudio"):
                 stamp = datetime.fromtimestamp(int(match.group(1)) / 1000)
                 if not 2002 <= stamp.year <= 2035:
                     return label, None, precision
