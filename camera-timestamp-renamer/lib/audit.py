@@ -27,13 +27,21 @@ _PATTERNS: tuple = (
     ("estándar", re.compile(r"^(\d{8})_(\d{6})"), "segundos"),
     ("whatsapp", re.compile(r"^(\d{8})_wa\d+", re.I), "día"),
     ("IMG_", re.compile(r"^IMG_(\d{8})_(\d{6})", re.I), "segundos"),
-    ("whatsapp-original", re.compile(r"^IMG-(\d{8})-WA\d+", re.I), "día"),
+    ("whatsapp-original", re.compile(r"^(?:IMG|VID)-(\d{8})-WA\d+", re.I), "día"),
     ("captura", re.compile(r"^Screenshot_(\d{8})-(\d{6})", re.I), "segundos"),
     ("facebook-epoch", re.compile(r"^fb_(\d{13})(?:\D|$)"), "segundos"),
     ("fecha-parcial", re.compile(r"^(\d{8})[_-]"), "día"),
 )
 # Descargas de Facebook/Instagram: '<id>_<id>_<id>_n.jpg' (sin fecha alguna).
 _FACEBOOK_NAME = re.compile(r"_n\.(jpe?g|png|webp)$", re.I)
+
+# Tipo real (FileType de exiftool) esperado para cada extensión. Si no
+# coinciden, exiftool se niega a escribir y hay que corregir la extensión.
+_EXPECTED_FILETYPE = {
+    ".jpg": {"JPEG"}, ".jpeg": {"JPEG"}, ".png": {"PNG"},
+    ".heic": {"HEIC", "HEIF"}, ".webp": {"WEBP", "Extended WEBP"}, ".mp4": {"MP4"},
+    ".mov": {"MOV"}, ".avi": {"AVI"}, ".mkv": {"MKV"},
+}
 
 
 @dataclass
@@ -80,10 +88,12 @@ def _parse_meta(value: str | None) -> datetime | None:
 
 def read_metadata(folder: Path, settings: Settings) -> list[dict]:
     """Lee las fechas de todos los archivos de la carpeta en un pase de exiftool."""
-    command = [settings.exiftool_binary, "-j", "-q", "-fast2",
+    # Sin '-fast2': HEIC guarda los metadatos al final del archivo y el modo
+    # rápido no llega hasta ahí (daría falsos SIN_METADATOS).
+    command = [settings.exiftool_binary, "-j", "-q",
                "-d", "%Y-%m-%d %H:%M:%S",
-               "-FileName", "-DateTimeOriginal", "-CreateDate", "-FileModifyDate",
-               str(folder)]
+               "-FileName", "-FileType", "-DateTimeOriginal", "-CreateDate",
+               "-FileModifyDate", str(folder)]
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     if not result.stdout.strip():
         raise DependencyError(f"exiftool no devolvió datos: {result.stderr.strip()}")
@@ -115,6 +125,13 @@ def _classify(name: str, meta: dict, expected_year: int | None,
     else:
         row.status = "FECHA_DISTINTA"
         row.suggestion = "revisar cuál fecha es la correcta"
+    # Extensión que no corresponde al formato real: exiftool no puede
+    # escribir ahí, así que es lo primero que hay que arreglar.
+    expected = _EXPECTED_FILETYPE.get(Path(name).suffix.lower())
+    filetype = meta.get("FileType", "")
+    if expected and filetype and filetype not in expected:
+        row.status = "EXTENSIÓN_INCORRECTA"
+        row.suggestion = f"el formato real es {filetype}: corregir la extensión"
     # El año del nombre manda para detectar archivos en la carpeta equivocada.
     year = name_dt.year if name_dt else (meta_dt.year if meta_dt else None)
     if expected_year and year and year != expected_year:
