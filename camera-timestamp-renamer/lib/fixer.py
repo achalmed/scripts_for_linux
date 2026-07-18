@@ -73,6 +73,11 @@ def _exif_based_name(name: str, meta: dict, settings: Settings,
     meta_dt = audit.primary_meta_date(meta)
     if meta_dt is None:
         return None
+    # Medianoche exacta = EXIF sin hora (BlackBerry y otros escriben solo la
+    # fecha): renombrar daría '..._000000' — no aporta hora y destruye el
+    # sufijo original del nombre (código wa, correlativo de la cámara).
+    if (meta_dt.hour, meta_dt.minute, meta_dt.second) == (0, 0, 0):
+        return None
     pattern, name_dt, precision = audit.parse_name_date(name)
     real_camera = bool(meta.get("Make") or meta.get("Model"))
     # Se exige evidencia: EXIF de cámara real, o un EXIF único en la carpeta.
@@ -101,9 +106,12 @@ def build_fixes(folder: Path, settings: Settings) -> list[tuple[str, str]]:
              if Path(meta.get("FileName", "")).suffix.lower() in known]
     batches = Counter(dt for meta in metas
                       if (dt := audit.primary_meta_date(meta)) is not None)
+    ignored = audit._read_ignore_list(folder / settings.audit_ignore_name)
     fixes = []
     for meta in metas:
         name = meta.get("FileName", "")
+        if name in ignored:
+            continue
         batch_count = batches.get(audit.primary_meta_date(meta), 0)
         target = (_decoded_name(name)
                   or _exif_based_name(name, meta, settings, batch_count)

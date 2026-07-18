@@ -114,6 +114,10 @@ class Settings:
     # --- Nombres de salida (se crean dentro de la carpeta objetivo) ---
     audit_csv_name: str = "date_audit.csv"
     fix_log_name: str = "_fix_log.csv"
+    # Lista de excepciones por carpeta: archivos que el usuario decidió dejar
+    # tal cual (p.ej. relojes reiniciados con fecha imposible pero real
+    # desconocida). Un nombre por línea; '#' comenta.
+    audit_ignore_name: str = "date_audit_ignore.txt"
     # fix-names: renombrar desde el EXIF cuando el nombre no trae fecha o
     # cuando el EXIF es anterior al nombre (el nombre vino de una exportación).
     rename_from_metadata: bool = True

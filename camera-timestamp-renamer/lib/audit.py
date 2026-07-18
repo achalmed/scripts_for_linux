@@ -278,12 +278,26 @@ def audit_folder(folder: Path, settings: Settings,
              if Path(meta.get("FileName", "")).suffix.lower() in known]
     all_meta_dates = [dt for meta in metas
                       if (dt := primary_meta_date(meta)) is not None]
+    ignored = _read_ignore_list(folder / settings.audit_ignore_name)
     rows = []
     for meta in metas:
         evidence = gather_evidence(meta, all_meta_dates)
-        rows.append(_classify(meta.get("FileName", ""), meta, expected_year,
-                              settings.audit_tolerance_seconds, evidence))
+        row = _classify(meta.get("FileName", ""), meta, expected_year,
+                        settings.audit_tolerance_seconds, evidence)
+        if row.name in ignored:
+            row.status = "IGNORADO"
+            row.suggestion = "excluido por decisión del usuario (ignore list)"
+        rows.append(row)
     return sorted(rows, key=lambda row: (row.status, row.name))
+
+
+def _read_ignore_list(path: Path) -> set[str]:
+    """Nombres que el usuario decidió dejar tal cual (uno por línea)."""
+    if not path.is_file():
+        return set()
+    lines = path.read_text(encoding="utf-8").splitlines()
+    return {line.strip() for line in lines
+            if line.strip() and not line.startswith("#")}
 
 
 def write_audit_csv(rows: list[AuditRow], destination: Path) -> None:
