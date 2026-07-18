@@ -127,7 +127,7 @@ def read_metadata(folder: Path, settings: Settings) -> list[dict]:
     command = [settings.exiftool_binary, "-j", "-q",
                "-d", "%Y-%m-%d %H:%M:%S",
                "-FileName", "-FileType", "-DateTimeOriginal", "-CreateDate",
-               "-FileModifyDate", str(folder)]
+               "-FileModifyDate", "-Make", "-Model", str(folder)]
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     if not result.stdout.strip():
         raise DependencyError(f"exiftool no devolvió datos: {result.stderr.strip()}")
