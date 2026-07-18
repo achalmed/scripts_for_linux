@@ -8,8 +8,8 @@ import re
 from pathlib import Path
 
 from config import Settings
-from lib import (audit, fixer, metadata, montage, planner, renamer, scanner,
-                 validator)
+from lib import (audit, digikam, fixer, metadata, montage, planner, renamer,
+                 scanner, validator)
 from lib.planner import PlanEntry
 
 _REVIEW_STATUSES = {"weak", "dark", "fail", "error"}
@@ -220,4 +220,24 @@ def cmd_fix_names(folder_arg: str, settings: Settings, logger: logging.Logger,
                     "embed-date después.", len(done), folder / settings.fix_log_name)
     else:
         logger.warning("[SIMULACIÓN] %d se renombrarían. Añade --execute.", len(done))
+    return 0
+
+
+def cmd_sync_digikam(folder_arg: str, settings: Settings, logger: logging.Logger,
+                     execute: bool) -> int:
+    """Escribe en el EXIF las fechas corregidas en digiKam. Simula por defecto."""
+    validator.require_exiftool(settings.exiftool_binary)
+    folder = validator.validate_folder(folder_arg)
+    plan = digikam.build_sync_plan(folder, settings)
+    if not plan:
+        logger.info("EXIF ya coincide con digiKam: nada que sincronizar.")
+        return 0
+    for name, current, target in plan:
+        logger.info("  %s: %s -> %s", name, current or "(sin EXIF)", target)
+    if execute:
+        digikam.apply_sync(folder, plan, settings)
+        logger.info("Sincronizados %d archivos desde digiKam.", len(plan))
+    else:
+        logger.warning("[SIMULACIÓN] %d se sincronizarían. Añade --execute.",
+                       len(plan))
     return 0
