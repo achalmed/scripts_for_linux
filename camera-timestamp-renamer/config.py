@@ -71,6 +71,10 @@ class Settings:
     # Escribir la fecha SOLO donde falten DateTimeOriginal y CreateDate.
     # Evita pisar el EXIF de las fotos que ya están correctas.
     embed_only_missing: bool = True
+    # Modo fotos escaneadas (--trust-name): el nombre manda SIEMPRE, incluso
+    # sobre EXIF con cámara (que ahí es el escáner/celular que digitalizó,
+    # con la fecha del escaneo, no la de la foto histórica).
+    trust_name: bool = False
     # Además, sobreescribir cuando el EXIF existente sea POSTERIOR al día del
     # nombre: una foto no puede capturarse después de recibirse/nombrarse, así
     # que ese EXIF es un artefacto (copias, guardados en lote). Un EXIF

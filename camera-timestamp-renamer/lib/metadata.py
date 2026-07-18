@@ -73,6 +73,8 @@ def _write_condition(settings: Settings, day: str | None = None) -> str:
     respeta siempre. `day` son dígitos 'AAAAMMDD' cuando ya se conoce (pase
     especial); si es None se extrae del propio nombre.
     """
+    if settings.trust_name:
+        return "1"  # modo escaneadas: el nombre manda sobre cualquier EXIF
     name_day = f'"{day}"' if day else "substr($filename,0,8)"
     later = (f"({_PRIMARY_DAY} gt {name_day}"
              f" and not $Make and not $Model)")
