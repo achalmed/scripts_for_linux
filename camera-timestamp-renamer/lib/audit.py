@@ -29,8 +29,8 @@ _PATTERNS: tuple = (
     ("IMG_", re.compile(r"^IMG_(\d{8})_(\d{6})", re.I), "segundos"),
     ("whatsapp-original", re.compile(r"^(?:IMG|VID)-(\d{8})-WA\d+", re.I), "día"),
     ("captura", re.compile(r"^Screenshot_(\d{8})-(\d{6})", re.I), "segundos"),
-    # fb_<epoch>: 13 dígitos = milisegundos; 12 dígitos = centisegundos.
-    ("facebook-epoch", re.compile(r"^fb_(\d{12,13})(?:\D|$)"), "segundos"),
+    # fb<epoch> (con o sin '_'): 13 dígitos = milisegundos; 12 = centisegundos.
+    ("facebook-epoch", re.compile(r"^fb_?(\d{12,13})(?:\D|$)"), "segundos"),
     ("pixiz", re.compile(  # pixiz-DD-MM-AAAA-HH-MM-SS (montajes de pixiz.com)
         r"^pixiz-(\d{2})-(\d{2})-(\d{4})-(\d{2})-(\d{2})-(\d{2})"), "segundos"),
     ("chatgpt", re.compile(  # chatgpt_image_mes_D_AAAA_HH_MM_SS_am/pm
@@ -191,8 +191,12 @@ def _classify(name: str, meta: dict, expected_year: int | None,
                    suggestion="", evidence=evidence.describe() if meta_dt else "")
     if name_dt is None:
         row.status = "SIN_FECHA_NOMBRE"
-        row.suggestion = ("renombrar usando metadatos" if meta_dt
-                          else "revisar a mano (sin fecha en nombre ni metadatos)")
+        if meta_dt is None:
+            row.suggestion = "revisar a mano (sin fecha en nombre ni metadatos)"
+        elif evidence.is_artifact():
+            row.suggestion = "revisar a mano: el EXIF es de lote (no confiable)"
+        else:
+            row.suggestion = "fix-names: renombrar usando metadatos"
     elif meta_dt is None:
         row.status = "SIN_METADATOS"
         row.suggestion = "embed-date (escribir fecha del nombre en EXIF)"
