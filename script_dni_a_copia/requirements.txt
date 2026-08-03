@@ -1,0 +1,9 @@
+# dni-a-copia — dependencias de Python (>= 3.9)
+# La exportación a PDF (--to-pdf) requiere además LibreOffice en el sistema.
+numpy>=1.20
+scipy>=1.7
+Pillow>=9.2
+python-docx>=0.8.11
+# Recomendada: habilita el denoise bilateral de la restauración (--enhance).
+# Sin ella, la restauración degrada a de-JPEG de crominancia + realce.
+scikit-image>=0.19
