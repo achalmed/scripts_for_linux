@@ -1,8 +1,8 @@
 # =============================================================================
 # repos-config.yml — Configuración de git-sync
 # =============================================================================
-# Editado por install.sh automáticamente la primera vez (base_directory).
-# El resto ajústalo a mano cuando necesites agregar/quitar/pausar repos.
+# Compartido entre Git Studio (GUI) y los scripts CLI sync.sh / status.sh.
+# Editable a mano o desde la página «Repositorios» de la aplicación.
 #
 # FORMATO REQUERIDO (el parser es ligero, no es YAML genérico):
 #   - 'name' con exactamente 2 espacios + "- " antes
@@ -11,13 +11,11 @@
 # =============================================================================
 
 # Directorio base donde están todos los repositorios (una carpeta por repo)
-# Acepta ~ al inicio o ruta absoluta
 base_directory: ~/Documents
 
 # Lista de repositorios a gestionar
 repositories:
 
-  # ── Blogs de publicación (formato pub_*) ──────────────────────────────────
   - name: pub_actus-mercator
     branch: main
     enabled: true
@@ -62,13 +60,7 @@ repositories:
     branch: main
     enabled: true
 
-  # ── Sitio web principal ───────────────────────────────────────────────────
   - name: website-achalma
-    branch: main
-    enabled: true
-
-  # ── Scripts y herramientas ────────────────────────────────────────────────
-  - name: scripts_for_quarto
     branch: main
     enabled: true
 
@@ -76,7 +68,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: scripts_for_libreoffice
+  - name: scripts_document_studio
     branch: main
     enabled: true
 
@@ -92,21 +84,27 @@ repositories:
     branch: main
     enabled: true
 
-  # ── Proyectos de código ───────────────────────────────────────────────────
-  - name: Python
+  - name: Academic_Class-python
     branch: main
     enabled: true
 
-  - name: awesome-ai-prompts
+  - name: git-awesome-ai-prompts
     branch: main
     enabled: true
 
-  # ── CampusTeX ─────────────────────────────────────────────────────────────
-  - name: CampusTeX-Research
+  - name: Academic_Class_Framework
     branch: main
     enabled: true
 
-  - name: CampusTeX-Math
+  - name: Academic_Class-LaTex
+    branch: main
+    enabled: true
+
+  - name: scripts_quarto_studio
+    branch: main
+    enabled: true
+
+  - name: Academic_Writing_Framework
     branch: main
     enabled: true
 
