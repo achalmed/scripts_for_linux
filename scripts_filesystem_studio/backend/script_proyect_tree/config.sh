@@ -22,14 +22,14 @@ declare -A PROJECT_GROUPS=(
     [pub]="pub_*"
     [scripts]="scripts_*"
     [campustex]="CampusTeX-*"
-    [website]="website-achalma"
+    [website]="04 index"
 )
 
 # Carpetas enlistadas manualmente (nombres exactos bajo PROJECTS_ROOT).
 # Útil para proyectos renombrados que ya no coinciden con ningún glob de
 # PROJECT_GROUPS. Se incluyen en --target all y en el grupo --target extra.
 EXTRA_PROJECTS=(
-    "Academic_Writing_Framework"
+    "03 writing"
 )
 
 # Folders excluded from every tree call.

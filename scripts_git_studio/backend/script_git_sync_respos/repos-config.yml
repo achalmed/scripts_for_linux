@@ -18,51 +18,51 @@ base_directory: ~/Documents
 # Lista de repositorios a gestionar
 repositories:
 
-  - name: website-achalma/_pubs/pub_actus-mercator
+  - name: 04 index/_pubs/pub_actus-mercator
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_aequilibria
+  - name: 04 index/_pubs/pub_aequilibria
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_axiomata
+  - name: 04 index/_pubs/pub_axiomata
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_chaska
+  - name: 04 index/_pubs/pub_chaska
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_dialectica-y-mercado
+  - name: 04 index/_pubs/pub_dialectica-y-mercado
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_epsilon-y-beta
+  - name: 04 index/_pubs/pub_epsilon-y-beta
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_methodica
+  - name: 04 index/_pubs/pub_methodica
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_numerus-scriptum
+  - name: 04 index/_pubs/pub_numerus-scriptum
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_optimums
+  - name: 04 index/_pubs/pub_optimums
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_pecunia-fluxus
+  - name: 04 index/_pubs/pub_pecunia-fluxus
     branch: main
     enabled: true
 
-  - name: website-achalma/_pubs/pub_res-publica
+  - name: 04 index/_pubs/pub_res-publica
     branch: main
     enabled: true
 
-  - name: website-achalma
+  - name: 04 index
     branch: main
     enabled: true
 
@@ -86,19 +86,19 @@ repositories:
     branch: main
     enabled: true
 
-  - name: Academic_Class_Framework/areas/Academic_Class-python
+  - name: 10 Class/areas/Academic_Class-python
     branch: main
     enabled: true
 
-  - name: git-awesome-ai-prompts
+  - name: prompts
     branch: main
     enabled: true
 
-  - name: Academic_Class_Framework
+  - name: 10 Class
     branch: main
     enabled: true
 
-  - name: Academic_Class_Framework/areas/Academic_Class-LaTex
+  - name: 10 Class/areas/Academic_Class-LaTex
     branch: main
     enabled: true
 
@@ -106,7 +106,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: Academic_Writing_Framework
+  - name: 03 writing
     branch: main
     enabled: true
 

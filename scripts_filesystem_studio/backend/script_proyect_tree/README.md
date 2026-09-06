@@ -173,7 +173,7 @@ entrada ya no existe en disco, se omite con una advertencia (no aborta).
 # ── CARPETA ACTUAL ──────────────────────────────────────────────────────────
 
 # Generar estructura.txt de la carpeta donde estás parado
-cd ~/Documents/Academic_Writing_Framework && ptree
+cd ~/Documents/03 writing && ptree
 
 # Lo mismo pero en Markdown y sin metadatos
 ptree --format md --no-meta
