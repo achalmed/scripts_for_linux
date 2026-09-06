@@ -68,7 +68,7 @@ Ejemplos:
   $(basename "$0") -m "feat: nuevo artículo sobre inflación"
       Sincroniza todos los repos con mensaje personalizado.
 
-  $(basename "$0") -r "pub_axiomata,pub_chaska" -m "docs: actualizar índices"
+  $(basename "$0") -r "website-achalma/_pubs/pub_axiomata,website-achalma/_pubs/pub_chaska" -m "docs: actualizar índices"
       Sincroniza solo esos dos repos.
 
   $(basename "$0") -c
