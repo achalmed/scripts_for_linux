@@ -217,11 +217,11 @@ Todo vive en `repos-config.yml`:
 base_directory: ~/Documents
 
 repositories:
-  - name: pub_axiomata
+  - name: website-achalma/_pubs/pub_axiomata
     branch: main
     enabled: true
 
-  - name: pub_epsilon-y-beta
+  - name: website-achalma/_pubs/pub_epsilon-y-beta
     branch: main
     enabled: true
 
@@ -283,7 +283,7 @@ marca como error** sin intentar commit ni push sobre un estado inconsistente.
 ./sync.sh -m "feat: nuevo artículo sobre inflación"
 
 # Solo dos repos específicos
-./sync.sh -r "pub_axiomata,pub_chaska" -m "docs: actualizar índices"
+./sync.sh -r "website-achalma/_pubs/pub_axiomata,website-achalma/_pubs/pub_chaska" -m "docs: actualizar índices"
 
 # Solo revisar qué cambió (seguro, no modifica nada)
 ./sync.sh --check
@@ -370,10 +370,10 @@ En la tabla, los contadores indican:
 ### Actualizar solo los blogs de un tema
 
 ```bash
-./sync.sh -r "pub_pecunia-fluxus,pub_epsilon-y-beta,pub_optimums" \
+./sync.sh -r "website-achalma/_pubs/pub_pecunia-fluxus,website-achalma/_pubs/pub_epsilon-y-beta,website-achalma/_pubs/pub_optimums" \
     -m "docs: actualizar índices económicos Q4-2025"
 
-./sync.sh -r "pub_axiomata,pub_dialectica-y-mercado,pub_res-publica" \
+./sync.sh -r "website-achalma/_pubs/pub_axiomata,website-achalma/_pubs/pub_dialectica-y-mercado,website-achalma/_pubs/pub_res-publica" \
     -m "docs: actualizar índices filosóficos"
 ```
 
@@ -523,7 +523,7 @@ vez de intentar merge automático (podría generar commits sobre un estado
 inconsistente). Entra al repo manualmente:
 
 ```bash
-cd ~/Documents/pub_axiomata
+cd ~/Documents/website-achalma/_pubs/pub_axiomata
 git pull           # verás el conflicto y las opciones de git
 # resolver conflictos si los hay
 git add .
@@ -543,7 +543,7 @@ Esto ya está corregido en v2.0 (Bug 2). Si lo ves en v2.0, puede ser:
 Para el caso 2:
 
 ```bash
-git -C ~/Documents/pub_axiomata branch -u origin/main main
+git -C ~/Documents/website-achalma/_pubs/pub_axiomata branch -u origin/main main
 ```
 
 ### Un repo no aparece en status.sh aunque existe
@@ -555,7 +555,7 @@ Revisa:
 3. Que la carpeta contenga `.git` (es un repo Git válido).
 
 ```bash
-ls -la ~/Documents/pub_axiomata/.git
+ls -la ~/Documents/website-achalma/_pubs/pub_axiomata/.git
 ```
 
 ### "Permission denied" al ejecutar los scripts

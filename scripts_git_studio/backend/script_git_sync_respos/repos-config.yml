@@ -12,51 +12,53 @@
 
 # Directorio base donde están todos los repositorios (una carpeta por repo)
 base_directory: ~/Documents
+# Los pub_* son submódulos del hub (website-achalma/_pubs/pub_*) desde 2026-09-06;
+# el nombre es la ruta relativa a base_directory.
 
 # Lista de repositorios a gestionar
 repositories:
 
-  - name: pub_actus-mercator
+  - name: website-achalma/_pubs/pub_actus-mercator
     branch: main
     enabled: true
 
-  - name: pub_aequilibria
+  - name: website-achalma/_pubs/pub_aequilibria
     branch: main
     enabled: true
 
-  - name: pub_axiomata
+  - name: website-achalma/_pubs/pub_axiomata
     branch: main
     enabled: true
 
-  - name: pub_chaska
+  - name: website-achalma/_pubs/pub_chaska
     branch: main
     enabled: true
 
-  - name: pub_dialectica-y-mercado
+  - name: website-achalma/_pubs/pub_dialectica-y-mercado
     branch: main
     enabled: true
 
-  - name: pub_epsilon-y-beta
+  - name: website-achalma/_pubs/pub_epsilon-y-beta
     branch: main
     enabled: true
 
-  - name: pub_methodica
+  - name: website-achalma/_pubs/pub_methodica
     branch: main
     enabled: true
 
-  - name: pub_numerus-scriptum
+  - name: website-achalma/_pubs/pub_numerus-scriptum
     branch: main
     enabled: true
 
-  - name: pub_optimums
+  - name: website-achalma/_pubs/pub_optimums
     branch: main
     enabled: true
 
-  - name: pub_pecunia-fluxus
+  - name: website-achalma/_pubs/pub_pecunia-fluxus
     branch: main
     enabled: true
 
-  - name: pub_res-publica
+  - name: website-achalma/_pubs/pub_res-publica
     branch: main
     enabled: true
 
