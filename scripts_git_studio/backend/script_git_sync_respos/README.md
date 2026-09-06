@@ -523,7 +523,7 @@ vez de intentar merge automático (podría generar commits sobre un estado
 inconsistente). Entra al repo manualmente:
 
 ```bash
-cd ~/Documents/website-achalma/_pubs/pub_axiomata
+cd ~/Documents/04 index/_pubs/pub_axiomata
 git pull           # verás el conflicto y las opciones de git
 # resolver conflictos si los hay
 git add .
@@ -543,7 +543,7 @@ Esto ya está corregido en v2.0 (Bug 2). Si lo ves en v2.0, puede ser:
 Para el caso 2:
 
 ```bash
-git -C ~/Documents/website-achalma/_pubs/pub_axiomata branch -u origin/main main
+git -C ~/Documents/04 index/_pubs/pub_axiomata branch -u origin/main main
 ```
 
 ### Un repo no aparece en status.sh aunque existe
@@ -555,7 +555,7 @@ Revisa:
 3. Que la carpeta contenga `.git` (es un repo Git válido).
 
 ```bash
-ls -la ~/Documents/website-achalma/_pubs/pub_axiomata/.git
+ls -la ~/Documents/04 index/_pubs/pub_axiomata/.git
 ```
 
 ### "Permission denied" al ejecutar los scripts
