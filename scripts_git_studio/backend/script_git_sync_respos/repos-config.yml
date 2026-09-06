@@ -86,7 +86,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: Academic_Class-python
+  - name: Academic_Class_Framework/areas/Academic_Class-python
     branch: main
     enabled: true
 
@@ -98,7 +98,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: Academic_Class-LaTex
+  - name: Academic_Class_Framework/areas/Academic_Class-LaTex
     branch: main
     enabled: true
 
