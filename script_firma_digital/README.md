@@ -1,5 +1,22 @@
 # firma-digital
 
+<!-- suite:inicio -->
+**Suite `firma_digital`** · objetivo *personal* · estado *activo* · python · interfaz cli
+
+Convierte la foto de una firma en SVG y PNG limpios (canal rojo, histéresis, potrace).
+
+- Escribe en: archivos · simula por defecto: no
+- Depende de: python3, opencv, potrace
+
+Comandos:
+
+```bash
+main.py firma.jpg [--salida firma.svg]
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<!-- suite:fin -->
+
 > Convierte la foto de una firma manuscrita (tomada con el celular) en una firma
 > digital limpia y profesional: **SVG vectorial** escalable sin pérdida y **PNG**
 > de alta resolución con fondo transparente, listos para PDF, Word, LibreOffice,

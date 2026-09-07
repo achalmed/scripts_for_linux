@@ -1,0 +1,14 @@
+# suite.yml — contrato de la suite (esquema en core/suite.schema.yml); core/suites.py generar escribe los índices y READMEs.
+nombre: backup_suite
+objetivo: sistema
+resumen: Sincroniza carpetas del home hacia un disco externo por perfiles, con confirmación, exclusiones y resumen.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.sh --profile completo
+- main.sh --dry-run
+- main.sh --help
+estado: activo
+depende_de:
+- rsync

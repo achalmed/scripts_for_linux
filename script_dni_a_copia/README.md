@@ -1,5 +1,22 @@
 # dni-a-copia
 
+<!-- suite:inicio -->
+**Suite `dni_a_copia`** · objetivo *personal* · estado *activo* · python · interfaz cli
+
+Convierte dos fotografías de un DNI (anverso y reverso) en una copia limpia a tamaño real lista para imprimir.
+
+- Escribe en: archivos · simula por defecto: no
+- Depende de: python3, opencv
+
+Comandos:
+
+```bash
+main.py anverso.jpg reverso.jpg [--salida copia.pdf]
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<!-- suite:fin -->
+
 > Arma una copia limpia, a tamaño real y **alta resolución**, del anverso y
 > reverso de un DNI a partir de dos fotos de celular: endereza, recorta, blanquea
 > el fondo (conservando el marco de laminado), **restaura la calidad** (quita

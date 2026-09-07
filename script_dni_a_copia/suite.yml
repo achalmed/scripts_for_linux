@@ -1,0 +1,13 @@
+# suite.yml — contrato de la suite (esquema en core/suite.schema.yml); core/suites.py generar escribe los índices y READMEs.
+nombre: dni_a_copia
+objetivo: personal
+resumen: Convierte dos fotografías de un DNI (anverso y reverso) en una copia limpia a tamaño real lista para imprimir.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.py anverso.jpg reverso.jpg [--salida copia.pdf]
+estado: activo
+depende_de:
+- python3
+- opencv
