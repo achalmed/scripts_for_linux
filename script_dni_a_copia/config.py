@@ -10,6 +10,8 @@ photos; adjust with care and re-check the output visually.
 """
 from __future__ import annotations
 
+import os
+
 from collections import namedtuple
 
 APP_NAME = "dni-a-copia"
@@ -28,8 +30,8 @@ EXIT_DEPENDENCY = 5
 # Override per run with --front/--back/--output-dir/--name.
 # NOTE: these paths point at a private archive; do not commit real values to
 # a public repository (see README, "Notas y Advertencias").
-_DNI_DIR = ("/home/achalmaedison/Documents/08 personal/"
-            "01_identidad_y_registro_civil/dni")
+_DNI_DIR = os.path.join(os.environ.get("PERSONAL_DIR", os.path.expanduser("~/Documents/08 personal")),
+                        "01_identidad_y_registro_civil/dni")   # FS2: sin ruta literal (core/env.py → PERSONAL_DIR)
 DEFAULT_FRONT = f"{_DNI_DIR}/dni_28250954_frontal.jpeg"
 DEFAULT_BACK = f"{_DNI_DIR}/dni_28250954_adversa.jpeg"
 DEFAULT_OUTPUT_DIR = _DNI_DIR
