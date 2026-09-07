@@ -1,0 +1,14 @@
+# suite.yml — contrato de la suite (esquema en core/suite.schema.yml); core/suites.py generar escribe los índices y READMEs.
+nombre: firma_digital
+objetivo: personal
+resumen: Convierte la foto de una firma en SVG y PNG limpios (canal rojo, histéresis, potrace).
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.py firma.jpg [--salida firma.svg]
+estado: activo
+depende_de:
+- python3
+- opencv
+- potrace

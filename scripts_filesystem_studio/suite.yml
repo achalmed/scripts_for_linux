@@ -1,0 +1,14 @@
+# suite.yml — contrato de la suite (esquema en core/suite.schema.yml); core/suites.py generar escribe los índices y READMEs.
+nombre: filesystem_studio
+objetivo: sistema
+resumen: 'Aplicación de escritorio (PySide6) que unifica las herramientas de sistema de archivos: renombrado, limpieza, árbol de proyectos.'
+escribe_en:
+- archivos
+simula_por_defecto: true
+comandos:
+- main.py
+- main.py --smoke
+estado: activo
+interfaz: gui
+depende_de:
+- PySide6

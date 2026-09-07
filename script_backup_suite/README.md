@@ -1,5 +1,24 @@
 # backup-suite — Sincronización Inteligente de Backup
 
+<!-- suite:inicio -->
+**Suite `backup_suite`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Sincroniza carpetas del home hacia un disco externo por perfiles, con confirmación, exclusiones y resumen.
+
+- Escribe en: archivos · simula por defecto: no
+- Depende de: rsync
+
+Comandos:
+
+```bash
+main.sh --profile completo
+main.sh --dry-run
+main.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<!-- suite:fin -->
+
 > Script modular de backup para Linux que sincroniza tu directorio home
 > hacia un disco externo con control total, perfiles configurables,
 > detección automática de distro y compatibilidad con Kubuntu y Arch Linux.

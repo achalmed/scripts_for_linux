@@ -1,5 +1,23 @@
 # File & Folder Tools – Colección de utilidades Bash + Python
 
+<!-- suites:inicio -->
+Suites de esta carpeta (9); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+
+| Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
+|---|---|---|---|---|---|---|---|
+| `audio_converter` | [scripts_for_linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
+| `backup_suite` | [scripts_for_linux/script_backup_suite](script_backup_suite/) | sistema | archivos | no |  | activo | `MCL` |
+| `dni_a_copia` | [scripts_for_linux/script_dni_a_copia](script_dni_a_copia/) | personal | archivos | no |  | activo | `MCL` |
+| `firma_digital` | [scripts_for_linux/script_firma_digital](script_firma_digital/) | personal | archivos | no |  | activo | `MCL` |
+| `video_downloader` | [scripts_for_linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
+| `whisper_transcriber` | [scripts_for_linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
+| `filesystem_studio` | [scripts_for_linux/scripts_filesystem_studio](scripts_filesystem_studio/) | sistema | archivos | sí |  | activo | `M··` |
+| `git_studio` | [scripts_for_linux/scripts_git_studio](scripts_git_studio/) | sistema | git | no |  | activo | `M··` |
+| `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
+
+<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<!-- suites:fin -->
+
 ![bash](https://img.shields.io/badge/bash-scripts-green) ![python](https://img.shields.io/badge/python-3.8%2B-blue) ![license](https://img.shields.io/github/license/tu-usuario/file-folder-tools)
 
 #readme

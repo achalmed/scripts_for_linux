@@ -1,5 +1,23 @@
 # Filesystem Studio
 
+<!-- suite:inicio -->
+**Suite `filesystem_studio`** · objetivo *sistema* · estado *activo* · python · interfaz gui
+
+Aplicación de escritorio (PySide6) que unifica las herramientas de sistema de archivos: renombrado, limpieza, árbol de proyectos.
+
+- Escribe en: archivos · simula por defecto: sí
+- Depende de: PySide6
+
+Comandos:
+
+```bash
+main.py
+main.py --smoke
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<!-- suite:fin -->
+
 Aplicación de escritorio (PySide6 / Qt6) que unifica las cinco herramientas
 de gestión del sistema de archivos que antes vivían como scripts CLI
 independientes. Los scripts originales se conservan **intactos** en
