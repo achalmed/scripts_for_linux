@@ -1,65 +1,10 @@
 #!/usr/bin/env bash
-# =============================================================================
-# lib/logger.sh — Sistema de logging centralizado
-# =============================================================================
-# All user-facing output goes through these functions.
-# stderr is used for WARN/ERROR so stdout stays pipe-safe.
-# Colors are suppressed automatically when stdout is not a TTY
-# or when --no-color is active.
-#
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
-# =============================================================================
+# scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/lib/logger.sh — envoltorio (FS2, 2026-09-07): el logger vive en core/shell-lib/logger.sh; aquí solo lo propio de esta suite.
+_core_d="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; while [ "$_core_d" != / ] && [ ! -f "$_core_d/core/shell-lib/logger.sh" ]; do _core_d="$(dirname "$_core_d")"; done
+[ -f "$_core_d/core/shell-lib/logger.sh" ] || { echo "[ERROR] no encuentro core/shell-lib/logger.sh subiendo desde ${BASH_SOURCE[0]}" >&2; exit 1; }
+source "$_core_d/core/shell-lib/logger.sh"; unset _core_d
 
-# _setup_colors()
-# Initializes color variables based on terminal capability and --no-color flag.
-# Called once at startup — avoids tput calls on every log line.
+# propio de la suite: _setup_colors se llama tras leer --no-color / --verbose (OPT_NO_COLOR, NO_COLOR, OPT_VERBOSE, VERBOSE)
 _setup_colors() {
-    if [[ "${NO_COLOR}" == "true" ]] || [[ ! -t 1 ]]; then
-        CLR_RESET="" CLR_BOLD="" CLR_DIM=""
-        CLR_INFO="" CLR_WARN="" CLR_ERROR="" CLR_OK="" CLR_ACCENT=""
-    else
-        CLR_RESET="\e[0m"
-        CLR_BOLD="\e[1m"
-        CLR_DIM="\e[2m"
-        CLR_INFO="\e[36m"       # cyan
-        CLR_WARN="\e[33m"       # yellow
-        CLR_ERROR="\e[31m"      # red
-        CLR_OK="\e[32m"         # green
-        CLR_ACCENT="\e[35m"     # magenta
-    fi
-}
-
-log_info() {
-    printf "${CLR_INFO}[INFO]${CLR_RESET}  %s - %s\n" \
-        "$(date '+%Y-%m-%d %H:%M:%S')" "$1"
-}
-
-log_ok() {
-    printf "${CLR_OK}[OK]${CLR_RESET}    %s - %s\n" \
-        "$(date '+%Y-%m-%d %H:%M:%S')" "$1"
-}
-
-log_warn() {
-    printf "${CLR_WARN}[WARN]${CLR_RESET}  %s - %s\n" \
-        "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >&2
-}
-
-log_error() {
-    printf "${CLR_ERROR}[ERROR]${CLR_RESET} %s - %s\n" \
-        "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >&2
-}
-
-# log_verbose()
-# Only prints when --verbose is active.
-# Used for diagnostic detail that would clutter normal operation.
-log_verbose() {
-    if [[ "${VERBOSE}" == "true" ]]; then
-        printf "${CLR_DIM}[DEBUG]${CLR_RESET} %s - %s\n" \
-            "$(date '+%Y-%m-%d %H:%M:%S')" "$1"
-    fi
-}
-
-log_section() {
-    printf "\n${CLR_BOLD}${CLR_ACCENT}══ %s ══${CLR_RESET}\n" "$1"
+    if [[ "${OPT_NO_COLOR:-}" == "true" || "${NO_COLOR:-}" == "true" || ! -t 1 ]]; then desactivar_colores; else core_colores; fi
 }

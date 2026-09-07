@@ -5,6 +5,8 @@ All tunable constants live here so the rest of the codebase
 never contains magic strings or hardcoded paths.
 """
 
+import os
+
 # ==============================================================================
 # VERSIÓN
 # ==============================================================================
@@ -17,7 +19,7 @@ EMAIL = "achalmed.18@gmail.com"
 # Set to None to use the parent directory of this script automatically.
 # Override with --directory CLI flag or by editing this value.
 # ==============================================================================
-DEFAULT_DIRECTORY: str | None = "/home/achalmaedison/Documents/"
+DEFAULT_DIRECTORY: str | None = os.environ.get("DOCS_ROOT", os.path.expanduser("~/Documents")) + "/"   # FS2: sin ruta literal
 
 # ==============================================================================
 # DIRECTORIOS EXCLUIDOS POR DEFECTO
