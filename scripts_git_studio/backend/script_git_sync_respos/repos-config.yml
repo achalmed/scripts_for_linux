@@ -86,21 +86,18 @@ repositories:
     branch: main
     enabled: true
 
-  - name: 10 Class/areas/Academic_Class-python
-    branch: main
-    enabled: true
 
   - name: prompts
     branch: main
     enabled: true
 
+  - name: 10 Class/docencia            # M6 (2026-09-15): submódulo único de contenido (repo Academic_Class); sustituye a las 23 áreas
+    branch: main
+    enabled: true
   - name: 10 Class
     branch: main
     enabled: true
 
-  - name: 10 Class/areas/Academic_Class-LaTex
-    branch: main
-    enabled: true
 
   - name: scripts_quarto_studio
     branch: main
