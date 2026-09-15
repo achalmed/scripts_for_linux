@@ -5,8 +5,6 @@
 # Mantiene compatibilidad total con las flags cortas de la v1.x
 # (-f, -p, -v, -d, -h) y añade sus variantes largas.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # parse_arguments()

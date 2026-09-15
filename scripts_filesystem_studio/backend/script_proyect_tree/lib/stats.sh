@@ -6,8 +6,6 @@
 # Keeping them separate from generator.sh means the reporting logic
 # can evolve independently (e.g. adding JSON output for stats).
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # show_disk_stats()

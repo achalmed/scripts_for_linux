@@ -6,8 +6,6 @@
 # -t -F -s -h) y añade -n (dry-run). -h ahora sale con 0; los errores
 # de uso salen con 2.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # parse_arguments()

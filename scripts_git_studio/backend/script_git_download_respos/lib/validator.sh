@@ -6,8 +6,6 @@
 # producía errores crípticos; aquí toda opción se comprueba antes de
 # tocar la red o el disco.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # validate_dependencies()

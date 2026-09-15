@@ -11,7 +11,7 @@
 #  aprovechando la misma lógica que usará la copia real.
 # =============================================================================
 
-# ── get_new_files() ───────────────────────────────────────────────────────────
+# --- get_new_files() -------------------------------------------------------
 # Obtiene la lista de archivos que existen en origen pero NO en destino.
 # Usa rsync --dry-run con --itemize-changes para detectarlos por el código
 # '>f+++++++++' que rsync emite para archivos completamente nuevos.
@@ -36,7 +36,7 @@ get_new_files() {
         || true
 }
 
-# ── get_modified_files() ──────────────────────────────────────────────────────
+# --- get_modified_files() --------------------------------------------------
 # Obtiene archivos que existen en ambos lados pero cuyo contenido difiere.
 # El código rsync '>f' sin '+++++++++ ' indica un archivo modificado.
 #
@@ -61,7 +61,7 @@ get_modified_files() {
         || true
 }
 
-# ── get_orphan_files() ────────────────────────────────────────────────────────
+# --- get_orphan_files() ----------------------------------------------------
 # Obtiene archivos que existen en destino pero NO en origen.
 # Estos son candidatos para eliminación o conservación.
 # Usa comm para comparar los listados de ambos directorios de forma eficiente.
@@ -88,7 +88,7 @@ get_orphan_files() {
         || true
 }
 
-# ── show_file_diff() ──────────────────────────────────────────────────────────
+# --- show_file_diff() ------------------------------------------------------
 # Muestra las diferencias entre la versión de origen y la de destino.
 # Para archivos de texto muestra diff unificado (máx. 60 líneas).
 # Para archivos binarios muestra metadatos (tamaño, fecha).
@@ -137,7 +137,7 @@ show_file_diff() {
     fi
 }
 
-# ── format_file_size() ────────────────────────────────────────────────────────
+# --- format_file_size() ----------------------------------------------------
 # Convierte bytes a unidad legible (B, KB, MB, GB).
 # Usa aritmética de bash pura para evitar dependencia de bc.
 #

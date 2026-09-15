@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# lib/sync_engine.sh
+#  scripts_git_studio/backend/script_git_sync_respos/lib/sync_engine.sh — Motor de sincronización
 # -----------------------------------------------------------------------------
 # Motor de sincronización: procesa un repositorio individual haciendo
 # pull → stage → commit → push con manejo de errores robusto.
@@ -61,7 +61,7 @@ sync_process_repo() {
         branch="$current_branch"
     fi
 
-    # ─── git pull ────────────────────────────────────────────────────────────
+    # --- git pull ----------------------------------------------------------
     if [[ "${NO_PULL:-false}" == "false" ]] && [[ "${CHECK_ONLY:-false}" == "false" ]]; then
         log_info "Actualizando desde remoto (git pull)..."
         if ! git_pull "$repo_path" "$branch" "${VERBOSE:-false}"; then
@@ -73,7 +73,7 @@ sync_process_repo() {
         log_ok "Pull completado"
     fi
 
-    # ─── Detectar cambios locales ─────────────────────────────────────────────
+    # --- Detectar cambios locales ------------------------------------------
     if ! git_has_local_changes "$repo_path"; then
         # En modo --check, también verificar si hay commits remotos pendientes
         if [[ "${CHECK_ONLY:-false}" == "true" ]]; then
@@ -93,28 +93,28 @@ sync_process_repo() {
     [[ "${VERBOSE:-false}" == "true" ]] && \
         git -C "$repo_path" status --short 2>/dev/null
 
-    # ─── Modo verificación: mostrar y salir ───────────────────────────────────
+    # --- Modo verificación: mostrar y salir --------------------------------
     if [[ "${CHECK_ONLY:-false}" == "true" ]]; then
         log_info "Cambios pendientes:"
         git -C "$repo_path" status --short 2>/dev/null
         return 1
     fi
 
-    # ─── git add -A ───────────────────────────────────────────────────────────
+    # --- git add -A --------------------------------------------------------
     log_info "Agregando cambios (git add -A)..."
     if ! git_add_all "$repo_path"; then
         log_error "Falló 'git add' en '${name}'"
         return 2
     fi
 
-    # ─── git commit ───────────────────────────────────────────────────────────
+    # --- git commit --------------------------------------------------------
     log_info "Creando commit: '${COMMIT_MSG}'"
     if ! git_commit "$repo_path" "$COMMIT_MSG"; then
         log_error "Falló 'git commit' en '${name}'"
         return 2
     fi
 
-    # ─── git push ─────────────────────────────────────────────────────────────
+    # --- git push ----------------------------------------------------------
     log_info "Enviando cambios (git push)..."
     if ! git_push "$repo_path" "${VERBOSE:-false}"; then
         log_error "Falló 'git push' en '${name}'"

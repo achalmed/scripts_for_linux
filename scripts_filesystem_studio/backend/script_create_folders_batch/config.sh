@@ -5,8 +5,6 @@
 # Todos los valores editables por el usuario viven aquí, incluida la lista
 # predefinida de carpetas que se usa cuando no se pasa -f/--file.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 readonly SCRIPT_NAME="create-folders-batch"

@@ -6,8 +6,6 @@
 # seguridad sobre nombres de carpeta: nunca escribir fuera del directorio
 # base, aunque el archivo de lista contenga rutas maliciosas o erróneas.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # validate_base_dir()

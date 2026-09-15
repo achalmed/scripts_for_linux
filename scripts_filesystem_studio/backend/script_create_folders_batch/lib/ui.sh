@@ -5,8 +5,6 @@
 # Presentación pura: este módulo no crea carpetas ni decide nada,
 # solo formatea la información que le pasan main.sh y lib/creator.sh.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # show_preview()

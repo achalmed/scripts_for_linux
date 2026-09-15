@@ -15,7 +15,7 @@ Suites de esta carpeta (9); índice global en `meta/INDICE_SCRIPTS.md`. Patrón:
 | `git_studio` | [scripts_for_linux/scripts_git_studio](scripts_git_studio/) | sistema | git | no |  | activo | `MCL` |
 | `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
-<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-09-07); no se edita a mano.</sub>
+<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-09-15); no se edita a mano.</sub>
 <!-- suites:fin -->
 
 ![bash](https://img.shields.io/badge/bash-scripts-green) ![python](https://img.shields.io/badge/python-3.8%2B-blue) ![license](https://img.shields.io/github/license/tu-usuario/file-folder-tools)

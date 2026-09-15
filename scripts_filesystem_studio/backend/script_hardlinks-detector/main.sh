@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-# ╔══════════════════════════════════════════════════════════════════════════════╗
-# ║                      HARDLINKS DETECTOR — MAIN                               ║
-# ║                                                                              ║
-# ║  Detects and visualizes hard links in a directory tree.                      ║
-# ║  Companion tool to hardlinks-creator.                                        ║
-# ║                                                                              ║
-# ║  Author : Edison Achalma <achalmaedison@outlook.com>                           ║
-# ║  Version: 3.1.0                                                              ║
-# ╚══════════════════════════════════════════════════════════════════════════════╝
+# =============================================================================
+#  scripts_filesystem_studio/backend/script_hardlinks-detector/main.sh — Detecta y visualiza los hard links de un árbol de directorios (punto de entrada)
+# -----------------------------------------------------------------------------
+#  Herramienta compañera de hardlinks-creator: árbol jerárquico, CSV o JSON, con
+#  filtros por inodo y conteo mínimo de enlaces. Solo orquesta: la lógica vive
+#  en lib/ y los ajustes (y VERSION) en config.sh.
+#  Uso: main.sh --help
+# =============================================================================
 #
 # Fail fast: exit on unset variables and pipeline errors.
 # 'set -e' is intentionally omitted because find returns non-zero

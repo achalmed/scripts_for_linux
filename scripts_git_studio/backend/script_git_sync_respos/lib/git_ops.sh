@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# lib/git_ops.sh
+#  scripts_git_studio/backend/script_git_sync_respos/lib/git_ops.sh — Wrappers seguros alrededor de los comandos git usados por sync.sh y status.sh
 # -----------------------------------------------------------------------------
 # Wrappers seguros alrededor de los comandos git usados por sync.sh y
 # status.sh. Centraliza el manejo de errores y la detección de estado.

@@ -6,8 +6,6 @@
 # All format-specific logic lives here so generate_project_structure()
 # in generator.sh stays format-agnostic.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # build_exclude_pattern()

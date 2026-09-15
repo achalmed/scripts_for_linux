@@ -9,9 +9,7 @@
 # Flujo: parse args → colores → validar → leer lista → vista previa
 #        → confirmar → crear → resumen
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
-# Requires: bash >= 4.0
+# Depende de: bash >= 4.0
 # =============================================================================
 
 set -euo pipefail

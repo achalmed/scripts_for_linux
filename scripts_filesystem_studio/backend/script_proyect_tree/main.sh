@@ -6,9 +6,7 @@
 # This file intentionally contains NO business logic — each responsibility
 # lives in its own module under lib/.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
-# Requires: tree >= 1.7, bash >= 5.0, Kubuntu/Debian
+# Depende de: tree >= 1.7, bash >= 5.0, Kubuntu/Debian
 # =============================================================================
 
 set -euo pipefail

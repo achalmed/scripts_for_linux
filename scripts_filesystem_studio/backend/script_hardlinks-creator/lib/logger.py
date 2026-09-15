@@ -1,4 +1,4 @@
-"""scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator/lib/logger.py — envoltorio (FS2, 2026-09-07): el logger vive en core/py-common/logger.py."""
+"""scripts_filesystem_studio/backend/script_hardlinks-creator/lib/logger.py — envoltorio (FS2, 2026-09-07): el logger vive en core/py-common/logger.py."""
 from __future__ import annotations
 
 import importlib.util

@@ -6,8 +6,6 @@
 # config.sh. Los mensajes de log van a stderr para que NUNCA se mezclen
 # con la lista que se emite por stdout.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # get_folders_list()

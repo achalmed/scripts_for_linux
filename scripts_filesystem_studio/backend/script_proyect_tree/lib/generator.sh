@@ -9,8 +9,6 @@
 # Keeping discovery and generation together avoids passing large arrays
 # between modules while still keeping each function under 30 lines.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # find_projects_by_pattern()

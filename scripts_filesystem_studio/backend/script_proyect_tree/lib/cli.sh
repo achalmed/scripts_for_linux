@@ -6,8 +6,6 @@
 # Centralizing argument parsing here keeps main.sh clean and makes
 # adding new flags a one-file change.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # show_help()

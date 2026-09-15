@@ -5,8 +5,6 @@
 # Tabla por extensión, ranking top-N con barras y estadísticas generales.
 # Este módulo solo lee los datos que dejó lib/scanner.sh; no escanea nada.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # format_size()

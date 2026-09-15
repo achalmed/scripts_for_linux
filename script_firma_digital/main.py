@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""firma-digital — convierte la foto de una firma en SVG + PNG limpios.
+"""script_firma_digital/main.py — convierte la foto de una firma en SVG + PNG limpios.
 
 Orchestration only — the pipeline lives in lib/:
 
@@ -16,8 +16,6 @@ Orchestration only — the pipeline lives in lib/:
 The heavy scientific libraries are imported lazily (step 4 onward) so the
 dependency check in step 3 can report a friendly message instead of an
 ImportError when a library is missing.
-
-Version: 1.0.0
 """
 from __future__ import annotations
 

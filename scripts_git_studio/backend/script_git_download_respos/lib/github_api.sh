@@ -6,8 +6,6 @@
 # Maneja explícitamente fallos de red y errores de la API (rate limit,
 # usuario inexistente), que la v1.x dejaba pasar como errores crípticos.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # fetch_all_repos()

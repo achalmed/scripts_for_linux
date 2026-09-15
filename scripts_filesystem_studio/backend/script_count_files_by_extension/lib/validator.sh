@@ -6,8 +6,6 @@
 # lógica, para fallar temprano con mensajes claros y códigos de salida
 # estándar (2 uso, 3 no encontrado, 4 permisos, 5 dependencia faltante).
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # validate_dependencies()

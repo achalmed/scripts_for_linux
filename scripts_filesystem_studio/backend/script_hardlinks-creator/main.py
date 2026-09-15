@@ -17,9 +17,6 @@ Flow:
 
 Each phase is handled by a dedicated module so this file
 reads like a high-level summary of the program's flow.
-
-Author : Edison Achalma <achalmed.18@gmail.com>
-Version: 3.1.0
 """
 
 import os

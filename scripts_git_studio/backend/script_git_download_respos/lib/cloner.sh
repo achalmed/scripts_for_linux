@@ -5,8 +5,6 @@
 # Construcción de URL y flags de git clone, clonado individual y
 # contadores de resultado para el resumen final.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 declare -g COUNT_CLONED=0

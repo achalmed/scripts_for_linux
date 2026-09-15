@@ -8,9 +8,6 @@ QSettings y muestra la ventana principal. Toda la lógica vive en app/.
 Uso:
     python3 main.py            # ejecución normal
     python3 main.py --smoke    # construye la UI y sale (prueba de humo)
-
-Author : Edison Achalma (@achalmed)
-Version: 1.0.0
 """
 
 import sys
