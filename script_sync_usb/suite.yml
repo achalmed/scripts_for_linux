@@ -1,0 +1,15 @@
+# script_sync_usb/suite.yml — suite sync_usb: sincroniza en ambas direcciones una carpeta local con su copia en un USB compartido, con papelera y detección de conflictos.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: sync_usb
+objetivo: sistema
+resumen: Sincroniza en ambas direcciones una carpeta local con su copia en un USB compartido (dos equipos, un USB que va y viene), con papelera y detección de conflictos; solo biblioteca estándar de Python.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.py --local <carpeta> --usb <montaje> [--dry-run]
+- sincronizar_usb.sh --local <carpeta> --usb <montaje> [--dry-run]
+estado: activo
+depende_de:
+- python3
+nota: 'Antes 05_sgdp/sincronizacion_usb (M10 D2, 2026-09-15). Caso de uso original: el archivo documental del SGDP entre las laptops de las secretarías.'
