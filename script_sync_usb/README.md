@@ -1,5 +1,24 @@
 # script_sync_usb — sincronización bidireccional de una carpeta por USB compartido
 
+<!-- suite:inicio -->
+**Suite `sync_usb`** · objetivo *sistema* · estado *activo* · python · interfaz cli
+
+Sincroniza en ambas direcciones una carpeta local con su copia en un USB compartido (dos equipos, un USB que va y viene), con papelera y detección de conflictos; solo biblioteca estándar de Python.
+
+- Escribe en: archivos · simula por defecto: no
+- Depende de: python3
+- Nota: Antes 05_sgdp/sincronizacion_usb (M10 D2, 2026-09-15). Caso de uso original: el archivo documental del SGDP entre las laptops de las secretarías.
+
+Comandos:
+
+```bash
+main.py --local <carpeta> --usb <montaje> [--dry-run]
+sincronizar_usb.sh --local <carpeta> --usb <montaje> [--dry-run]
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-15); no se edita a mano.</sub>
+<!-- suite:fin -->
+
 > Suite genérica de `scripts_for_linux` desde 2026-09-15 (M10 D2; antes `05_sgdp/sincronizacion_usb`): sirve para cualquier carpeta que viaje en un USB entre dos equipos (el caso de origen es el archivo documental del SGDP). Invocación: `main.py --local <carpeta> --usb <montaje>` o `sincronizar_usb.sh`/`.bat`.
 
 Herramienta **nativa** para compartir los documentos del SGDP entre las
