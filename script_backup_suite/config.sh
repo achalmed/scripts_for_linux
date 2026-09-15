@@ -85,7 +85,7 @@ PROFILE_DOCS_FOLDERS=(
 )
 
 # --- Perfil: full ----------------------------------------------------------
-# Respalda TODO el home excepto las exclusiones globales de abajo.
+# Respalda todo el home excepto las exclusiones globales de abajo.
 # Se expande dinámicamente listando $HOME_DIR al momento de ejecutar.
 PROFILE_FULL_FOLDERS=("__DYNAMIC__")   # marcador: se llena en runtime
 
