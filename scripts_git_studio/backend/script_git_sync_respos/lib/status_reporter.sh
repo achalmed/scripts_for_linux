@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
-# lib/status_reporter.sh
+#  scripts_git_studio/backend/script_git_sync_respos/lib/status_reporter.sh — Recolección y presentación del estado de todos los repositorios
 # -----------------------------------------------------------------------------
-# Recolección y presentación del estado de todos los repositorios.
 #
 # BUGS CORREGIDOS:
 #   Bug 2 - El original comparaba git log origin/branch..branch sin hacer

@@ -14,10 +14,10 @@
 #  apropiado en fallo crítico.
 # =============================================================================
 
-# ── Variable global: comando diff disponible ──────────────────────────────────
+# --- Variable global: comando diff disponible ------------------------------
 DIFF_CMD=""
 
-# ── detect_mount_point() ──────────────────────────────────────────────────────
+# --- detect_mount_point() --------------------------------------------------
 # Detecta automáticamente el punto de montaje del disco externo según la
 # distribución Linux en uso.
 #
@@ -64,7 +64,7 @@ detect_mount_point() {
     return 1
 }
 
-# ── validate_not_root() ───────────────────────────────────────────────────────
+# --- validate_not_root() ---------------------------------------------------
 # Advierte si el script se ejecuta como root.
 # Ejecutar como root puede alterar la propiedad (ownership) de archivos
 # del usuario, lo que rompería permisos en el home.
@@ -84,7 +84,7 @@ validate_not_root() {
     fi
 }
 
-# ── validate_dependencies() ──────────────────────────────────────────────────
+# --- validate_dependencies() -----------------------------------------------
 # Verifica que las dependencias obligatorias y opcionales estén instaladas.
 # Detecta automáticamente el gestor de paquetes (pacman / apt) para mostrar
 # el comando de instalación correcto según la distro.
@@ -113,7 +113,7 @@ validate_dependencies() {
 
     local failures=0
 
-    # ── rsync: OBLIGATORIO ────────────────────────────────────────────────────
+    # --- rsync: OBLIGATORIO ------------------------------------------------
     if command -v rsync &>/dev/null; then
         local rsync_version
         rsync_version=$(rsync --version 2>/dev/null | head -1 | awk '{print $3}')
@@ -124,7 +124,7 @@ validate_dependencies() {
         ((failures++))
     fi
 
-    # ── pv: RECOMENDADO (barra de progreso visual) ────────────────────────────
+    # --- pv: RECOMENDADO (barra de progreso visual) ------------------------
     if command -v pv &>/dev/null; then
         log_ok "pv encontrado (barras de progreso disponibles)"
     else
@@ -132,7 +132,7 @@ validate_dependencies() {
         log_warn "Para instalarlo: ${install_hint} pv"
     fi
 
-    # ── colordiff / diff: OPCIONAL (vista de cambios) ─────────────────────────
+    # --- colordiff / diff: OPCIONAL (vista de cambios) ---------------------
     if command -v colordiff &>/dev/null; then
         log_ok "colordiff encontrado (diffs en color)"
         DIFF_CMD="colordiff"
@@ -143,7 +143,7 @@ validate_dependencies() {
         log_warn "Ni diff ni colordiff encontrados — no se podrán mostrar diferencias."
     fi
 
-    # ── bc: para cálculos de tamaño ───────────────────────────────────────────
+    # --- bc: para cálculos de tamaño ---------------------------------------
     if ! command -v bc &>/dev/null; then
         log_warn "bc no encontrado — algunos cálculos de tamaño usarán método alternativo."
     fi
@@ -156,7 +156,7 @@ validate_dependencies() {
     echo ""
 }
 
-# ── validate_disk() ───────────────────────────────────────────────────────────
+# --- validate_disk() -------------------------------------------------------
 # Verifica que el disco externo esté montado, tenga espacio suficiente
 # y que el directorio de destino exista (o lo crea).
 #
@@ -236,7 +236,7 @@ validate_disk() {
     echo ""
 }
 
-# ── validate_source_folders() ────────────────────────────────────────────────
+# --- validate_source_folders() ---------------------------------------------
 # Verifica que cada carpeta del perfil exista en el sistema de origen.
 # Las carpetas no encontradas se eliminan del array y se reporta al usuario.
 # Modifica el array CARPETAS_BACKUP en el scope del llamador.
@@ -284,7 +284,7 @@ validate_source_folders() {
     echo ""
 }
 
-# ── build_rsync_exclude_args() ────────────────────────────────────────────────
+# --- build_rsync_exclude_args() --------------------------------------------
 # Construye los argumentos --exclude para rsync a partir de las listas
 # GLOBAL_EXCLUDE y RSYNC_PATTERN_EXCLUDE definidas en config.sh.
 #

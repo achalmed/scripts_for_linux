@@ -5,8 +5,6 @@
 # Todos los valores editables por el usuario viven aquí; los módulos de lib/
 # nunca llevan rutas ni números mágicos hardcodeados.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 readonly SCRIPT_NAME="count-files-by-extension"

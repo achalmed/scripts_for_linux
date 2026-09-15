@@ -7,8 +7,6 @@
 # relanzaba find + un stat por archivo POR CADA extensión (O(N×M));
 # esta pasada única es O(N) y no ejecuta ningún proceso por archivo.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # Resultados del escaneo, consumidos por lib/renderer.sh

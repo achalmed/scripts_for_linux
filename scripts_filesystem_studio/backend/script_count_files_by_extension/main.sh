@@ -8,9 +8,7 @@
 #
 # Flujo: parse args → colores → validar → escanear → renderizar
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
-# Requires: bash >= 4.0, GNU findutils, awk
+# Depende de: bash >= 4.0, GNU findutils, awk
 # =============================================================================
 
 set -euo pipefail

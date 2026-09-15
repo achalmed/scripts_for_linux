@@ -6,8 +6,6 @@
 # El directorio se acepta como argumento posicional para mantener
 # compatibilidad con la versión 1.x del script.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # parse_arguments()

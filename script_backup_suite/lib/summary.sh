@@ -8,7 +8,7 @@
 #  si el usuario lo definió con --post-cmd.
 # =============================================================================
 
-# ── show_summary() ────────────────────────────────────────────────────────────
+# --- show_summary() --------------------------------------------------------
 # Imprime el resumen completo de la sesión de backup al finalizar.
 # Muestra contadores de todas las categorías y estado del disco.
 #
@@ -70,7 +70,7 @@ show_summary() {
     echo ""
 }
 
-# ── run_post_command() ────────────────────────────────────────────────────────
+# --- run_post_command() ----------------------------------------------------
 # Ejecuta el comando definido por el usuario con --post-cmd al finalizar.
 # Útil para notificaciones de escritorio, scripts de limpieza, etc.
 #
@@ -96,7 +96,7 @@ run_post_command() {
     fi
 }
 
-# ── print_config_banner() ─────────────────────────────────────────────────────
+# --- print_config_banner() -------------------------------------------------
 # Imprime el banner de configuración antes de pedir confirmación.
 # Da al usuario una vista clara de lo que va a pasar.
 #

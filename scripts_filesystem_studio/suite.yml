@@ -1,5 +1,6 @@
-# suite.yml — contrato de la suite (esquema en core/suite.schema.yml); core/suites.py generar escribe los índices y READMEs.
-nombre: filesystem_studio
+# scripts_filesystem_studio/suite.yml — suite filesystem_studio: Aplicación de escritorio (PySide6) que unifica las herramientas de sistema de archivos: renombrado, limpieza, árbol de proyectos.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: filesystem_studio
 objetivo: sistema
 resumen: 'Aplicación de escritorio (PySide6) que unifica las herramientas de sistema de archivos: renombrado, limpieza, árbol de proyectos.'
 escribe_en:

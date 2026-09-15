@@ -6,8 +6,6 @@
 # Failing fast here gives the user a clear, actionable message
 # instead of a cryptic error mid-execution.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 # validate_dependencies()

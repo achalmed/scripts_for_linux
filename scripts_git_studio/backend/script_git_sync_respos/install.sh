@@ -56,20 +56,20 @@ sed_inplace() {
     fi
 }
 
-# ─── Paso 1: configuración inicial ───────────────────────────────────────────
+# --- Paso 1: configuración inicial -----------------------------------------
 echo -e "${BLUE}[1/5]${NC} Configuración inicial"
 echo ""
 
 INSTALL_DIR="$(ask "¿Dónde instalar los scripts?" "$HOME/bin/git-sync")"
 REPOS_DIR="$(ask "¿Dónde están tus repositorios?" "$HOME/Documents")"
 
-# ─── Paso 2: crear directorio ────────────────────────────────────────────────
+# --- Paso 2: crear directorio ----------------------------------------------
 echo ""
 echo -e "${BLUE}[2/5]${NC} Creando directorio de instalación..."
 mkdir -p "$INSTALL_DIR"
 _ok "Directorio: $INSTALL_DIR"
 
-# ─── Paso 3: copiar archivos ─────────────────────────────────────────────────
+# --- Paso 3: copiar archivos -----------------------------------------------
 echo ""
 echo -e "${BLUE}[3/5]${NC} Copiando archivos..."
 
@@ -107,7 +107,7 @@ else
     _err "repos-config.yml no encontrado"
 fi
 
-# ─── Paso 4: configurar base_directory ───────────────────────────────────────
+# --- Paso 4: configurar base_directory -------------------------------------
 echo ""
 echo -e "${BLUE}[4/5]${NC} Configurando directorio base..."
 
@@ -140,7 +140,7 @@ if [[ -f "$CONFIG_PATH" ]]; then
     fi
 fi
 
-# ─── Paso 5: aliases opcionales ──────────────────────────────────────────────
+# --- Paso 5: aliases opcionales --------------------------------------------
 echo ""
 echo -e "${BLUE}[5/5]${NC} Configuración de aliases (opcional)"
 echo ""
@@ -170,7 +170,7 @@ EOF
     fi
 fi
 
-# ─── Resumen ─────────────────────────────────────────────────────────────────
+# --- Resumen ---------------------------------------------------------------
 echo ""
 echo -e "${GREEN}${BOLD}"
 echo "╔════════════════════════════════════════════════════════╗"

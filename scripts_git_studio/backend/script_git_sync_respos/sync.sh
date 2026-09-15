@@ -10,7 +10,6 @@
 #
 # Uso: ./sync.sh [OPCIONES]
 #
-# Autor: Edison Achalma (achalmed)
 # =============================================================================
 
 set -uo pipefail

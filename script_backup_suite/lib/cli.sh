@@ -15,7 +15,7 @@
 #    Avanzados: --no-confirm, --post-cmd
 # =============================================================================
 
-# ── Variables de estado (sobreescritas por parsear_args) ─────────────────────
+# --- Variables de estado (sobreescritas por parsear_args) ------------------
 # Se inicializan con los defaults de config.sh
 OPT_VERBOSE=false
 OPT_SIMULATE=false
@@ -31,7 +31,7 @@ OPT_CUSTOM_DEST=""
 OPT_SINGLE_FOLDER=""
 OPT_POST_CMD=""
 
-# ── show_help() ───────────────────────────────────────────────────────────────
+# --- show_help() -----------------------------------------------------------
 # Muestra la ayuda completa del script con colores si el terminal los soporta.
 # Usa variables de color del logger (ya inicializadas cuando se llama esto).
 show_help() {
@@ -103,14 +103,14 @@ ${CLR_BOLD}DESTINO DEFAULT:${CLR_RESET} (detectado automáticamente en /media o 
 EOF
 }
 
-# ── show_version() ────────────────────────────────────────────────────────────
+# --- show_version() --------------------------------------------------------
 show_version() {
     echo "backup-suite v3.0.0"
     echo "Compatible con Kubuntu, Ubuntu, Arch Linux, Archcraft"
     echo "Autor: achalmaedison"
 }
 
-# ── show_profiles() ───────────────────────────────────────────────────────────
+# --- show_profiles() -------------------------------------------------------
 # Lista los perfiles disponibles con descripción y carpetas incluidas.
 show_profiles() {
     echo ""
@@ -133,7 +133,7 @@ show_profiles() {
     echo ""
 }
 
-# ── parse_args() ──────────────────────────────────────────────────────────────
+# --- parse_args() ----------------------------------------------------------
 # Parsea todos los argumentos de la línea de comandos.
 # Usa un bucle while con case para soportar flags cortos y largos.
 # Valida combinaciones inválidas antes de retornar.
@@ -243,7 +243,7 @@ parse_args() {
     _validate_flag_combinations
 }
 
-# ── _validate_flag_combinations() ────────────────────────────────────────────
+# --- _validate_flag_combinations() -----------------------------------------
 # Detecta combinaciones de flags contradictorias o incompletas.
 # Separado de parse_args() para mantener la función de parseo limpia.
 _validate_flag_combinations() {

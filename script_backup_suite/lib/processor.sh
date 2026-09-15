@@ -13,7 +13,7 @@
 #  Las funciones privadas (prefijo _) son helpers internos del módulo.
 # =============================================================================
 
-# ── Contadores globales de estadísticas ──────────────────────────────────────
+# --- Contadores globales de estadísticas -----------------------------------
 # Se incrementan durante el procesamiento y se leen en summary.sh
 STATS_COPIED=0
 STATS_UPDATED=0
@@ -22,7 +22,7 @@ STATS_ORPHANS=0
 STATS_DELETED=0
 STATS_START_TIME=$(date +%s)
 
-# ── process_folder() ──────────────────────────────────────────────────────────
+# --- process_folder() ------------------------------------------------------
 # Orquesta el backup completo de una carpeta: nuevos → modificados → huérfanos.
 # Es el punto de entrada principal desde main.sh para cada carpeta del perfil.
 #
@@ -64,7 +64,7 @@ process_folder() {
     echo ""
 }
 
-# ── _handle_new_files() ───────────────────────────────────────────────────────
+# --- _handle_new_files() ---------------------------------------------------
 # Detecta y copia archivos nuevos (no existen en destino).
 # No requiere confirmación: los archivos nuevos siempre se copian.
 # Usa pv si está disponible para una barra de progreso visual.
@@ -130,7 +130,7 @@ _handle_new_files() {
     log_ok "  ✓ Copiados: ${#new_files[@]} archivo(s)"
 }
 
-# ── _handle_modified() ────────────────────────────────────────────────────────
+# --- _handle_modified() ----------------------------------------------------
 # Detecta y gestiona archivos cuyos checksums difieren entre origen y destino.
 # En modo --force actualiza sin preguntar.
 # En modo interactivo pregunta archivo por archivo con opciones detalladas.
@@ -254,7 +254,7 @@ _handle_modified() {
     done
 }
 
-# ── _handle_orphans() ─────────────────────────────────────────────────────────
+# --- _handle_orphans() -----------------------------------------------------
 # Detecta y gestiona archivos en el disco externo que ya no existen en origen.
 # Puede ser: archivos borrados, movidos, o propios del disco.
 # En modo --delete-all elimina todos sin preguntar.
@@ -352,7 +352,7 @@ _handle_orphans() {
     esac
 }
 
-# ── _sync_single_file() ───────────────────────────────────────────────────────
+# --- _sync_single_file() ---------------------------------------------------
 # Sincroniza un único archivo de origen a destino usando rsync.
 # Extrae como función propia para evitar duplicar la llamada rsync en 3 lugares.
 #
@@ -380,7 +380,7 @@ _sync_single_file() {
     fi
 }
 
-# ── _delete_orphan() ──────────────────────────────────────────────────────────
+# --- _delete_orphan() ------------------------------------------------------
 # Elimina un archivo o directorio huérfano del disco externo.
 # Separado para evitar duplicación entre modo --delete-all y revisión manual.
 #
@@ -404,7 +404,7 @@ _delete_orphan() {
     fi
 }
 
-# ── elapsed_time() ────────────────────────────────────────────────────────────
+# --- elapsed_time() --------------------------------------------------------
 # Calcula el tiempo transcurrido desde STATS_START_TIME.
 #
 # Outputs (stdout):

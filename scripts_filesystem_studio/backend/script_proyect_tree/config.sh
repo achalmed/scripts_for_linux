@@ -5,8 +5,6 @@
 # Single source of truth for every constant and mutable runtime variable.
 # All other modules source this file; nothing is hardcoded elsewhere.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 readonly SCRIPT_NAME="$(basename "$0")"

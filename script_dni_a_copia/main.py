@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""dni-a-copia — copia limpia, a tamaño real, de un DNI (anverso + reverso).
+"""script_dni_a_copia/main.py — copia limpia, a tamaño real, de un DNI (anverso + reverso).
 
 Orchestration only — the logic lives in lib/:
 
@@ -13,7 +13,7 @@ Orchestration only — the logic lives in lib/:
 
 Turns two phone photos of a DNI into an A4 sheet where both faces are
 straightened, cleaned onto white (laminate rim kept), color-corrected and
-centered at exact ISO/IEC 7810 ID-1 size. Version: 1.0.0
+centered at exact ISO/IEC 7810 ID-1 size.
 """
 from __future__ import annotations
 

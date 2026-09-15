@@ -9,9 +9,7 @@
 # Flujo: parse args → colores → validar → preparar destino
 #        → despachar (single|list|all) → resumen
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
-# Requires: bash >= 4.3, git; curl y jq solo para el modo "all"
+# Depende de: bash >= 4.3, git; curl y jq solo para el modo "all"
 # =============================================================================
 
 set -euo pipefail

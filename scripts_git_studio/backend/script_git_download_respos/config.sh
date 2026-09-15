@@ -5,8 +5,6 @@
 # Valores por defecto editables por el usuario. El token puede venir
 # de la variable de entorno GITHUB_TOKEN o de la opción -t.
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 readonly SCRIPT_NAME="git-download-respos"

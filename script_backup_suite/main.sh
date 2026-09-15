@@ -17,16 +17,14 @@
 #  ~120 líneas para que el flujo sea legible de un vistazo.
 #
 #  COMPATIBLE: Kubuntu / Ubuntu / Arch Linux / Archcraft
-#  AUTOR     : achalmaedison
-#  VERSIÓN   : 3.0.0
 # =============================================================================
 
 set -euo pipefail
 
-# ── Directorio del script (funciona aunque se ejecute desde cualquier ruta) ──
+# --- Directorio del script (funciona aunque se ejecute desde cualquier ruta) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ── Cargar configuración y módulos en orden de dependencia ───────────────────
+# --- Cargar configuración y módulos en orden de dependencia ----------------
 # config.sh primero: define las variables que usan todos los demás módulos
 source "${SCRIPT_DIR}/config.sh"
 source "${SCRIPT_DIR}/lib/logger.sh"
@@ -36,9 +34,9 @@ source "${SCRIPT_DIR}/lib/analyzer.sh"
 source "${SCRIPT_DIR}/lib/processor.sh"
 source "${SCRIPT_DIR}/lib/summary.sh"
 
-# ── Función principal ─────────────────────────────────────────────────────────
+# --- Función principal -----------------------------------------------------
 main() {
-    # ── Cabecera visual ───────────────────────────────────────────────────────
+    # --- Cabecera visual ---------------------------------------------------
     clear
     echo ""
     echo -e "${CLR_BOLD}${CLR_BLUE}"
@@ -49,23 +47,23 @@ main() {
     echo -e "${CLR_RESET}"
     echo ""
 
-    # ── FASE 1: Parsear argumentos CLI ───────────────────────────────────────
+    # --- FASE 1: Parsear argumentos CLI ------------------------------------
     parse_args "$@"
 
-    # ── FASE 2: Inicializar logger con las opciones elegidas ─────────────────
+    # --- FASE 2: Inicializar logger con las opciones elegidas --------------
     logger_init \
         "${OPT_VERBOSE}" \
         "${OPT_LOG}" \
         "${LOG_FILE}" \
         "${LOG_MAX_BYTES}"
 
-    # ── FASE 3: Advertir si se ejecuta como root ─────────────────────────────
+    # --- FASE 3: Advertir si se ejecuta como root --------------------------
     validate_not_root
 
-    # ── FASE 4: Verificar dependencias ───────────────────────────────────────
+    # --- FASE 4: Verificar dependencias ------------------------------------
     validate_dependencies
 
-    # ── FASE 5: Detectar punto de montaje del disco ───────────────────────────
+    # --- FASE 5: Detectar punto de montaje del disco -----------------------
     local disk_path
     if ! disk_path=$(detect_mount_point "${USUARIO}" "${DISK_LABEL}"); then
         log_error "El disco '${DISK_LABEL}' no está montado."
@@ -81,7 +79,7 @@ main() {
         "${OPT_SIMULATE}" \
         "${MIN_FREE_BYTES}"
 
-    # ── FASE 6: Construir lista de carpetas según el perfil elegido ───────────
+    # --- FASE 6: Construir lista de carpetas según el perfil elegido -------
     local carpetas_backup=()
     local src_base="${HOME_DIR}"
 
@@ -139,7 +137,7 @@ main() {
         exit 1
     fi
 
-    # ── FASE 7: Construir opciones rsync finales ──────────────────────────────
+    # --- FASE 7: Construir opciones rsync finales --------------------------
     local rsync_opts="${RSYNC_BASE_OPTS}"
 
     # Modo rápido: quitar checksum (-c) y usar solo tamaño/fecha
@@ -165,7 +163,7 @@ main() {
 
     log_debug "Opciones rsync activas: ${rsync_opts}"
 
-    # ── FASE 8: Mostrar configuración y pedir confirmación ────────────────────
+    # --- FASE 8: Mostrar configuración y pedir confirmación ----------------
     print_config_banner \
         "${src_base}" \
         "${dest_base}" \
@@ -194,7 +192,7 @@ main() {
     log_separator "═" 70
     echo ""
 
-    # ── FASE 9: Procesar cada carpeta del perfil ──────────────────────────────
+    # --- FASE 9: Procesar cada carpeta del perfil --------------------------
     for folder in "${carpetas_backup[@]}"; do
         process_folder \
             "${folder}" \
@@ -203,7 +201,7 @@ main() {
             "${rsync_opts}"
     done
 
-    # ── FASE 10: Resumen y post-comando ──────────────────────────────────────
+    # --- FASE 10: Resumen y post-comando -----------------------------------
     show_summary \
         "${#carpetas_backup[@]}" \
         "${disk_path}" \
@@ -213,5 +211,5 @@ main() {
     run_post_command "${OPT_POST_CMD}" "${OPT_SIMULATE}"
 }
 
-# ── Punto de entrada ──────────────────────────────────────────────────────────
+# --- Punto de entrada ------------------------------------------------------
 main "$@"

@@ -8,7 +8,6 @@
 # Hace git fetch antes de calcular cuántos commits hay por detrás de origin
 # (corrección del bug original donde behind siempre era 0 sin fetch previo).
 #
-# Autor: Edison Achalma (achalmed)
 # =============================================================================
 
 set -uo pipefail

@@ -9,8 +9,6 @@
 #   COUNT_REJECTED - nombres inseguros rechazados por el validador
 #   COUNT_FAILED   - mkdir falló (permisos, FS de solo lectura, etc.)
 #
-# Author : Edison Achalma (@achalmed)
-# Version: 2.0.0
 # =============================================================================
 
 declare -g COUNT_CREATED=0

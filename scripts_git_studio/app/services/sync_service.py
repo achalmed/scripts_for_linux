@@ -67,7 +67,7 @@ def process_repo(config: ReposConfig, name: str, branch: str,
                     "Continúo en la rama actual (no se hace checkout).")
         branch = current
 
-    # ─── git pull ────────────────────────────────────────────────────────
+    # --- git pull ----------------------------------------------------------
     if not no_pull and not check_only:
         say("info", f"{name}: actualizando desde remoto (git pull)…")
         result = git_service.pull(path)
@@ -77,7 +77,7 @@ def process_repo(config: ReposConfig, name: str, branch: str,
             return SyncItem(name, RESULT_ERROR, "git pull falló")
         say("ok", f"{name}: pull completado")
 
-    # ─── Detectar cambios locales ────────────────────────────────────────
+    # --- Detectar cambios locales ------------------------------------------
     if not git_service.has_local_changes(path):
         # En modo verificación, detectar también commits remotos pendientes
         if check_only:
@@ -93,13 +93,13 @@ def process_repo(config: ReposConfig, name: str, branch: str,
 
     say("info", f"Cambios detectados en '{name}'")
 
-    # ─── Modo verificación: mostrar y salir ──────────────────────────────
+    # --- Modo verificación: mostrar y salir --------------------------------
     if check_only:
         pending = git_service.status_short(path)
         say("info", f"{name}: cambios pendientes:\n{pending}")
         return SyncItem(name, RESULT_NO_CHANGES, "cambios pendientes (check)")
 
-    # ─── add → commit → push ─────────────────────────────────────────────
+    # --- add → commit → push -----------------------------------------------
     say("info", f"{name}: agregando cambios (git add -A)…")
     if not git_service.add_all(path).ok:
         say("error", f"Falló 'git add' en '{name}'")

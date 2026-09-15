@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# lib/config.sh
+#  scripts_git_studio/backend/script_git_sync_respos/lib/config.sh — Parseo del archivo repos-config.yml y exposición de variables globales
 # -----------------------------------------------------------------------------
 # Parseo del archivo repos-config.yml y exposición de variables globales.
 # Todos los demás módulos leen la configuración desde aquí.
