@@ -1,5 +1,8 @@
-# firma-digital
-
+---
+tipo: readme
+estado: activo
+---
+# script_firma_digital/ — foto de una firma a SVG y PNG limpios: canal rojo, histéresis y potrace (v1.0)
 <!-- suite:inicio -->
 **Suite `firma_digital`** · objetivo *personal* · estado *activo* · python · interfaz cli
 
@@ -204,7 +207,7 @@ reestructuración:
   inutilizable.
 - **Corrección**: se mide la inclinación con `probabilistic_hough_line` sobre los
   segmentos casi horizontales, promediando por longitud, y se prueban ambos
-  signos de rotación quedándose con el menor residual (`lib/mask.py::_deskew`).
+  signos de rotación quedándose con el menor residual (`lib/mask.py`, función `_deskew`).
 
 ### Bug #2: Polaridad de potrace invertida
 
@@ -213,7 +216,7 @@ reestructuración:
   fondo, no la tinta.
 - **Impacto**: IoU de 0.0008 (vector vacío/basura); SVG inservible.
 - **Corrección**: se traza `np.logical_not(mask)` para que la tinta sea el primer
-  plano (`lib/vectorize.py::trace`, comentado en el código).
+  plano (`lib/vectorize.py`, función `trace`, comentado en el código).
 
 ### Bug #3: Fallo de `reshape` con dimensiones impares
 
@@ -222,7 +225,7 @@ reestructuración:
   recortado; con lados impares lanzaba `ValueError: cannot reshape`.
 - **Impacto**: caída del script (código 1) tras minutos de vectorización.
 - **Corrección**: las dimensiones pares se derivan del propio array recortado
-  antes del `reshape` (`lib/export.py::_alpha_from_raster`).
+  antes del `reshape` (`lib/export.py`, función `_alpha_from_raster`).
 
 ### Checklist de paridad funcional
 
@@ -325,4 +328,11 @@ con `--dry-run`. Firmas muy orgánicas dejan un residual de 2–3°, que es natu
   checkpoint de confirmación): lenguaje Python (el pipeline es científico), una
   sola foto por ejecución, ancho físico del SVG por defecto de 68 mm (tamaño
   natural de firma), y salidas junto a la foto salvo `--output-dir`.
-```
+
+## Límite honesto
+
+- **`--area-motas` es conservador a propósito** (240 px²): conserva puntos y tildes deliberados a costa de alguna mota en fotos ruidosas; súbelo con `--qa-dir` a la vista.
+- **El enderezado deja un residual de 2–3° en firmas sin línea base recta**: se corrige solo con ≥ 3 segmentos casi horizontales y más de 0,5°.
+- **Vectoriza con `potracer` (Python puro) y tarda minutos**; el binario `potrace` del sistema no se usa todavía.
+- **Tinta azul o violeta por defecto** (canal rojo); otro color exige cambiar `CANAL_TINTA` en `config.py`.
+- **`--dry-run` no vectoriza**: reporta ángulo y cobertura y se detiene antes del trazado; una foto por ejecución.

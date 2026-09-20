@@ -1,5 +1,8 @@
-# backup-suite — Sincronización Inteligente de Backup
-
+---
+tipo: readme
+estado: activo
+---
+# script_backup_suite/ — respaldo rsync del home a un disco externo por perfiles, con exclusiones, confirmación y resumen (v3.0)
 <!-- suite:inicio -->
 **Suite `backup_suite`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
 
@@ -159,7 +162,7 @@ alias backup='~/Documents/scripts_for_linux/script_backup_suite/main.sh'
 | `--version`            | Muestra la versión                                   | —       |
 | `-v, --verbose`        | Modo detallado (lista cada archivo procesado)        | false   |
 | `-s, --simulate`       | Simulación: sin cambios reales                       | false   |
-| `-l, --log`            | Guarda log en `~/backup_suite.log`                   | false   |
+| `-l, --log`            | Guarda log en ~/backup_suite.log                   | false   |
 | `--no-confirm`         | Omite la confirmación inicial                        | false   |
 | `-p, --profile <name>` | Selecciona perfil (`home`, `docs`, `full`, `custom`) | `home`  |
 | `--profile list`       | Lista todos los perfiles disponibles                 | —       |
@@ -176,7 +179,7 @@ alias backup='~/Documents/scripts_for_linux/script_backup_suite/main.sh'
 
 ```bash
 # Inicio
-cd /home/achalmaedison/Documents/scripts_for_linux/script_backup_suite
+cd ~/Documents/scripts_for_linux/script_backup_suite
 
 # Backup interactivo con perfil por defecto (recomendado para uso diario)
 ./main.sh
@@ -336,10 +339,9 @@ After=media-achalmaedison-ARCHDISK.mount
 
 [Service]
 Type=oneshot
-User=achalmaedison
-Environment=DISPLAY=:0
+User=<usuario>Environment=DISPLAY=:0
 ExecStartPre=/bin/sleep 5
-ExecStart=/home/achalmaedison/Documents/scripts_for_linux/script_backup_suite/main.sh \
+ExecStart=/home/<usuario>/Documents/scripts_for_linux/script_backup_suite/main.sh \
     --force --delete-all --log --no-confirm \
     --post-cmd "notify-send 'Backup ARCHDISK' 'Completado'"
 StandardOutput=journal
@@ -408,7 +410,7 @@ La arquitectura modular hace que extender el script sea simple:
 
 ### Para agregar un nuevo módulo:
 
-1. Crea `lib/mi_modulo.sh` con funciones de responsabilidad única.
+1. Crea lib/<tema>.sh con funciones de responsabilidad única.
 2. Agrégalo en el bloque de `source` de `main.sh`.
 3. Llama sus funciones desde la fase correspondiente en `main()`.
 
@@ -447,4 +449,12 @@ usan `|| true` explícitamente para no abortar el backup.
 ---
 
 _backup-suite v3.0.0 — Compatible con Kubuntu y Arch Linux_
-_achalmaedison — `/home/achalmaedison` → `/media/*/ARCHDISK`_
+_achalmaedison — del home al disco externo `/media/*/ARCHDISK`_
+
+## Límite honesto
+
+- **No simula por defecto**: `--dry-run` (o `-s`) hay que pedirlo; `--delete-all --no-confirm` borra huérfanos del destino sin preguntar.
+- **Requiere Bash ≥ 4.3** (`local -n`) y `rsync`; `--help` necesita una terminal (`TERM`) porque usa `tput`.
+- **El destino es un disco externo montado** (`/media/*` o `/run/media/*`): sin él no hay respaldo, no hay modo remoto ni nube.
+- **Checksum (`-c`) es más lento que comparar por fecha y tamaño** (`--fast`); la precisión se paga en tiempo.
+- **Los códigos de salida esperables de rsync (24) no abortan** por `|| true` explícito; cualquier otro error detiene el respaldo (`set -euo pipefail`).

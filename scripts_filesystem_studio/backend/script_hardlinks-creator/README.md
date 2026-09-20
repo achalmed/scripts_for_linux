@@ -1,5 +1,32 @@
-# hardlinks-creator
+---
+tipo: readme
+estado: activo
+---
+# script_hardlinks-creator/ — hard links entre archivos de igual nombre y contenido idéntico (SHA-256), uno a uno o por lotes (v3.1)
 
+<!-- suite:inicio -->
+**Suite `hardlinks_creator`** · objetivo *sistema* · estado *activo* · python · interfaz cli
+
+Sustituye por hard links los archivos de igual nombre y contenido idéntico (SHA-256) de un árbol, uno a uno o por lotes de nombres.
+
+- Escribe en: archivos · simula por defecto: no
+- Entrada: un árbol de proyectos (por defecto la raíz del workspace)
+- Depende de: python3
+- Nota: Backend de Filesystem Studio (pestaña Crear de Hardlinks; la GUI reutiliza su lib/) desde 2026-07-13; sigue siendo utilizable desde la terminal. Enlace atómico; _extensions/ excluida por defecto.
+
+Comandos:
+
+```bash
+main.py <nombre> --dry-run
+main.py <nombre> -d <carpeta> --auto --report-json reporte.json
+main.py --batch archivos.txt --dry-run
+main.py --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Busca archivos con el mismo nombre en un árbol de directorios, los agrupa
 > por contenido idéntico (SHA-256) y crea hard links para eliminar duplicados
 > sin perder datos — con operaciones atómicas, modo batch para procesar
@@ -134,7 +161,7 @@ chmod +x main.py
 Edita `config.py` para establecer tu directorio de trabajo predefinido:
 
 ```python
-DEFAULT_DIRECTORY = "/home/achalmaedison/Documents/"
+DEFAULT_DIRECTORY = os.environ.get("DOCS_ROOT", os.path.expanduser("~/Documents")) + "/"   # FS2: sin ruta literal
 ```
 
 ---
@@ -401,7 +428,7 @@ python main.py requirements.txt
 
 ```bash
 # /etc/cron.daily/hardlinks-sync
-0 3 * * * /home/achalmaedison/.local/bin/hardlinks-creator \
+0 3 * * * $HOME/.local/bin/hardlinks-creator \
     _metadata.yml --auto \
     --report-json /var/log/hardlinks/$(date +\%Y-\%m-\%d).json \
     --no-color >> /var/log/hardlinks/sync.log 2>&1
@@ -451,7 +478,7 @@ def foo() -> Optional[str]: ...
 
 1. Fork el repositorio
 2. `git checkout -b feature/nueva-funcion`
-3. Crea tu módulo en `lib/nuevo_modulo.py` con responsabilidad única
+3. Crea tu módulo en lib/<tema>.py con responsabilidad única
 4. Agrega el flag en `lib/cli.py` y llámalo desde `main.py`
 5. Actualiza este README
 6. `git commit -am 'feat: descripción clara'`
@@ -477,4 +504,12 @@ GitHub: [@achalmed](https://github.com/achalmed) · LinkedIn: [achalmaedison](ht
 
 ## 📄 Licencia
 
-MIT License — ver archivo `LICENSE` para detalles.
+MIT License — ver `LICENSE` en la raíz del repo.
+
+## Límite honesto
+
+- **Solo enlaza archivos con el mismo nombre y contenido idéntico** (SHA-256); un byte distinto los deja aparte.
+- **Los hard links comparten contenido**: editar uno edita todos, que es lo deseado para configuración compartida y no para lo demás.
+- **`--auto` no pide confirmación** y no simula por defecto: `--dry-run` primero, siempre.
+- **`_extensions/` está excluida por defecto** (los `_metadata.yml` de extensiones Quarto difieren por diseño); la lista se cambia con `--exclude`/`--replace-exclude`.
+- **No cruza sistemas de archivos**: un hard link solo existe dentro del mismo volumen.

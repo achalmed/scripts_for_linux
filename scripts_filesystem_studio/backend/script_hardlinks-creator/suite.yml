@@ -1,0 +1,18 @@
+# scripts_filesystem_studio/backend/script_hardlinks-creator/suite.yml — suite hardlinks_creator: Sustituye por hard links los archivos de igual nombre y contenido idéntico (SHA-256) de un árbol, uno a uno o por lotes de nombres.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: hardlinks_creator
+objetivo: sistema
+resumen: Sustituye por hard links los archivos de igual nombre y contenido idéntico (SHA-256) de un árbol, uno a uno o por lotes de nombres.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.py <nombre> --dry-run
+- main.py <nombre> -d <carpeta> --auto --report-json reporte.json
+- main.py --batch archivos.txt --dry-run
+- main.py --help
+estado: activo
+entrada: un árbol de proyectos (por defecto la raíz del workspace)
+depende_de:
+- python3
+nota: Backend de Filesystem Studio (pestaña Crear de Hardlinks; la GUI reutiliza su lib/) desde 2026-07-13; sigue siendo utilizable desde la terminal. Enlace atómico; _extensions/ excluida por defecto.

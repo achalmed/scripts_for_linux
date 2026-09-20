@@ -1,0 +1,20 @@
+# scripts_filesystem_studio/backend/script_proyect_tree/suite.yml — suite proyect_tree: Genera el árbol de carpetas (txt, md o json) de la carpeta actual o de los proyectos del workspace por grupos, con exclusiones y estadísticas de disco.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: proyect_tree
+objetivo: sistema
+resumen: Genera el árbol de carpetas (txt, md o json) de la carpeta actual o de los proyectos del workspace por grupos, con exclusiones y estadísticas de disco.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.sh --list
+- main.sh --stats
+- main.sh --dry-run -t all
+- main.sh -f md -L 3
+- main.sh --help
+estado: activo
+entrada: la carpeta actual o los grupos de proyectos de config.sh
+depende_de:
+- bash
+- tree
+nota: Backend de Filesystem Studio (página Árbol, modo Proyectos) desde 2026-07-13; sigue siendo utilizable desde la terminal. Escribe estructura.txt, derivado que NORMATIVA §15.8 (D07) no admite dentro de un repo (retirado en DOC2, 2026-09-20); úsese para vista previa, --list, --stats o salidas fuera de git.

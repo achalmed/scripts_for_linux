@@ -1,0 +1,19 @@
+# scripts_git_studio/backend/script_git_sync_respos/suite.yml — suite git_sync_respos: Sincroniza (pull, add, commit, push) y reporta el estado de los repos del workspace listados en repos-config.yml, el registro que comparte con Git Studio.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: git_sync_respos
+objetivo: sistema
+resumen: Sincroniza (pull, add, commit, push) y reporta el estado de los repos del workspace listados en repos-config.yml, el registro que comparte con Git Studio.
+escribe_en:
+- git
+simula_por_defecto: false
+comandos:
+- sync.sh --check
+- sync.sh -m "mensaje" -r "repo1,repo2"
+- status.sh --days 30
+- sync.sh --help
+estado: activo
+entrada: repos-config.yml (base_directory y lista de repos habilitados)
+depende_de:
+- bash >= 4
+- git
+nota: Backend de Git Studio (páginas Sincronizar, Repositorios y Reportes) desde 2026-07-13; sigue siendo utilizable desde la terminal. Sin main.sh a propósito, dos entradas (sync.sh y status.sh) y config en lib/config.sh; repos-config.yml es el único registro de repos y nunca diverge de la GUI.

@@ -1,5 +1,32 @@
-# hardlinks-detector
+---
+tipo: readme
+estado: activo
+---
+# script_hardlinks-detector/ — detección de hard links por inodo, en árbol, CSV, JSON o reporte de auditoría (v3.1)
 
+<!-- suite:inicio -->
+**Suite `hardlinks_detector`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Detecta los hard links de un árbol y los presenta agrupados por inodo como árbol, CSV, JSON o reporte de auditoría.
+
+- Escribe en: ninguno · simula por defecto: no
+- Entrada: cualquier carpeta (por defecto la actual)
+- Depende de: bash >= 4, GNU findutils
+- Nota: Backend de Filesystem Studio (pestañas Detectar y Reportes de Hardlinks) desde 2026-07-13; sigue siendo utilizable desde la terminal. Solo lee; -o y --report escriben el archivo que se les pide.
+
+Comandos:
+
+```bash
+main.sh [directorio]
+main.sh <directorio> -f json -o salida.json
+main.sh <directorio> --report
+main.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Detecta y visualiza todos los hard links existentes en un árbol de directorios,
 > en formato árbol jerárquico, CSV o JSON — con filtros por inodo y conteo mínimo de enlaces.
 
@@ -340,7 +367,7 @@ que se generan raramente pero podrían romper el JSON manual. En ese caso usa `-
 
 1. Fork el repositorio
 2. `git checkout -b feature/nueva-funcion`
-3. Crea tu módulo en `lib/nuevo_modulo.sh` con responsabilidad única
+3. Crea tu módulo en lib/<tema>.sh con responsabilidad única
 4. Agrégalo con `source` en `main.sh`
 5. Documenta cada función con el bloque de comentario estándar
 6. Actualiza este README
@@ -366,4 +393,12 @@ GitHub: [@achalmed](https://github.com/achalmed) · LinkedIn: [achalmaedison](ht
 
 ## 📄 Licencia
 
-MIT License — ver archivo `LICENSE` para detalles.
+MIT License — ver `LICENSE` en la raíz del repo.
+
+## Límite honesto
+
+- **Solo lee**; escribe únicamente el archivo que se le pide con `-o` o el reporte de `--report`.
+- **Bash ≥ 4** (arrays asociativos) y GNU findutils: no corre en el bash 3.2 de macOS.
+- **Árboles con millones de archivos tardan**: una pasada de `find`, pero un `stat` por archivo.
+- **El JSON se escribe a mano, sin `jq`**: con caracteres especiales conviene pasarlo por `jq .`.
+- **`--filter-inode` exige el número exacto** del inodo (`stat -c '%i'`).

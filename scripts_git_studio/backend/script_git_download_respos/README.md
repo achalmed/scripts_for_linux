@@ -1,5 +1,32 @@
-# Git Download Repos
+---
+tipo: readme
+estado: activo
+---
+# script_git_download_respos/ — clonado de uno, varios o todos los repos de una cuenta de GitHub con la profundidad que se pida (v2.0)
 
+<!-- suite:inicio -->
+**Suite `git_download_respos`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Clona uno, varios o todos los repos de una cuenta de GitHub con la profundidad de historial que se pida, por SSH o HTTPS, con dry-run.
+
+- Escribe en: git · simula por defecto: no
+- Entrada: la API de GitHub (users/<usuario>/repos) o una lista de repos
+- Depende de: bash, git, curl y jq (solo en modo all)
+- Nota: Backend de Git Studio (página Clonar; la GUI lo porta a app/services/clone_service.py y github_service.py) desde 2026-07-13; sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t para repos privados.
+
+Comandos:
+
+```bash
+main.sh -u <usuario> -n
+main.sh -u <usuario> -m list -r "repo1,repo2" -d full
+main.sh -u <usuario> -o <carpeta> -s
+main.sh -h
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_git_studio` desde 2026-07-13 (Git Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Descarga repositorios de GitHub con control total sobre la profundidad del
 > historial de commits: desde un snapshot del último commit hasta el
 > historial completo, para uno, varios o todos los repos de una cuenta.
@@ -212,7 +239,7 @@ Verifica tu clave (`ssh -T git@github.com`) o usa `-p https`.
 
 ## 🤝 Cómo Contribuir
 
-1. Crea el módulo en `lib/nuevo_modulo.sh` con una única responsabilidad
+1. Crea el módulo en lib/<tema>.sh con una única responsabilidad
    (p. ej. soporte de GitLab iría en su propio `gitlab_api.sh`).
 2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh`.
 3. Cárgalo con `source` en `main.sh` en orden de dependencias.
@@ -232,3 +259,10 @@ Verifica tu clave (`ssh -T git@github.com`) o usa `-p https`.
 - `-s` (strip `.git`) borra el historial local de forma irreversible para
   esa copia; el repo remoto no se toca.
 - El código de salida es `1` si algún repo falló, `0` en caso contrario.
+
+## Límite honesto
+
+- **Solo GitHub**: el modo `all` usa `users/<usuario>/repos`, que sin token lista solo los públicos; `curl` y `jq` solo hacen falta ahí.
+- **`-s` borra `.git` de la copia de forma irreversible**; el remoto no se toca.
+- **No simula por defecto**: `-n` muestra qué se clonaría sin tocar la red de git.
+- **No actualiza repos ya clonados**: eso es `script_git_sync_respos`.

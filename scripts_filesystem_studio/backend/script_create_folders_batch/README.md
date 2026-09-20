@@ -1,5 +1,31 @@
-# Create Folders Batch
+---
+tipo: readme
+estado: activo
+---
+# script_create_folders_batch/ — creación de carpetas por lote desde una lista o un archivo, con vista previa y dry-run (v2.0)
 
+<!-- suite:inicio -->
+**Suite `create_folders_batch`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Crea carpetas por lote desde una lista predefinida o un archivo, con vista previa, confirmación y dry-run.
+
+- Escribe en: archivos · simula por defecto: no
+- Entrada: lista de nombres (config.sh o archivo -f)
+- Depende de: bash
+- Nota: Backend de Filesystem Studio (página Carpetas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Rechaza rutas absolutas y componentes «..».
+
+Comandos:
+
+```bash
+main.sh -d -f lista.txt
+main.sh -y -f lista.txt -p <carpeta>
+main.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Crea múltiples carpetas de forma masiva a partir de una lista predefinida
 > (en `config.sh`) o de un archivo de texto externo, con vista previa,
 > confirmación interactiva y modo dry-run.
@@ -30,7 +56,7 @@ Formato del archivo de lista (`-f`):
 carpeta-uno
 carpeta-dos
 carpeta-tres/subcarpeta     # se admiten rutas relativas
-# las líneas con # y las vacías se ignoran
+#las líneas que empiezan por # y las vacías se ignoran
 ```
 
 Por seguridad se **rechazan** rutas absolutas (`/algo`) y componentes `..`:
@@ -144,7 +170,7 @@ script_create_folders_batch/
   REJECTED/FAILED`) clasificados una sola vez.
 
 ### Bug #5: Escape del directorio base
-- **Descripción**: una línea `../otro` o `/ruta/absoluta` en el archivo de
+- **Descripción**: una línea ../otro o /ruta/absoluta en el archivo de
   lista creaba carpetas **fuera** del directorio destino.
 - **Impacto**: escritura fuera del árbol elegido (riesgo de seguridad y de
   desorden).
@@ -177,7 +203,7 @@ del directorio base.
 
 ## 🤝 Cómo Contribuir
 
-1. Crea el módulo en `lib/nuevo_modulo.sh` con una única responsabilidad.
+1. Crea el módulo en lib/<tema>.sh con una única responsabilidad.
 2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh`.
 3. Cárgalo con `source` en `main.sh` en orden de dependencias.
 4. Verifica con `bash -n` y prueba siempre primero con `--dry-run`.
@@ -196,3 +222,10 @@ del directorio base.
   recortan los espacios al inicio/final.
 - El código de salida es `1` si alguna carpeta falló, `0` en caso contrario
   (que existieran previamente no se considera fallo).
+
+## Límite honesto
+
+- **Solo crea**: nunca borra ni renombra; una carpeta existente se reporta y se deja como está.
+- **Rechaza rutas absolutas y componentes `..`**: nunca escribe fuera del directorio base.
+- **La lista predefinida vive en `config.sh`** (`PREDEFINED_FOLDERS`); no lee CSV ni Markdown (eso lo hace la GUI).
+- **No simula por defecto**: `-d`/`--dry-run` hay que pedirlo; `-y` salta la confirmación.

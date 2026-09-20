@@ -1,0 +1,18 @@
+# scripts_filesystem_studio/backend/script_count_files_by_extension/suite.yml — suite count_files_by_extension: Cuenta los archivos de un árbol por extensión, con tamaño acumulado, ranking top-N y estadísticas, en una sola pasada de find.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: count_files_by_extension
+objetivo: sistema
+resumen: Cuenta los archivos de un árbol por extensión, con tamaño acumulado, ranking top-N y estadísticas, en una sola pasada de find.
+escribe_en:
+- ninguno
+simula_por_defecto: false
+comandos:
+- main.sh [directorio]
+- main.sh -t 10 --no-color <directorio>
+- main.sh --help
+estado: activo
+entrada: cualquier carpeta (por defecto la biblioteca)
+depende_de:
+- bash
+- GNU findutils
+nota: Backend de Filesystem Studio (página Estadísticas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Solo lee; GNU-only (find -printf).
