@@ -14,7 +14,7 @@ Comandos:
 main.py anverso.jpg reverso.jpg [--salida copia.pdf]
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-15); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 > Arma una copia limpia, a tamaño real y **alta resolución**, del anverso y

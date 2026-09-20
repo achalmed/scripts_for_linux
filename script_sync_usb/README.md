@@ -16,7 +16,7 @@ main.py --local <carpeta> --usb <montaje> [--dry-run]
 sincronizar_usb.sh --local <carpeta> --usb <montaje> [--dry-run]
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-15); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 > Suite genérica de `scripts_for_linux` desde 2026-09-15 (M10 D2; antes `05_sgdp/sincronizacion_usb`): sirve para cualquier carpeta que viaje en un USB entre dos equipos (el caso de origen es el archivo documental del SGDP). Invocación: `main.py --local <carpeta> --usb <montaje>` o `sincronizar_usb.sh`/`.bat`.
