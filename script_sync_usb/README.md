@@ -1,5 +1,8 @@
-# script_sync_usb — sincronización bidireccional de una carpeta por USB compartido
-
+---
+tipo: readme
+estado: activo
+---
+# script_sync_usb/ — sincronización bidireccional de una carpeta por un USB compartido, con papelera y detección de conflictos
 <!-- suite:inicio -->
 **Suite `sync_usb`** · objetivo *sistema* · estado *activo* · python · interfaz cli
 
@@ -71,7 +74,7 @@ carpeta `SGDP` con el USB en las dos direcciones.
 
 ### Windows
 Doble clic en **`sincronizar_usb.bat`** (o desde la consola:
-`python sincronizar_usb.py`).
+`python main.py`).
 
 ### Opciones útiles
 ```
@@ -96,5 +99,13 @@ Ejemplo indicando todo a mano:
 3. Si aparece un **conflicto**, abre esa carpeta, compara las dos versiones y
    borra a mano la que no quieras.
 
-> La clave `2026AM` y otros ajustes (nombre de carpeta, tolerancia de fechas)
-> están al inicio de `sincronizar_usb.py`, en la sección CONFIGURACIÓN.
+> La clave de autorización y otros ajustes (nombre de carpeta, tolerancia de fechas)
+> están al inicio de `main.py`, en la sección CONFIGURACIÓN.
+
+## Límite honesto
+
+- **Nunca borra**: una supresión no se propaga; lo sobrescrito va a la papelera `.sgdp-papelera/<fecha>/` del lado que pierde.
+- **Gana el más nuevo; en empate conserva ambos** como «(conflicto …)» y avisa: resolver es manual.
+- **La clave de autorización vive en el código** (`main.py`, sección CONFIGURACIÓN; `SGDP_USB_CLAVE` la evita en modo no interactivo): no hay `.env` ni perfil.
+- **No sigue el patrón `main` + `config` + `lib`** (un solo archivo con lanzadores `.sh` y `.bat`): vino de otro repo el 2026-09-15 y se aceptó así.
+- **No simula por defecto**: `--dry-run` la primera vez.

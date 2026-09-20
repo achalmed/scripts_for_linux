@@ -1,5 +1,8 @@
-# Git Studio
-
+---
+tipo: readme
+estado: activo
+---
+# scripts_git_studio/ — Git Studio, GUI PySide6 para clonar, sincronizar y ver el estado de los repos del workspace (backend/ y repos-config.yml)
 <!-- suite:inicio -->
 **Suite `git_studio`** · objetivo *sistema* · estado *activo* · python · interfaz gui
 
@@ -84,12 +87,12 @@ abortan el lote):
 
 | Servicio | Origen |
 |---|---|
-| `git_service.py` | `script_git_sync_respos/lib/git_ops.sh` + `script_git_download_respos/lib/cloner.sh` (URLs y flags) |
-| `config_service.py` | `script_git_sync_respos/lib/config.sh` (mismo `repos-config.yml`) |
-| `status_service.py` | `script_git_sync_respos/lib/status_reporter.sh` |
-| `sync_service.py` | `script_git_sync_respos/lib/sync_engine.sh` |
-| `clone_service.py` | `script_git_download_respos/lib/cloner.sh` + despachador de `main.sh` |
-| `github_service.py` | `script_git_download_respos/lib/github_api.sh` (urllib en vez de curl+jq) |
+| `git_service.py` | `backend/script_git_sync_respos/lib/git_ops.sh` + `backend/script_git_download_respos/lib/cloner.sh` (URLs y flags) |
+| `config_service.py` | `backend/script_git_sync_respos/lib/config.sh` (mismo `repos-config.yml`) |
+| `status_service.py` | `backend/script_git_sync_respos/lib/status_reporter.sh` |
+| `sync_service.py` | `backend/script_git_sync_respos/lib/sync_engine.sh` |
+| `clone_service.py` | `backend/script_git_download_respos/lib/cloner.sh` + despachador de `main.sh` |
+| `github_service.py` | `backend/script_git_download_respos/lib/github_api.sh` (urllib en vez de curl+jq) |
 
 ### Un solo registro de repositorios
 
@@ -106,7 +109,7 @@ elegidas y muestra su salida completa en la Consola integrada.
 Para una nueva funcionalidad (ramas, commits, etiquetas, remotos,
 estadísticas…):
 
-1. Añadir las operaciones git necesarias a `services/git_service.py`
+1. Añadir las operaciones git necesarias a `app/services/git_service.py`
    (o un servicio nuevo de dominio, p. ej. `branch_service.py`).
 2. Diseñar la vista en Qt Designer → `app/ui/page_<nombre>.ui`.
 3. Crear `controllers/<nombre>_controller.py` heredando de
@@ -116,3 +119,11 @@ estadísticas…):
 
 Nada más: navegación, consola, progreso, cancelación, historial y
 preferencias ya son transversales.
+
+## Límite honesto
+
+- **No simula**: sincronizar es `pull → add → commit → push` de verdad; la vista previa es la página Repositorios o `sync.sh --check`.
+- **Los servicios son ports de los módulos Bash, no los mismos módulos**: `git_service.py` es la única implementación git de la GUI y puede divergir de `git_ops.sh` si uno cambia y el otro no.
+- **Los dos backends de `backend/` son suites** con `suite.yml`, README y CLI propios; lo único que comparten con la GUI de verdad es `backend/script_git_sync_respos/repos-config.yml`, cuyo parser es ligero (sin comillas, anclas ni anidación).
+- **Sin pruebas automáticas**: `python3 main.py --smoke` construye la UI y sale; PySide6 solo lo necesita la GUI.
+- **Solo GitHub** en Clonar (API `users/<usuario>/repos`; repos privados con token).

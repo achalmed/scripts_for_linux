@@ -1,5 +1,32 @@
-# git-sync v2.0
+---
+tipo: readme
+estado: activo
+---
+# script_git_sync_respos/ — sincronización y estado de los repos del workspace desde repos-config.yml (git-sync v2.0)
 
+<!-- suite:inicio -->
+**Suite `git_sync_respos`** · objetivo *sistema* · estado *activo* · - · interfaz cli
+
+Sincroniza (pull, add, commit, push) y reporta el estado de los repos del workspace listados en repos-config.yml, el registro que comparte con Git Studio.
+
+- Escribe en: git · simula por defecto: no
+- Entrada: repos-config.yml (base_directory y lista de repos habilitados)
+- Depende de: bash >= 4, git
+- Nota: Backend de Git Studio (páginas Sincronizar, Repositorios y Reportes) desde 2026-07-13; sigue siendo utilizable desde la terminal. Sin main.sh a propósito, dos entradas (sync.sh y status.sh) y config en lib/config.sh; repos-config.yml es el único registro de repos y nunca diverge de la GUI.
+
+Comandos:
+
+```bash
+sync.sh --check
+sync.sh -m "mensaje" -r "repo1,repo2"
+status.sh --days 30
+sync.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_git_studio` desde 2026-07-13 (Git Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 Herramienta modular para sincronizar y monitorear múltiples repositorios Git
 desde una sola fuente de configuración. Reemplaza el conjunto anterior de
 tres scripts redundantes (`sync-repos.sh`, `sync-repos.py`, `quick-sync.sh`)
@@ -135,7 +162,7 @@ hace `git fetch` y se cuenta `behind`. Si `behind > 0` se reporta
 formato `pub_axiomata`, `pub_chaska`, etc.
 
 **Corrección:** Todos los nombres de blogs actualizados al formato `pub_*`.
-`base_directory` actualizado a `~/Documents` (en vez de `~/Documents/publicaciones`).
+`base_directory` actualizado a `~/Documents` (en vez de ~/Documents/publicaciones).
 
 ---
 
@@ -186,7 +213,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-El instalador pregunta dónde instalar (default `~/bin/git-sync`) y dónde están
+El instalador pregunta dónde instalar (default ~/bin/git-sync) y dónde están
 tus repositorios (default `~/Documents`), copia todos los archivos (incluyendo
 `lib/`), ajusta `base_directory` automáticamente, detecta qué carpetas con
 `.git` existen y avisa cuáles faltan en el config, y opcionalmente agrega
@@ -204,7 +231,7 @@ cp lib/*.sh ~/bin/git-sync/lib/
 chmod +x ~/bin/git-sync/sync.sh ~/bin/git-sync/status.sh
 ```
 
-Luego edita `~/bin/git-sync/repos-config.yml` para ajustar `base_directory`
+Luego edita ~/bin/git-sync/repos-config.yml para ajustar `base_directory`
 y la lista de repositorios.
 
 ---
@@ -381,8 +408,8 @@ En la tabla, los contadores indican:
 
 ```bash
 # 1. Regenerar índices
-cd ~/Documents/scripts/scripts_for_quarto
-./generar_indices.sh
+cd ~/Documents/scripts_quarto_studio
+backend/script_generador_publicacion_similar/main.sh "../04 index/_pubs/pub_axiomata"
 
 # 2. Sincronizar
 cd ~/bin/git-sync
@@ -438,7 +465,7 @@ crontab -e
 Agregar (ejemplo: sincronizar a las 18:00 todos los días):
 
 ```
-0 18 * * * /home/achalmaedison/bin/git-sync/sync.sh -m "auto: sincronización diaria" >> /tmp/git-sync.log 2>&1
+0 18 * * * $HOME/bin/git-sync/sync.sh -m "auto: sincronización diaria" >> /tmp/git-sync.log 2>&1
 ```
 
 **Importante:** En cron no hay `$HOME` garantizado igual que en tu shell
@@ -591,3 +618,11 @@ O agrega `/opt/homebrew/bin/bash` al shebang de los scripts.
 **Autor:** Edison Achalma (`achalmed`)  
 ORCID: 0000-0001-6996-3364  
 Universidad Nacional de San Cristóbal de Huamanga, Ayacucho, Perú
+
+## Límite honesto
+
+- **No simula**: `sync.sh` hace `pull`, `add -A`, `commit` y `push` de verdad; `--check` solo muestra qué cambió (con `fetch`).
+- **Si `git pull` falla (ramas divergentes), detiene ese repo y lo marca como error**: no hay merge automático; se resuelve a mano en el repo.
+- **`repos-config.yml` se lee con un parser ligero**: dos espacios antes de `- name`, cuatro en `branch`/`enabled`, sin comillas, anclas ni anidación. Es el mismo archivo que Git Studio lee y escribe.
+- **Sin `main.sh` a propósito**: las dos entradas son `sync.sh` y `status.sh`, y la configuración vive en `lib/config.sh`.
+- **La instalación en ~/bin/git-sync, los alias y el cron son opcionales y externos al repo**: el repo se usa desde su carpeta.

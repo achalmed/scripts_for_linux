@@ -1,5 +1,8 @@
-# dni-a-copia
-
+---
+tipo: readme
+estado: activo
+---
+# script_dni_a_copia/ — dos fotos de un DNI a una copia limpia a tamaño real, en DOCX o PDF (v1.5)
 <!-- suite:inicio -->
 **Suite `dni_a_copia`** · objetivo *personal* · estado *activo* · python · interfaz cli
 
@@ -232,7 +235,7 @@ Imprime/exporta a escala **100 %**, nunca "Ajustar a página".
 ## 🤝 Cómo Contribuir
 
 ### Para agregar un nuevo módulo o flag
-1. Crea `lib/nuevo_modulo.py` con funciones de responsabilidad única (< 30 líneas).
+1. Crea lib/<tema>.py con funciones de responsabilidad única (< 30 líneas).
 2. Añade los valores ajustables en `config.py` (nunca hardcodeados en `lib/`).
 3. Si aporta una opción, declárala en `lib/cli.py` y consúmela en `main.py`.
 4. Actualiza este README.
@@ -303,3 +306,11 @@ Imprime/exporta a escala **100 %**, nunca "Ajustar a página".
     defecto 600 para acabado de escáner de alta resolución.
   - **v1.0.0** — reestructuración 1:1 del script original + exportación
     integrada a PDF (`--to-pdf`).
+
+## Límite honesto
+
+- **`config.py` trae por defecto las rutas de un DNI real**: las imágenes nunca salen de la máquina y, antes de publicar, esos valores se sustituyen por rutas de ejemplo.
+- **La restauración (`--enhance`) es solo visual**: limpia compresión y ruido, no inventa detalle ni altera dato alguno del documento.
+- **La detección exige tarjeta saturada y cuatro esquinas visibles**: los DNIe y los escaneos planos van siempre con `--pre-cropped`; una esquina tapada, con `--no-perspective`.
+- **`--rotate auto` solo distingue vertical de horizontal**; boca abajo u horario se fuerzan con `--rotate 180`/`270`.
+- **No simula por defecto**: `--dry-run` hay que pedirlo.

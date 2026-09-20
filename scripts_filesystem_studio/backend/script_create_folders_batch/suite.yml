@@ -1,0 +1,17 @@
+# scripts_filesystem_studio/backend/script_create_folders_batch/suite.yml — suite create_folders_batch: Crea carpetas por lote desde una lista predefinida o un archivo, con vista previa, confirmación y dry-run.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: create_folders_batch
+objetivo: sistema
+resumen: Crea carpetas por lote desde una lista predefinida o un archivo, con vista previa, confirmación y dry-run.
+escribe_en:
+- archivos
+simula_por_defecto: false
+comandos:
+- main.sh -d -f lista.txt
+- main.sh -y -f lista.txt -p <carpeta>
+- main.sh --help
+estado: activo
+entrada: lista de nombres (config.sh o archivo -f)
+depende_de:
+- bash
+nota: Backend de Filesystem Studio (página Carpetas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Rechaza rutas absolutas y componentes «..».

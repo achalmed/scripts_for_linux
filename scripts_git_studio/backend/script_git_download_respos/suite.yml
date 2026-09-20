@@ -1,0 +1,20 @@
+# scripts_git_studio/backend/script_git_download_respos/suite.yml — suite git_download_respos: Clona uno, varios o todos los repos de una cuenta de GitHub con la profundidad de historial que se pida, por SSH o HTTPS, con dry-run.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+id: git_download_respos
+objetivo: sistema
+resumen: Clona uno, varios o todos los repos de una cuenta de GitHub con la profundidad de historial que se pida, por SSH o HTTPS, con dry-run.
+escribe_en:
+- git
+simula_por_defecto: false
+comandos:
+- main.sh -u <usuario> -n
+- main.sh -u <usuario> -m list -r "repo1,repo2" -d full
+- main.sh -u <usuario> -o <carpeta> -s
+- main.sh -h
+estado: activo
+entrada: la API de GitHub (users/<usuario>/repos) o una lista de repos
+depende_de:
+- bash
+- git
+- curl y jq (solo en modo all)
+nota: Backend de Git Studio (página Clonar; la GUI lo porta a app/services/clone_service.py y github_service.py) desde 2026-07-13; sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t para repos privados.

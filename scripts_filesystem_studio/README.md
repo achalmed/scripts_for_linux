@@ -1,5 +1,8 @@
-# Filesystem Studio
-
+---
+tipo: readme
+estado: activo
+---
+# scripts_filesystem_studio/ — Filesystem Studio, GUI PySide6 de las cinco herramientas de sistema de archivos que viven en backend/
 <!-- suite:inicio -->
 **Suite `filesystem_studio`** · objetivo *sistema* · estado *activo* · python · interfaz gui
 
@@ -94,3 +97,11 @@ tamaño de iconos, hilos, carpeta de reportes y temporal.
   (.ts/.qm) aún no están generadas; la interfaz es en español.
 - Al mover los scripts aquí, corrige los alias del shell que apuntaban a
   las rutas antiguas (p. ej. `ptree`).
+
+## Límite honesto
+
+- **Sin pruebas automáticas**: la comprobación es `python3 main.py --smoke` y usar la aplicación.
+- **No es la fuente de verdad de sus backends**: reutiliza la `lib/` de `script_hardlinks-creator` y reimplementa el resto en `app/services/`; un cambio de comportamiento se hace en los dos sitios.
+- **Los cinco backends de `backend/` son suites** con `suite.yml`, README y CLI propios; la GUI los lanza o los porta, no los sustituye.
+- **Las traducciones no existen** (el selector de idioma guarda la preferencia, la interfaz es en español) y `resources_rc.py` es opcional.
+- **`reports/` no se versiona**: es un historial local de lo generado.

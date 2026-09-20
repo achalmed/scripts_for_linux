@@ -1,5 +1,31 @@
-# Count Files by Extension
+---
+tipo: readme
+estado: activo
+---
+# script_count_files_by_extension/ — conteo de archivos por extensión con tamaños, ranking y estadísticas (v2.0)
 
+<!-- suite:inicio -->
+**Suite `count_files_by_extension`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Cuenta los archivos de un árbol por extensión, con tamaño acumulado, ranking top-N y estadísticas, en una sola pasada de find.
+
+- Escribe en: ninguno · simula por defecto: no
+- Entrada: cualquier carpeta (por defecto la biblioteca)
+- Depende de: bash, GNU findutils
+- Nota: Backend de Filesystem Studio (página Estadísticas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Solo lee; GNU-only (find -printf).
+
+Comandos:
+
+```bash
+main.sh [directorio]
+main.sh -t 10 --no-color <directorio>
+main.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Analiza recursivamente un directorio y cuenta los archivos agrupados por
 > extensión, mostrando cantidad, tamaño acumulado, ranking top-N y
 > estadísticas generales — todo en una sola pasada sobre el disco.
@@ -116,7 +142,7 @@ script_count_files_by_extension/
 - **Descripción**: con `set -u`, la comprobación `[[ "$1" == "-h" ]]` (línea
   258 de la v1.x) accedía a `$1` sin valor por defecto; sin argumentos el
   script moría con "unbound variable" antes de llegar a `main`.
-- **Impacto**: el caso de uso principal documentado (`./script.sh` sin
+- **Impacto**: el caso de uso principal documentado (ejecutarlo sin
   argumentos) no funcionaba.
 - **Corrección**: parseo centralizado en `lib/cli.sh` con bucle `while` que
   nunca accede a posicionales inexistentes.
@@ -181,7 +207,7 @@ fuerza, usa `--no-color`.
 
 ## 🤝 Cómo Contribuir
 
-1. Crea el módulo en `lib/nuevo_modulo.sh` con una única responsabilidad.
+1. Crea el módulo en lib/<tema>.sh con una única responsabilidad.
 2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh` (nunca
    hardcodeados en `lib/`).
 3. Cárgalo con `source` en `main.sh` en orden de dependencias.
@@ -202,3 +228,10 @@ fuerza, usa `--no-color`.
   destino de un symlink), igual que en la v1.x.
 - El separador decimal de los porcentajes depende del `LC_NUMERIC` del
   sistema (coma en locales españoles).
+
+## Límite honesto
+
+- **Solo lee**: no escribe nada; la salida se redirige (`> reporte.txt`) si hace falta.
+- **GNU/Linux solamente** (`find -printf`): sin findutils GNU no funciona en macOS/BSD.
+- **No sigue enlaces simbólicos** ni distingue archivos duplicados: cuenta entradas, no contenido.
+- **Los porcentajes dependen del `LC_NUMERIC`** del sistema.

@@ -1,67 +1,118 @@
-# CLAUDE.md
+---
+tipo: guia_ia
+estado: activo
+---
+# CLAUDE.md — scripts_for_linux
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guía para el asistente. En español, como todo el ecosistema. `AGENTS.md` es un enlace a este archivo.
+Léase antes: `README.md` (qué es, uso, estructura), el `suite.yml` y el README de la herramienta que se
+toque, y `scripts_filesystem_studio/README.md` o `scripts_git_studio/README.md` si el cambio es en una GUI.
 
-## What this repository is
+## Reglas que no se negocian
 
-A collection of independent Linux CLI utilities (Bash and Python 3), one per `script_*` directory, plus two PySide6 desktop apps: **`filesystem-studio/`** (unifies five filesystem tools) and **`scripts_git_studio/`** (unifies the two Git repo-management tools). There is no repo-wide build system, package manager, linter config, or test suite — each tool is run directly from its directory. Documentation, code comments, and terminal output are written in **Spanish**; keep that convention when editing or adding code.
+- **Cada suite es autónoma y sigue el patrón `main` + `config` + `lib`**, en Bash y en Python por igual
+  (`core/suite.schema.yml` §`patron`; excepción aceptada: `script_sync_usb`, un solo archivo):
 
-## filesystem-studio (desktop app)
+  ```
+  script_<nombre>/
+  ├── main.sh|main.py     # entrada: solo orquestación (≈120 líneas como máximo)
+  ├── config.sh|config.py # valores editables: rutas, exclusiones, opciones de rsync, colores
+  └── lib/                # un módulo por responsabilidad
+      ├── cli.*           # parseo de argumentos (variables OPT_* en Bash / argparse en Python)
+      ├── logger.*        # envoltorio del logger de core/ (shell-lib o py-common)
+      ├── validator.*     # dependencias, entradas y entorno
+      └── ...             # dominio: scanner, processor, renderer, …
+  ```
 
-`filesystem-studio/` is a PySide6/Qt6 GUI that integrates five former top-level tools, which were **moved intact** into `filesystem-studio/backend/` and are still runnable from the CLI there: `script_proyect_tree`, `script_count_files_by_extension`, `script_create_folders_batch`, `script_hardlinks-creator`, `script_hardlinks-detector`. Run the app with `python3 filesystem-studio/main.py` (or `--smoke` for a construction test). Its architecture (controllers → services → backend, workers for QThread, .ui files loaded via QUiLoader) is documented in `filesystem-studio/README.md` — read it before modifying the app, and never make the UI touch the filesystem directly: that belongs in `app/services/`.
+  **`main` orquesta, `lib/` implementa.** La entrada carga `config`, luego los módulos de `lib/` en orden
+  de dependencia y ejecuta fases numeradas (parsear → logger → validar → confirmar → procesar →
+  resumen).
+  La lógica de negocio nunca vive en `main`. **Los tunables nuevos van al `config`**, no a un módulo
+  de `lib/`.
+- **Sin rutas de máquina ni logger propio**: la raíz se resuelve con `core/env.sh` o `core/env.py` y
+  `lib/logger.*` envuelve el de `core/` (FS2). Las herramientas Bash usan `set -euo pipefail` y resuelven
+  `SCRIPT_DIR` para funcionar desde cualquier directorio; las Python anteponen su carpeta a `sys.path`.
+- **Lo destructivo pide confirmación** salvo `--no-confirm`/`--auto`/`-y`, y la simulación (`--dry-run`,
+  `--simulate`, `-d`, `-n`, `--check`) se respeta de punta a punta. Un script nuevo de un solo archivo se
+  lleva al patrón modular antes de ampliarlo, y su README documenta los bugs corregidos en esa migración.
+- **Las dos GUI (PySide6/Qt6) nunca tocan el disco ni ejecutan scripts desde la UI**: todo pasa por
+  la carpeta app/services/ de cada GUI; las operaciones largas corren en un worker (`QThread`) con
+  progreso y cancelación; las vistas son `.ui` de Qt Designer cargadas con `QUiLoader` (sin compilar).
+  Se ejecutan con `python3 scripts_filesystem_studio/main.py` y `python3 scripts_git_studio/main.py`;
+  `--smoke` construye la UI y sale.
+- **Los siete backends de las GUI son suites completas** (`suite.yml`, README, `main.*` + `config` +
+  `lib/`)
+  y siguen siendo CLI desde su carpeta: `scripts_filesystem_studio/backend/` (`script_proyect_tree`,
+  `script_count_files_by_extension`, `script_create_folders_batch`, `script_hardlinks-creator`,
+  `script_hardlinks-detector`) y `scripts_git_studio/backend/` (`script_git_download_respos`,
+  `script_git_sync_respos`). Un cambio de comportamiento se hace en el backend y en el servicio de la
+  GUI que lo porta.
+- **`scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el único registro de repos**:
+  lo leen `sync.sh`, `status.sh` y la GUI (`scripts_git_studio/app/services/config_service.py`), y la
+  GUI lo escribe al añadir o clonar. El registro de repos nunca diverge: no se duplica en ningún otro
+  archivo.
+- **`scripts_git_studio/app/services/git_service.py` es la única implementación de comandos git**
+  de Git Studio: sync, estado, clonado y reportes la reutilizan.
+- **Lo generado no se edita**: los bloques `<!-- suite:inicio -->`/`<!-- suites:inicio -->` de los README
+  salen de los `suite.yml` (`core/suites.py generar --aplicar`); `resources_rc.py` lo escribe
+  `scripts_filesystem_studio/tools/build_resources.sh`; `reports/` y `estructura.txt` no se versionan.
+- **Español con tildes** en código, mensajes, comentarios y docs; nada del despacho en este repo.
 
-## scripts_git_studio (desktop app)
-
-`scripts_git_studio/` is a PySide6/Qt6 GUI for Git repository administration that unifies the former top-level tools `script_git_download_respos` (cloning from GitHub) and `script_git_sync_respos` (pull→commit→push sync + status), **moved intact** into `scripts_git_studio/backend/` and still runnable from the CLI there. Run the app with `python3 scripts_git_studio/main.py` (or `--smoke`). It follows the same architecture as filesystem-studio (see `scripts_git_studio/README.md`): all git commands live in `app/services/git_service.py` — the single implementation reused by sync, status, clone and reports — and the GUI shares `backend/script_git_sync_respos/repos-config.yml` with the CLI scripts, so the repo registry never diverges.
-
-## Running the tools
-
-Each tool is executed via its entry point:
+## Cómo se verifica un cambio
 
 ```bash
-# Modular Bash tools (backup_suite, pdf-suite)
-./script_backup_suite/main.sh --help
-
-# Tools that now live under filesystem-studio/backend/
-./filesystem-studio/backend/script_create_folders_batch/main.sh -f lista.txt -d
-python3 filesystem-studio/backend/script_hardlinks-creator/main.py <filename> --dry-run
-
-# Git tools that now live under scripts_git_studio/backend/
-./scripts_git_studio/backend/script_git_sync_respos/sync.sh --check
-./scripts_git_studio/backend/script_git_download_respos/main.sh -u achalmed -n
-
-# Python tools
-python3 script_pdf_page_counter/main.py --listar
+python3 core/archivos.py validar scripts_for_linux          # A01–A14 y D01–D12, desde ~/Documents
+python3 core/suites.py validar                               # los 17 suite.yml contra el esquema
+python3 core/suites.py generar                               # ¿bloques de README desfasados? (simula)
+bash -n scripts_for_linux/script_backup_suite/main.sh        # sintaxis Bash; un archivo por invocación
+python3 -m py_compile scripts_for_linux/script_audio_converter/main.py
+scripts_for_linux/script_video_downloader/main.sh --simulate <url>   # la simulación de la suite tocada
+python3 scripts_for_linux/scripts_filesystem_studio/main.py --smoke           # la GUI construye y sale
+python3 scripts_for_linux/scripts_git_studio/main.py --smoke
+scripts_for_linux/scripts_git_studio/backend/script_git_sync_respos/status.sh   # mismo registro que la GUI
+meta/doctor/main.sh --breve
 ```
 
-- Most tools support a simulation flag (`--dry-run`, `-d`, or simulate mode) — use it to verify changes without touching the filesystem.
-- Scripts need execute permission: `chmod +x <tool>/main.sh <tool>/lib/*.sh`.
-- To sanity-check Bash edits without running side effects: `bash -n <file>.sh`.
-- `script_git_sync_respos` reads its repository list from `repos-config.yml` in its own directory (`scripts_git_studio/backend/script_git_sync_respos/`); the Git Studio GUI reads and writes the same file.
+No hay pruebas automáticas: un cambio se prueba con `--help`, con la simulación de la suite sobre una
+carpeta de prueba y, si es de una GUI, abriéndola y mirando la Consola integrada (comando, stdout, stderr,
+código de salida).
 
-## Architecture: the shared modular pattern
+## Detalles que cuesta redescubrir
 
-The mature tools all follow the same three-part layout, in both Bash and Python:
+- **Los nombres viejos no existen**: la GUI de archivos es `scripts_filesystem_studio/` (no
+  `filesystem-studio/`), y `script_pdf_page_counter` migró a
+  `scripts_document_studio/backends/page-counter/`.
+- **`script_proyect_tree` escribe `estructura.txt`**, derivado que la normativa ya no admite en un repo
+  (§15.8, D07, retirado de este repo en DOC2 el 2026-09-20). Se usa para la vista previa de la GUI,
+  `--list`, `--stats` o formatos `md`/`json` fuera de git. Su `config.sh` fija por nombre los grupos de
+  proyectos (`pub_*`, `scripts_*`, `CampusTeX-*`, `website-achalma`) y `EXTRA_PROJECTS`.
+- **`script_backup_suite/main.sh --help` necesita `TERM`** (usa `tput`): en un entorno sin terminal sale 1.
+- **`script_hardlinks-creator` compara por SHA-256 y solo enlaza contenido idéntico**; `_extensions/` está
+  excluida a propósito (los `_metadata.yml` de extensiones Quarto difieren por diseño). Su reporte lo
+  consume `script_hardlinks-detector --report`.
+- **`script_git_sync_respos` no tiene `main.sh`**: sus entradas son `sync.sh` y `status.sh`, y su parser
+  de `repos-config.yml` es ligero (dos espacios antes de `- name`, cuatro en `branch`/`enabled`; sin
+  comillas ni anidación). El README describe una instalación opcional en ~/bin/git-sync que no es parte del
+  repo.
+- **`script_sync_usb` vino de `05_sgdp/sincronizacion_usb`** (M10 D2, 2026-09-15): nunca borra, gana el más
+  nuevo con papelera .sgdp-papelera/, conserva ambos en conflicto y pide una clave que hoy vive en el
+  código (`SGDP_USB_CLAVE` la evita en modo no interactivo).
+- **`script_dni_a_copia/config.py` trae por defecto las rutas de un DNI real**; las imágenes no salen de la
+  máquina. `--pre-cropped` es obligatorio con DNIe o escaneos planos (no son turquesa).
+- **`script_video_downloader --clip` no usa `--download-sections`** de yt-dlp (trunca DASH): corta con
+  ffmpeg desde las URL crudas y verifica con ffprobe; en `script_video_downloader/lib/options.sh` las
+  funciones terminan con `return 0` y los contadores son `var=$((var + 1))` por `set -e`.
+- **`vendor/transcribir_whisper_jason_boog.py`** es el cuaderno Colab original (MIT) del transcriptor: se
+  conserva como referencia y no se edita.
 
-```
-script_<name>/
-├── main.sh|main.py    # Entry point: orchestration only (~120 lines max by convention)
-├── config.sh|config.py # User-editable defaults: paths, exclusions, rsync opts, colors
-└── lib/               # Single-responsibility modules
-    ├── cli.*          # Argument parsing (defines OPT_* variables / argparse parser)
-    ├── logger.*       # Colored logging + optional log file with rotation
-    ├── validator.*    # Dependency/input/environment checks
-    └── ...            # Domain modules (scanner, processor, renderer, etc.)
-```
+## Dónde está cada cosa
 
-Key conventions to preserve:
-
-- **`main` orchestrates, `lib/` implements.** Entry points load `config` first, then source/import lib modules in dependency order, then run numbered phases (parse args → init logger → validate → confirm with user → process → summary). Business logic never lives in `main`.
-- Bash tools use `set -euo pipefail` and resolve `SCRIPT_DIR` so they work from any CWD; the Python tool prepends its own directory to `sys.path` for the same reason.
-- CLI options are stored in `OPT_*` globals (Bash) set by `parse_args`, and configuration constants live in `config.sh`/`config.py` — new tunables go there, not hardcoded in lib modules.
-- Destructive operations ask for interactive confirmation unless a `--no-confirm`/`--auto` flag is passed, and honor the simulation flag end-to-end.
-- File headers carry a version number and phase-by-phase description of the flow; module files state their single responsibility.
-
-As of 2026-07 every tool follows this modular layout (the last four single-file tools — count_files_by_extension, create_folders_batch, git_download_respos, pdf_page_counter — were refactored into it; each README documents the bugs fixed in that migration). If a new single-file script is added, refactor it into the modular layout before substantially extending it.
-
-Each tool has its own README.md with usage, architecture notes, and extension instructions — read it before modifying that tool, and update it when behavior changes.
+| pregunta | documento |
+|---|---|
+| qué suites hay, cómo se invocan, qué escribe cada una | `README.md` y el bloque generado `suites:` |
+| módulos y cómo extender cada GUI | `scripts_filesystem_studio/README.md`, `scripts_git_studio/README.md` |
+| manual de una herramienta absorbida | `scripts_*_studio/backend/<herramienta>/README.md` |
+| manual de una suite de primer nivel | `<suite>/README.md` |
+| el contrato de suite, el patrón y los bloques generados | `core/suite.schema.yml`, `core/README.md` |
+| las suites de este repo entre las del workspace | `meta/INDICE_SCRIPTS.md` (generado) |
+| normativa de archivos, cabeceras y documentación | `meta/NORMATIVA_ARCHIVOS.md` (§6, §9, §15) |

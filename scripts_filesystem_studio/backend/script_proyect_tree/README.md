@@ -1,5 +1,33 @@
-# script_project_tree
+---
+tipo: readme
+estado: activo
+---
+# script_proyect_tree/ — árbol de carpetas (txt, md, json) de la carpeta actual o de los proyectos del workspace por grupos (v2.1)
 
+<!-- suite:inicio -->
+**Suite `proyect_tree`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
+
+Genera el árbol de carpetas (txt, md o json) de la carpeta actual o de los proyectos del workspace por grupos, con exclusiones y estadísticas de disco.
+
+- Escribe en: archivos · simula por defecto: no
+- Entrada: la carpeta actual o los grupos de proyectos de config.sh
+- Depende de: bash, tree
+- Nota: Backend de Filesystem Studio (página Árbol, modo Proyectos) desde 2026-07-13; sigue siendo utilizable desde la terminal. Escribe estructura.txt, derivado que NORMATIVA §15.8 (D07) no admite dentro de un repo (retirado en DOC2, 2026-09-20); úsese para vista previa, --list, --stats o salidas fuera de git.
+
+Comandos:
+
+```bash
+main.sh --list
+main.sh --stats
+main.sh --dry-run -t all
+main.sh -f md -L 3
+main.sh --help
+```
+
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<!-- suite:fin -->
+
+> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
 > Genera y actualiza archivos `estructura.txt` con el árbol de directorios
 > de cada proyecto en `~/Documents`, con soporte para grupos (`pub_*`,
 > `scripts_*`, `CampusTeX-*`, `website-achalma`), actualización individual
@@ -399,3 +427,10 @@ Edita `DEFAULT_EXCLUDE_DIRS` o `DEFAULT_EXCLUDE_FILES` en `config.sh`.
 - **`_GEN_SUCCESS` y `_GEN_FAIL`**: son variables globales usadas para
   comunicar el conteo entre `_run_generation_loop()` y `_print_final_status()`.
   Son privadas por convención (prefijo `_`) y no deben usarse fuera de `main.sh`.
+
+## Límite honesto
+
+- **Escribe `estructura.txt`, un derivado que NORMATIVA §15.8 (D07) ya no admite dentro de un repo** (retirado de este repo en DOC2, 2026-09-20): úsese para la vista previa de la GUI, `--list`, `--stats` o formatos `md`/`json` fuera de git.
+- **Los grupos de proyectos son nombres fijos en `config.sh`** (`pub_*`, `scripts_*`, `CampusTeX-*`, `website-achalma`, `EXTRA_PROJECTS`); lo que no coincide se ignora por diseño.
+- **Depende de `tree`** (≥ 1.8 para JSON limpio); profundidad 6 por defecto.
+- **No simula por defecto**: `--dry-run` hay que pedirlo; la escritura es atómica (temporal + `mv`).
