@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# DOC2 (2026-09-20): temporales y derivados fuera de git (NORMATIVA §5, §15.8)
+estructura.txt
+
+# DOC2 (2026-09-20): temporales y derivados fuera de git (NORMATIVA §5, §15.8)
+reports/
+scripts_filesystem_studio/backend/script_hardlinks-creator/archivos.txt
+estructura.txt
