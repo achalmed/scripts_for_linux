@@ -1,5 +1,5 @@
 ---
-tipo: doc
+tipo: plan
 titulo: "Visión de producto — Backup Studio (script_backup_suite) (2026-07-13)"
 estado: hecho
 creado: 2026-07-13
