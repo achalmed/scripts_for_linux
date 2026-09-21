@@ -1,5 +1,5 @@
 ---
-tipo: doc
+tipo: plan
 titulo: "Visión de producto — Git Studio (2026-07-20)"
 estado: hecho
 creado: 2026-07-20
