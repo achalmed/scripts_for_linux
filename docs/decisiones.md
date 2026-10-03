@@ -69,6 +69,12 @@ sin `config` ni `lib/` (patrón `M··`, que `core/suites.py validar` marca como
 personal (`backup_suite.log`, `video_downloader.log`) aunque `--log` estuviera apagado. Ahora `config.sh` declara `RUTA_LOG`, y
 `logger_init` solo asigna `LOG_FILE` con `--log` (y lo vacía sin él, aunque venga del entorno).
 
+**3.4 `HOME_DIR` sale de `core/env.sh`** (2026-10-03). Los `config.sh` de `script_backup_suite` y
+`script_video_downloader` escribían `HOME_DIR="/home/${USUARIO}"` (y un usuario de respaldo a mano),
+contra la regla 5 del `CLAUDE.md` raíz. Ahora cargan `core/env.sh` y usan la carpeta madre de
+`DOCS_ROOT`, que `env.sh` resuelve por la ubicación del script y no por `$HOME`: con `sudo` sigue
+siendo el directorio personal de quien invoca. `USUARIO` cae en `id -un`.
+
 ## Pendientes
 
 - **Datos personales en un repo público** (anotado 2026-10-03; dueño: el autor). El remoto es
