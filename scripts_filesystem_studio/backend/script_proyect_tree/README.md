@@ -50,14 +50,13 @@ main.sh --help
 
 ## 📖 Descripción
 
-`script_project_tree` automatiza la documentación de la estructura de
+`script_proyect_tree` automatiza la documentación de la estructura de
 carpetas de todos tus proyectos de desarrollo. Cada vez que ejecutas el
 script, genera (o actualiza) un archivo `estructura.txt` en la raíz de
 cada proyecto seleccionado.
 
 **Casos de uso principales:**
 
-- Documentar el estado actual de un proyecto antes de un commit
 - Comparar la estructura de un proyecto entre fechas distintas
 - Generar snapshots en formato Markdown para incluir en READMEs
 - Auditar el uso de disco por proyecto
@@ -90,17 +89,16 @@ forma aislada y puede extenderse sin tocar el resto del código.
 
 ## 🚀 Instalación
 
-### Paso 1: Copiar el proyecto a tu carpeta de scripts
+### Paso 1: Ubicar la herramienta
 
-```bash
-cp -r script_project_tree/ ~/Documents/scripts_for_linux/
-```
+Vive en el repo, en `scripts_filesystem_studio/backend/script_proyect_tree/`; no se copia a
+ningún otro sitio.
 
 ### Paso 2: Dar permisos de ejecución
 
 ```bash
-chmod +x ~/Documents/scripts_for_linux/script_project_tree/main.sh
-chmod +x ~/Documents/scripts_for_linux/script_project_tree/lib/*.sh
+chmod +x ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/main.sh
+chmod +x ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/lib/*.sh
 ```
 
 ### Paso 3: Instalar `tree` (si no lo tienes)
@@ -116,7 +114,7 @@ la ruta completa nunca más:
 
 ```bash
 # ~/.zshrc  (zsh — tu shell actual en Kubuntu/Arch)
-alias ptree='~/Documents/scripts_for_linux/script_project_tree/main.sh'
+alias ptree='~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/main.sh'
 ```
 
 Recarga la configuración:
@@ -284,7 +282,7 @@ La versión 2.0 separa el monolito original en módulos con responsabilidad úni
 `main.sh` solo orquesta — toda la lógica vive en `lib/`.
 
 ```
-script_project_tree/
+script_proyect_tree/
 ├── main.sh              # Punto de entrada — carga módulos y orquesta el flujo
 ├── config.sh            # Constantes y variables de runtime (única fuente de verdad)
 ├── README.md            # Esta documentación

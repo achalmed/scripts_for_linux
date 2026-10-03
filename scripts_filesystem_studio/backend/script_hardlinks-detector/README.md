@@ -135,10 +135,8 @@ sudo apt install coreutils findutils
 ## 🚀 Instalación
 
 ```bash
-# 1. Clonar en tu carpeta de scripts
-cd ~/Documents/scripts_for_linux
-git clone https://github.com/achalmed/hardlinks-detector.git
-cd hardlinks-detector
+# 1. Vive en el repo scripts_for_linux, como backend de Filesystem Studio
+cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector
 
 # 2. Dar permisos de ejecución
 chmod +x main.sh lib/*.sh
@@ -183,7 +181,7 @@ hardlinks-detector [DIRECTORIO] [OPCIONES]
 
 ```bash
 # Inicio
-cd ~/Documents/scripts_for_linux/script_hardlinks-detector
+cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector
 
 # Ver hard links en el directorio actual
 ./main.sh
@@ -293,7 +291,7 @@ hardlinks-detector/
 
 ```bash
 # Crear links
-python ~/Documents/scripts_for_linux/hardlinks-creator/main.py _metadata.yml --auto
+python ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator/main.py _metadata.yml --auto
 
 # Verificar resultado
 hardlinks-detector ~/Documents

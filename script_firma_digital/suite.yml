@@ -7,7 +7,8 @@ escribe_en:
 - archivos
 simula_por_defecto: false
 comandos:
-- main.py firma.jpg [--salida firma.svg]
+- main.py firma.jpg [-o <carpeta>] [-n <nombre>]
+- main.py firma.jpg --dry-run
 estado: activo
 depende_de:
 - python3

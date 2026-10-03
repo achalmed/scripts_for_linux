@@ -14,12 +14,13 @@ Sincroniza carpetas del home hacia un disco externo por perfiles, con confirmaci
 Comandos:
 
 ```bash
-main.sh --profile completo
-main.sh --dry-run
+main.sh --simulate --verbose
+main.sh --profile docs
+main.sh --profile list
 main.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 > Script modular de backup para Linux que sincroniza tu directorio home
@@ -113,11 +114,9 @@ Para cada carpeta del perfil activo:
 
 ## 🚀 Instalación
 
-### 1. Clonar o copiar el proyecto
+### 1. Ubicar la herramienta
 
-```bash
-cp -r backup-suite/ ~/Documents/scripts_for_linux/script_backup_suite/
-```
+Vive en el repo `scripts_for_linux`, en `script_backup_suite/`; no se copia a ningún otro sitio.
 
 ### 2. Dar permisos de ejecución
 
@@ -453,8 +452,8 @@ _achalmaedison — del home al disco externo `/media/*/ARCHDISK`_
 
 ## Límite honesto
 
-- **No simula por defecto**: `--dry-run` (o `-s`) hay que pedirlo; `--delete-all --no-confirm` borra huérfanos del destino sin preguntar.
-- **Requiere Bash ≥ 4.3** (`local -n`) y `rsync`; `--help` necesita una terminal (`TERM`) porque usa `tput`.
+- **No simula por defecto**: `--simulate` (o `-s`) hay que pedirlo; `--delete-all --no-confirm` borra huérfanos del destino sin preguntar.
+- **Requiere Bash ≥ 4.3** (`local -n`) y `rsync`; toda invocación, también `--help`, necesita una terminal (`TERM`) porque `main.sh` empieza con `clear`.
 - **El destino es un disco externo montado** (`/media/*` o `/run/media/*`): sin él no hay respaldo, no hay modo remoto ni nube.
 - **Checksum (`-c`) es más lento que comparar por fecha y tamaño** (`--fast`); la precisión se paga en tiempo.
 - **Los códigos de salida esperables de rsync (24) no abortan** por `|| true` explícito; cualquier otro error detiene el respaldo (`set -euo pipefail`).

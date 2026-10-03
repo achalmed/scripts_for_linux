@@ -15,6 +15,9 @@ Creo que el nombre **Filesystem Studio** incluso se queda corto. Lo que realment
 > Visión de producto escrita en el vault el 2026-07-13 (`01 notes/proyecto-filesystem-studio.md`, tipo idea) y trasladada a `docs/` del repo en
 > DOC8 (2026-09-20, decisión D15): es el documento fundacional de lo que hoy es Filesystem Studio. Lo construido y vigente está en
 > `README.md` y `CLAUDE.md`; lo que aquí se prometió y no se hizo es historia, no pendiente.
+>
+> En `docs/historial/` desde el 2026-10-03 (`../decisiones.md` §1.4); lo vigente es el README de la
+> herramienta.
 
 No lo pensaría como
 

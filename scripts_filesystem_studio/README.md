@@ -101,7 +101,7 @@ tamaño de iconos, hilos, carpeta de reportes y temporal.
 ## Límite honesto
 
 - **Sin pruebas automáticas**: la comprobación es `python3 main.py --smoke` y usar la aplicación.
-- **No es la fuente de verdad de sus backends**: reutiliza la `lib/` de `script_hardlinks-creator` y reimplementa el resto en `app/services/`; un cambio de comportamiento se hace en los dos sitios.
+- **No es la fuente de verdad de sus backends**: importa la `lib/` de `script_hardlinks-creator`, ejecuta el `main.sh` de `script_proyect_tree` en el modo «Proyectos» y porta el resto a `app/services/`; un cambio de comportamiento se hace en los dos sitios (`../docs/decisiones.md` §2.2).
 - **Los cinco backends de `backend/` son suites** con `suite.yml`, README y CLI propios; la GUI los lanza o los porta, no los sustituye.
 - **Las traducciones no existen** (el selector de idioma guarda la preferencia, la interfaz es en español) y `resources_rc.py` es opcional.
 - **`reports/` no se versiona**: es un historial local de lo generado.

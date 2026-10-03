@@ -7,8 +7,9 @@ escribe_en:
 - archivos
 simula_por_defecto: false
 comandos:
-- main.sh --profile completo
-- main.sh --dry-run
+- main.sh --simulate --verbose
+- main.sh --profile docs
+- main.sh --profile list
 - main.sh --help
 estado: activo
 depende_de:

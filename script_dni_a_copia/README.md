@@ -14,10 +14,11 @@ Convierte dos fotografías de un DNI (anverso y reverso) en una copia limpia a t
 Comandos:
 
 ```bash
-main.py anverso.jpg reverso.jpg [--salida copia.pdf]
+main.py --front anverso.jpg --back reverso.jpg [-o <carpeta>] [--to-pdf]
+main.py --front anverso.jpg --back reverso.jpg --dry-run
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 > Arma una copia limpia, a tamaño real y **alta resolución**, del anverso y
@@ -117,12 +118,12 @@ python3 main.py [OPCIONES]
 | `--version`         | Muestra la versión y sale                            | No        |
 | `-h, --help`        | Muestra la ayuda y sale                              | No        |
 
-¹ Tienen valores por defecto (los archivos del DNI [DNI-RETIRADO]); ver Notas.
+¹ Tienen valores por defecto (los archivos de un DNI concreto, en `config.py`); ver Notas.
 
 ### Ejemplos de uso
 
 ```bash
-# Reproducir la copia por defecto (DNI [DNI-RETIRADO]) -> Word
+# Reproducir la copia por defecto (rutas de `config.py`) -> Word
 python3 main.py
 
 # Cualquier DNI, con salida y nombre propios, y PDF
@@ -248,7 +249,7 @@ Imprime/exporta a escala **100 %**, nunca "Ajustar a página".
 ## ⚠️ Notas y Advertencias
 
 - **Datos personales**: `config.py` trae como valores por defecto las rutas de un
-  DNI real (número [DNI-RETIRADO]) para comodidad de un uso concreto. Si versionas este
+  DNI real para comodidad de un uso concreto. Si versionas este
   repositorio en un remoto público, **cambia esos defaults o no los subas**
   (p. ej. añádelos a `.gitignore` o reemplázalos por rutas de ejemplo). Las
   imágenes del DNI nunca deben salir de la máquina.

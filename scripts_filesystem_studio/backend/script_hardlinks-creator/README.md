@@ -135,10 +135,8 @@ El modo single (`python main.py _metadata.yml`) funciona exactamente igual que a
 ## 🚀 Instalación
 
 ```bash
-# 1. Clonar en tu carpeta de scripts
-cd ~/Documents/scripts_for_linux
-git clone https://github.com/achalmed/hardlinks-creator.git
-cd hardlinks-creator
+# 1. Vive en el repo scripts_for_linux, como backend de Filesystem Studio
+cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator
 
 # 2. Dar permisos de ejecución
 chmod +x main.py
@@ -201,7 +199,7 @@ exactamente uno de los dos.
 
 ```bash
 # Inicio
-cd ~/Documents/scripts_for_linux/script_hardlinks-creator
+cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator
 
 # Enlazar _metadata.yml con mismo contenido
 python main.py _metadata.yml
@@ -219,7 +217,7 @@ python main.py .editorconfig --replace-exclude build dist
 python main.py _quarto.yml --auto --no-color >> /var/log/hardlinks.log 2>&1
 
 # Procesar decenas de nombres de una sola vez (ver "Modo batch")
-cd ~/Documents/scripts_for_linux/script_hardlinks-creator
+cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator
 python main.py --batch archivos.txt --dry-run # primero simula
 python main.py --batch archivos.txt           # ejecuta de verdad (confirmar)
 python main.py --batch archivos.txt --auto    # ejecuta de verdad (sin confirmar)

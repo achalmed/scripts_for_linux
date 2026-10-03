@@ -14,10 +14,11 @@ Convierte la foto de una firma en SVG y PNG limpios (canal rojo, histéresis, po
 Comandos:
 
 ```bash
-main.py firma.jpg [--salida firma.svg]
+main.py firma.jpg [-o <carpeta>] [-n <nombre>]
+main.py firma.jpg --dry-run
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 > Convierte la foto de una firma manuscrita (tomada con el celular) en una firma

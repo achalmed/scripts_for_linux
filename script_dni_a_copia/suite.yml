@@ -7,7 +7,8 @@ escribe_en:
 - archivos
 simula_por_defecto: false
 comandos:
-- main.py anverso.jpg reverso.jpg [--salida copia.pdf]
+- main.py --front anverso.jpg --back reverso.jpg [-o <carpeta>] [--to-pdf]
+- main.py --front anverso.jpg --back reverso.jpg --dry-run
 estado: activo
 depende_de:
 - python3
