@@ -65,8 +65,8 @@ sin `config` ni `lib/` (patrón `M··`, que `core/suites.py validar` marca como
 
 **3.3 El destino del log se llama `RUTA_LOG`, no `LOG_FILE`** (2026-10-03). `script_backup_suite` y
 `script_video_downloader` asignaban `LOG_FILE` en su `config.sh`, y ese nombre es del logger de
-`core/` (`core/docs/logger.md`): cada mensaje se copiaba a `~/backup_suite.log` o
-`~/video_downloader.log` aunque `--log` estuviera apagado. Ahora `config.sh` declara `RUTA_LOG`, y
+`core/` (`core/docs/logger.md`): cada mensaje se copiaba al log de la suite en el directorio
+personal (`backup_suite.log`, `video_downloader.log`) aunque `--log` estuviera apagado. Ahora `config.sh` declara `RUTA_LOG`, y
 `logger_init` solo asigna `LOG_FILE` con `--log` (y lo vacía sin él, aunque venga del entorno).
 
 ## Pendientes
