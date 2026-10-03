@@ -28,7 +28,9 @@ DISK_LABEL="ARCHDISK"
 DESTINO_BASE_NAME="backup_${USUARIO}"
 
 # --- Archivo de log --------------------------------------------------------
-LOG_FILE="${HOME_DIR}/backup_suite.log"
+# Destino del log con --log. No se llama LOG_FILE: ese nombre es del logger de core/, que
+# copiaría cada mensaje en él aunque --log esté apagado (core/docs/logger.md).
+RUTA_LOG="${HOME_DIR}/backup_suite.log"
 LOG_MAX_BYTES=10485760   # 10 MB — rota automáticamente si supera este límite
 
 # --- Opciones rsync base ---------------------------------------------------

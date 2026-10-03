@@ -50,7 +50,7 @@ ${CLR_BOLD}OPCIONES GENERALES:${CLR_RESET}
         --version           Muestra la versión del script
     -v, --verbose           Modo detallado (lista cada archivo procesado)
     -s, --simulate          Simulación: muestra qué haría sin ejecutar nada
-    -l, --log               Guarda log completo en: ${LOG_FILE}
+    -l, --log               Guarda log completo en: ${RUTA_LOG}
         --no-confirm        No pide confirmación inicial (útil en scripts)
 
 ${CLR_BOLD}PERFILES DE BACKUP:${CLR_RESET}

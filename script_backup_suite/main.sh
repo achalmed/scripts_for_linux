@@ -54,7 +54,7 @@ main() {
     logger_init \
         "${OPT_VERBOSE}" \
         "${OPT_LOG}" \
-        "${LOG_FILE}" \
+        "${RUTA_LOG}" \
         "${LOG_MAX_BYTES}"
 
     # --- FASE 3: Advertir si se ejecuta como root --------------------------
@@ -206,7 +206,7 @@ main() {
         "${#carpetas_backup[@]}" \
         "${disk_path}" \
         "${OPT_SIMULATE}" \
-        "${OPT_LOG:+${LOG_FILE}}"
+        "${OPT_LOG:+${RUTA_LOG}}"
 
     run_post_command "${OPT_POST_CMD}" "${OPT_SIMULATE}"
 }

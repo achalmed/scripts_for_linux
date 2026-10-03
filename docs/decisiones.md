@@ -63,6 +63,12 @@ y verifica con ffprobe.
 `05_sgdp/sincronizacion_usb` como un solo `main.py` con lanzadores `.sh` y `.bat`; se incorporó
 sin `config` ni `lib/` (patrón `M··`, que `core/suites.py validar` marca como aviso).
 
+**3.3 El destino del log se llama `RUTA_LOG`, no `LOG_FILE`** (2026-10-03). `script_backup_suite` y
+`script_video_downloader` asignaban `LOG_FILE` en su `config.sh`, y ese nombre es del logger de
+`core/` (`core/docs/logger.md`): cada mensaje se copiaba a `~/backup_suite.log` o
+`~/video_downloader.log` aunque `--log` estuviera apagado. Ahora `config.sh` declara `RUTA_LOG`, y
+`logger_init` solo asigna `LOG_FILE` con `--log` (y lo vacía sin él, aunque venga del entorno).
+
 ## Pendientes
 
 - **Datos personales en un repo público** (anotado 2026-10-03; dueño: el autor). El remoto es
