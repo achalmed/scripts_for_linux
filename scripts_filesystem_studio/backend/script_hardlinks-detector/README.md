@@ -9,10 +9,10 @@ estado: activo
 
 Detecta los hard links de un árbol y los presenta agrupados por inodo como árbol, CSV, JSON o reporte de auditoría.
 
-- Escribe en: ninguno · simula por defecto: no
+- Escribe en: archivos · simula por defecto: no
 - Entrada: cualquier carpeta (por defecto la actual)
 - Depende de: bash >= 4, GNU findutils
-- Nota: Backend de Filesystem Studio (pestañas Detectar y Reportes de Hardlinks) desde 2026-07-13; sigue siendo utilizable desde la terminal. Solo lee; -o y --report escriben el archivo que se les pide.
+- Nota: Backend de Filesystem Studio (pestañas Detectar y Reportes de Hardlinks); sigue siendo utilizable desde la terminal. Sin -o ni --report solo lee; -o escribe el archivo pedido y --report, reports/hardlinks-report.md.
 
 Comandos:
 
@@ -23,7 +23,7 @@ main.sh <directorio> --report
 main.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

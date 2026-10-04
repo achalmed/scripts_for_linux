@@ -6,9 +6,9 @@ estado: activo
 <!-- suite:inicio -->
 **Suite `filesystem_studio`** · objetivo *sistema* · estado *activo* · python · interfaz gui
 
-Aplicación de escritorio (PySide6) que unifica las herramientas de sistema de archivos: renombrado, limpieza, árbol de proyectos.
+Aplicación de escritorio (PySide6) que reúne las herramientas de sistema de archivos: explorador, árbol de proyectos, estadísticas, creación de carpetas, hard links y reportes.
 
-- Escribe en: archivos · simula por defecto: sí
+- Escribe en: archivos · simula por defecto: no
 - Depende de: PySide6
 
 Comandos:
@@ -18,7 +18,7 @@ main.py
 main.py --smoke
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

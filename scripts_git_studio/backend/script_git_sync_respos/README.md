@@ -12,7 +12,7 @@ Sincroniza (pull, add, commit, push) y reporta el estado de los repos del worksp
 - Escribe en: git · simula por defecto: no
 - Entrada: repos-config.yml (base_directory y lista de repos habilitados)
 - Depende de: bash >= 4, git
-- Nota: Backend de Git Studio (páginas Sincronizar, Repositorios y Reportes) desde 2026-07-13; sigue siendo utilizable desde la terminal. Sin main.sh a propósito, dos entradas (sync.sh y status.sh) y config en lib/config.sh; repos-config.yml es el único registro de repos y nunca diverge de la GUI.
+- Nota: Backend de Git Studio (páginas Sincronizar, Repositorios y Reportes); sigue siendo utilizable desde la terminal. Sin main.sh a propósito, dos entradas (sync.sh y status.sh) y config en lib/config.sh; repos-config.yml es el registro de repos que comparte con la GUI.
 
 Comandos:
 
@@ -23,7 +23,7 @@ status.sh --days 30
 sync.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

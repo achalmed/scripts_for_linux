@@ -12,4 +12,4 @@ comandos:
 estado: activo
 depende_de:
 - python3
-nota: 'Antes 05_sgdp/sincronizacion_usb (M10 D2, 2026-09-15). Caso de uso original: el archivo documental del SGDP entre las laptops de las secretarías.'
+nota: 'Fija la carpeta SGDP en el USB y aplica la convención de nombres del SGDP: los PDF gemelos de nombre antiguo pasan a la papelera (.sgdp-papelera).'

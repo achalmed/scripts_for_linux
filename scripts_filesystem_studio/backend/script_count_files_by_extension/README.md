@@ -12,7 +12,7 @@ Cuenta los archivos de un árbol por extensión, con tamaño acumulado, ranking 
 - Escribe en: ninguno · simula por defecto: no
 - Entrada: cualquier carpeta (por defecto la biblioteca)
 - Depende de: bash, GNU findutils
-- Nota: Backend de Filesystem Studio (página Estadísticas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Solo lee; GNU-only (find -printf).
+- Nota: Backend de Filesystem Studio (página Estadísticas); sigue siendo utilizable desde la terminal. Solo lee; GNU-only (find -printf).
 
 Comandos:
 
@@ -22,7 +22,7 @@ main.sh -t 10 --no-color <directorio>
 main.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

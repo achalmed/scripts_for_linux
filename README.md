@@ -19,15 +19,15 @@ Suites de esta carpeta (17); índice global en `meta/INDICE_SCRIPTS.md`. Patrón
 | `count_files_by_extension` | [scripts_for_linux/scripts_filesystem_studio/backend/script_count_files_by_extension](scripts_filesystem_studio/backend/script_count_files_by_extension/) | sistema | ninguno | no |  | activo | `MCL` |
 | `create_folders_batch` | [scripts_for_linux/scripts_filesystem_studio/backend/script_create_folders_batch](scripts_filesystem_studio/backend/script_create_folders_batch/) | sistema | archivos | no |  | activo | `MCL` |
 | `hardlinks_creator` | [scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator](scripts_filesystem_studio/backend/script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
-| `hardlinks_detector` | [scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector](scripts_filesystem_studio/backend/script_hardlinks-detector/) | sistema | ninguno | no |  | activo | `MCL` |
+| `hardlinks_detector` | [scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector](scripts_filesystem_studio/backend/script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
 | `proyect_tree` | [scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree](scripts_filesystem_studio/backend/script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
-| `filesystem_studio` | [scripts_for_linux/scripts_filesystem_studio](scripts_filesystem_studio/) | sistema | archivos | sí |  | activo | `MCL` |
+| `filesystem_studio` | [scripts_for_linux/scripts_filesystem_studio](scripts_filesystem_studio/) | sistema | archivos | no |  | activo | `MCL` |
 | `git_download_respos` | [scripts_for_linux/scripts_git_studio/backend/script_git_download_respos](scripts_git_studio/backend/script_git_download_respos/) | sistema | git | no |  | activo | `MCL` |
 | `git_sync_respos` | [scripts_for_linux/scripts_git_studio/backend/script_git_sync_respos](scripts_git_studio/backend/script_git_sync_respos/) | sistema | git | no |  | activo | `··L` |
 | `git_studio` | [scripts_for_linux/scripts_git_studio](scripts_git_studio/) | sistema | git | no |  | activo | `MCL` |
 | `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
-<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suites:fin -->
 
 ## Qué es

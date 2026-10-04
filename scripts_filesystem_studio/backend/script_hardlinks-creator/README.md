@@ -12,7 +12,7 @@ Sustituye por hard links los archivos de igual nombre y contenido idéntico (SHA
 - Escribe en: archivos · simula por defecto: no
 - Entrada: un árbol de proyectos (por defecto la raíz del workspace)
 - Depende de: python3
-- Nota: Backend de Filesystem Studio (pestaña Crear de Hardlinks; la GUI reutiliza su lib/) desde 2026-07-13; sigue siendo utilizable desde la terminal. Enlace atómico; _extensions/ excluida por defecto.
+- Nota: Backend de Filesystem Studio (pestaña Crear de Hardlinks; la GUI reutiliza su lib/); sigue siendo utilizable desde la terminal. Enlace atómico; _extensions/ excluida por defecto.
 
 Comandos:
 
@@ -23,7 +23,7 @@ main.py --batch archivos.txt --dry-run
 main.py --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

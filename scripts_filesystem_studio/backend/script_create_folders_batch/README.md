@@ -12,7 +12,7 @@ Crea carpetas por lote desde una lista predefinida o un archivo, con vista previ
 - Escribe en: archivos · simula por defecto: no
 - Entrada: lista de nombres (config.sh o archivo -f)
 - Depende de: bash
-- Nota: Backend de Filesystem Studio (página Carpetas) desde 2026-07-13; sigue siendo utilizable desde la terminal. Rechaza rutas absolutas y componentes «..».
+- Nota: Backend de Filesystem Studio (página Carpetas); sigue siendo utilizable desde la terminal. Rechaza rutas absolutas y componentes «..».
 
 Comandos:
 
@@ -22,7 +22,7 @@ main.sh -y -f lista.txt -p <carpeta>
 main.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

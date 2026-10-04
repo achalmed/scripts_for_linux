@@ -9,7 +9,7 @@ estado: activo
 Convierte dos fotografías de un DNI (anverso y reverso) en una copia limpia a tamaño real lista para imprimir.
 
 - Escribe en: archivos · simula por defecto: no
-- Depende de: python3, opencv
+- Depende de: python3 (numpy, scipy, Pillow, python-docx; scikit-image recomendada), LibreOffice (solo --to-pdf)
 
 Comandos:
 
@@ -18,7 +18,7 @@ main.py --front anverso.jpg --back reverso.jpg [-o <carpeta>] [--to-pdf]
 main.py --front anverso.jpg --back reverso.jpg --dry-run
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

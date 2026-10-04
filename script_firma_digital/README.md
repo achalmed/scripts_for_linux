@@ -9,7 +9,7 @@ estado: activo
 Convierte la foto de una firma en SVG y PNG limpios (canal rojo, histéresis, potrace).
 
 - Escribe en: archivos · simula por defecto: no
-- Depende de: python3, opencv, potrace
+- Depende de: python3 (numpy, scipy, scikit-image, Pillow), potracer (paquete de Python; no el binario potrace)
 
 Comandos:
 
@@ -18,7 +18,7 @@ main.py firma.jpg [-o <carpeta>] [-n <nombre>]
 main.py firma.jpg --dry-run
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

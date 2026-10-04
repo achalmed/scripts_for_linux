@@ -11,5 +11,5 @@ comandos:
 - main.py --front anverso.jpg --back reverso.jpg --dry-run
 estado: activo
 depende_de:
-- python3
-- opencv
+- python3 (numpy, scipy, Pillow, python-docx; scikit-image recomendada)
+- LibreOffice (solo --to-pdf)

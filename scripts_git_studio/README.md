@@ -6,7 +6,7 @@ estado: activo
 <!-- suite:inicio -->
 **Suite `git_studio`** · objetivo *sistema* · estado *activo* · python · interfaz gui
 
-Aplicación de escritorio (PySide6) para administrar los repositorios del workspace: estado, sincronización, ramas (repos-config.yml).
+Aplicación de escritorio (PySide6) para administrar los repositorios del workspace: estado, sincronización, clonado y reportes (repos-config.yml).
 
 - Escribe en: git · simula por defecto: no
 - Depende de: PySide6, git
@@ -18,7 +18,7 @@ main.py
 main.py --smoke
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

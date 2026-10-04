@@ -10,7 +10,7 @@ Sincroniza en ambas direcciones una carpeta local con su copia en un USB compart
 
 - Escribe en: archivos · simula por defecto: no
 - Depende de: python3
-- Nota: Antes 05_sgdp/sincronizacion_usb (M10 D2, 2026-09-15). Caso de uso original: el archivo documental del SGDP entre las laptops de las secretarías.
+- Nota: Fija la carpeta SGDP en el USB y aplica la convención de nombres del SGDP: los PDF gemelos de nombre antiguo pasan a la papelera (.sgdp-papelera).
 
 Comandos:
 
@@ -19,7 +19,7 @@ main.py --local <carpeta> --usb <montaje> [--dry-run]
 sincronizar_usb.sh --local <carpeta> --usb <montaje> [--dry-run]
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

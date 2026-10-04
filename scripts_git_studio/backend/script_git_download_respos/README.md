@@ -11,8 +11,8 @@ Clona uno, varios o todos los repos de una cuenta de GitHub con la profundidad d
 
 - Escribe en: git · simula por defecto: no
 - Entrada: la API de GitHub (users/<usuario>/repos) o una lista de repos
-- Depende de: bash, git, curl y jq (solo en modo all)
-- Nota: Backend de Git Studio (página Clonar; la GUI lo porta a app/services/clone_service.py y github_service.py) desde 2026-07-13; sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t para repos privados.
+- Depende de: bash >= 4.3, git, curl y jq (solo en modo all)
+- Nota: Backend de Git Studio (página Clonar; la GUI lo porta a app/services/clone_service.py y github_service.py); sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t autentican las llamadas a la API de GitHub.
 
 Comandos:
 
@@ -23,7 +23,7 @@ main.sh -u <usuario> -o <carpeta> -s
 main.sh -h
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es

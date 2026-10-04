@@ -11,6 +11,5 @@ comandos:
 - main.py firma.jpg --dry-run
 estado: activo
 depende_de:
-- python3
-- opencv
-- potrace
+- python3 (numpy, scipy, scikit-image, Pillow)
+- potracer (paquete de Python; no el binario potrace)

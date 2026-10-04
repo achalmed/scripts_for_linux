@@ -12,7 +12,7 @@ Genera el árbol de carpetas (txt, md o json) de la carpeta actual o de los proy
 - Escribe en: archivos · simula por defecto: no
 - Entrada: la carpeta actual o los grupos de proyectos de config.sh
 - Depende de: bash, tree
-- Nota: Backend de Filesystem Studio (página Árbol, modo Proyectos) desde 2026-07-13; sigue siendo utilizable desde la terminal. Escribe estructura.txt, derivado que NORMATIVA §15.8 (D07) no admite dentro de un repo (retirado en DOC2, 2026-09-20); úsese para vista previa, --list, --stats o salidas fuera de git.
+- Nota: Backend de Filesystem Studio (página Árbol, modo Proyectos); sigue siendo utilizable desde la terminal. Escribe estructura.txt, derivado que NORMATIVA §15.8 (D07) no admite dentro de un repo; úsese para vista previa, --list, --stats o salidas fuera de git.
 
 Comandos:
 
@@ -24,7 +24,7 @@ main.sh -f md -L 3
 main.sh --help
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es
