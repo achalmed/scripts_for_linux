@@ -1,28 +1,31 @@
 # scripts_for_linux/.gitignore — comentado por clase (NORMATIVA §5 y §15.8): lo interno no convive con lo listado.
+# Cubre también las dos GUI y sus backends: los patrones sin barra inicial valen en cualquier carpeta.
 
-# --- Bytecode y cachés de herramientas Python (clase temporal) -------------
+# --- temporal: bytecode y cachés de herramientas Python ---------------------
 __pycache__/
 *.py[cod]
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
 
-# --- Entornos virtuales y variables locales (nunca en git) -----------------
+# --- temporal: entornos virtuales y variables locales (nunca en git) --------
 .venv/
 venv/
 .env
 
-# --- Artefacto de construcción de las GUI (lo regenera tools/build_resources.sh)
+# --- artefacto de construcción: recursos Qt compilados ----------------------
+# lo regenera scripts_filesystem_studio/tools/build_resources.sh
 resources_rc.py
 
-# --- Informes de ejecución y logs: rotan en cada corrida (§15.8) -----------
+# --- temporal: informes de ejecución y logs (rotan en cada corrida) ---------
 reports/
 *.log
 
-# --- Ajustes locales del asistente ---------------------------------------
-.claude/
-
-# DOC2 (2026-09-20): temporales y derivados fuera de git (NORMATIVA §5, §15.8)
-reports/
-scripts_filesystem_studio/backend/script_hardlinks-creator/archivos.txt
+# --- derivado: árboles que escribe script_proyect_tree (D07) ----------------
 estructura.txt
+
+# --- temporal: lista de trabajo local de script_hardlinks-creator -----------
+scripts_filesystem_studio/backend/script_hardlinks-creator/archivos.txt
+
+# --- ajustes locales del asistente ------------------------------------------
+.claude/

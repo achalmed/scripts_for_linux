@@ -41,15 +41,16 @@ tamaño real (`script_dni_a_copia`), digitalizar una firma a SVG (`script_firma_
 sincronizar una carpeta por un USB que va y viene (`script_sync_usb`) y poner en orden fechas y
 nombres de fotos de cámara (`scripts_photo_metadata_suite`).
 
-Dos aplicaciones de escritorio agrupan los antiguos scripts sueltos de archivos y de git:
+Dos aplicaciones de escritorio agrupan las herramientas de archivos y de git:
 **Filesystem Studio** (`scripts_filesystem_studio`: árbol de proyectos, conteo por extensión,
 carpetas por lote, hard links) y **Git Studio** (`scripts_git_studio`: clonar desde GitHub,
-sincronizar y ver el estado de los repos del workspace). Esos scripts viven intactos en `backend/`
-de cada GUI, con su `suite.yml` y su README, y siguen siendo utilizables desde la terminal. La
+sincronizar y ver el estado de los repos). Cada herramienta vive en `backend/` de su GUI, con su
+`suite.yml` y su README, y se usa también desde la terminal. La
 tabla de arriba es la lista completa; `python3 core/suites.py listar` la da para todo el workspace.
 
 **No es** una biblioteca: cada suite es autónoma (`main.*` + `config.*` + `lib/`, `suite.yml`,
-README) y solo comparte `core/` (raíz del workspace y logger). No contiene nada del despacho.
+README) y solo comparte `core/` (raíz del workspace y logger). Nada del despacho debe vivir aquí; hoy
+`script_sync_usb` lo incumple en el código (`docs/decisiones.md` §Pendientes).
 Tampoco es el lugar de PDF y ofimática: eso vive en `scripts_document_studio`. El remoto en
 GitHub se llama igual que la carpeta (`scripts_for_linux`) y es público.
 
@@ -72,7 +73,7 @@ python3 script_firma_digital/main.py firma.jpg --dry-run
 python3 script_sync_usb/main.py --local <carpeta> --usb <montaje> --dry-run
 # analyze no toca nada; apply simula salvo --execute
 python3 scripts_photo_metadata_suite/main.py analyze <carpeta>
-# los backends de las GUI siguen siendo CLI; el registro de repos es repos-config.yml
+# los backends de las GUI son también CLI; Git Studio lee su registro repos-config.yml
 scripts_filesystem_studio/backend/script_proyect_tree/main.sh --list
 scripts_git_studio/backend/script_git_sync_respos/sync.sh --check
 ```
@@ -94,15 +95,16 @@ cada una, y cada herramienta tiene `--help`.
 | `script_whisper_transcriber/` | Python: transcripción y traducción local con Whisper, subtítulos | a mano |
 | `scripts_photo_metadata_suite/` | Python: fechas y nombres de fotos y videos de cámara, OCR de la marca, digiKam | a mano |
 | `scripts_filesystem_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas CLI de archivos, cada una con `suite.yml` | a mano; `resources_rc.py` lo genera `scripts_filesystem_studio/tools/build_resources.sh` |
-| `scripts_git_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas Bash de git; `scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el registro de repos que comparten CLI y GUI | a mano |
-| `docs/` | lo transversal: `decisiones.md` y `historial/` (las visiones de producto de las GUI) | a mano; índice por `core/docs.py indice` |
+| `scripts_git_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas Bash de git; `scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el inventario de repos que comparten CLI y GUI, escrito a mano y paralelo a `meta/workspace.yml` | a mano |
+| `docs/` | lo transversal: `decisiones.md` (con sus pendientes) y, en su README, quién consume estas herramientas | a mano; índice por `core/docs.py indice` |
 | `vendor/` | código ajeno conservado tal cual: el cuaderno Colab de Jason Boog del que nació `script_whisper_transcriber` (MIT) | ajeno; no se edita |
 | `suite.yml` (uno por suite y por backend) | manifiesto de cada herramienta (`core/suite.schema.yml`) | a mano; los bloques de README los escribe `core/suites.py generar --aplicar` |
 | `CLAUDE.md` · `AGENTS.md` | guía para el asistente; `AGENTS.md` es un enlace a `CLAUDE.md` | a mano |
 | `.gitignore` | comentado por clase: bytecode, entornos, `reports/`, `estructura.txt`, `resources_rc.py` | a mano |
 
-La versión de cada herramienta la dice el H1 de su README y, donde existe, su `--version`. Los
-informes que generan las GUI (`reports/`) y las listas de trabajo de una corrida no se versionan.
+La versión de cada herramienta es una constante de su código y la imprime `--version` donde existe
+(`docs/decisiones.md` §1.6). Los informes que generan las GUI (`reports/`) y las listas de trabajo de
+una corrida no se versionan.
 
 ## Documentación
 
@@ -111,9 +113,8 @@ informes que generan las GUI (`reports/`) y las listas de trabajo de una corrida
 | `script_*/README.md` · `scripts_photo_metadata_suite/README.md` | manual de cada suite de primer nivel: uso, opciones, arquitectura, límites |
 | `scripts_filesystem_studio/README.md` · `scripts_git_studio/README.md` | las GUI: módulos, arquitectura `ui → controllers → services`, cómo extender |
 | `scripts_filesystem_studio/backend/*/README.md` · `scripts_git_studio/backend/*/README.md` | manual de cada herramienta absorbida por una GUI |
-| `docs/README.md` | mapa por lector de lo transversal |
+| `docs/README.md` | mapa por lector de lo transversal y §Consumidores (quién invoca estas herramientas) |
 | `docs/decisiones.md` | por qué el repo es como es, y sus pendientes |
-| `docs/historial/` | las visiones de producto de las que nacieron las GUI; historia, no pendientes |
 | `CLAUDE.md` | reglas para el asistente: patrón `main`/`config`/`lib`, las dos GUI, cómo verificar, trampas |
 | `meta/INDICE_SCRIPTS.md` | las suites de este repo entre las del workspace (generado) |
 | `core/README.md` · `core/suite.schema.yml` | el contrato de suite y los bloques generados |
@@ -130,14 +131,19 @@ informes que generan las GUI (`reports/`) y las listas de trabajo de una corrida
 - **Las GUI no son la fuente de verdad de sus backends**: portan su lógica a la carpeta
   app/services/ de cada GUI (Filesystem Studio importa la `lib/` de `script_hardlinks-creator` y
   ejecuta el `main.sh` de `script_proyect_tree` en modo proyectos; el resto es un port). Un cambio
-  de comportamiento hay que hacerlo en los dos sitios; lo único garantizado en común es
-  `repos-config.yml` (`docs/decisiones.md` §2.2).
+  de comportamiento hay que hacerlo en los dos sitios (`docs/decisiones.md` §2.2); `sync.sh` y la GUI
+  ya divergen en qué cuentan como cambio.
+- **`repos-config.yml` es un inventario a mano, paralelo a `meta/workspace.yml`**, y no coincide con él
+  (`docs/decisiones.md` §2.3 y §Pendientes).
 - **`script_proyect_tree` genera `estructura.txt`**, un derivado que la normativa (§15.8, D07) no
   admite dentro de un repo: se usa para vista previa en la GUI, `--list`, `--stats` o salidas
   `md`/`json` fuera del árbol versionado.
 - **Dos suites traen valores de un uso concreto en un repo público**: `script_dni_a_copia` (número y
   rutas de un DNI real en `script_dni_a_copia/config.py` y en la ayuda de
-  `script_dni_a_copia/lib/cli.py`) y `script_sync_usb` (clave de autorización en el código). No hay
-  `.env` ni perfil de usuario; ver `docs/decisiones.md` §Pendientes.
+  `script_dni_a_copia/lib/cli.py`) y `script_sync_usb` (clave de autorización fija en el código, que
+  debe rotarse). No hay `.env` ni perfil de usuario; ver `docs/decisiones.md` §Pendientes.
+- **`script_sync_usb` está atada al archivo documental del SGDP**: sincroniza una carpeta `SGDP`,
+  aplica su convención de nombres y mueve a la papelera los PDF gemelos con nombre antiguo; su
+  lanzador de Windows está roto (su README).
 - **`script_sync_usb` no sigue el patrón** `main` + `config` + `lib` (un solo archivo con
   lanzadores `.sh` y `.bat`); `core/suites.py validar` lo marca con aviso.

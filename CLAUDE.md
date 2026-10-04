@@ -37,20 +37,22 @@ si el cambio es en una GUI, y `docs/decisiones.md` (por qué el repo es así y q
   (`--dry-run`, `--simulate`, `-d`, `-n`, `--check`) se respeta de punta a punta. La bandera de
   simulación **no es la misma en todas las suites**: compruébala en su `--help` o en su `suite.yml`
   antes de escribirla en un README. Un script nuevo de un solo archivo se lleva al patrón modular
-  antes de ampliarlo, y su README documenta los bugs corregidos en esa migración.
-- **Las dos GUI (PySide6/Qt6) nunca tocan el disco ni ejecutan scripts desde la UI**: todo pasa
-  por la carpeta app/services/ de cada GUI; las operaciones largas corren en un worker (`QThread`)
-  con progreso y cancelación; las vistas son `.ui` de Qt Designer cargadas con `QUiLoader` (sin
-  compilar). Se ejecutan con `python3 scripts_filesystem_studio/main.py` y
+  antes de ampliarlo; los bugs que esa migración corrija van al mensaje de commit, no al README.
+- **En las dos GUI (PySide6/Qt6) toda escritura y toda ejecución de un backend pasan por la carpeta
+  app/services/** de cada una, y las operaciones largas corren en un worker (`QThread`) con progreso
+  y cancelación. Hoy hay excepciones que no se amplían: algunos controllers abren archivos con
+  `xdg-open` y consultan el disco, y el reporte de Hardlinks se genera en el hilo de la interfaz. Las
+  vistas son `.ui` de Qt Designer cargadas con `QUiLoader` (sin compilar). Se ejecutan con `python3 scripts_filesystem_studio/main.py` y
   `python3 scripts_git_studio/main.py`; `--smoke` construye la UI y sale.
 - **Los backends de las GUI son suites completas** (`suite.yml`, README, `main.*` + `config` +
   `lib/`) y siguen siendo CLI desde su carpeta: `scripts_filesystem_studio/backend/` y
   `scripts_git_studio/backend/`. Un cambio de comportamiento se hace en el backend y en el
   servicio de la GUI que lo porta (`docs/decisiones.md` §2.2).
-- **`scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el único registro de
-  repos**: lo leen `sync.sh`, `status.sh` y la GUI
-  (`scripts_git_studio/app/services/config_service.py`), y la GUI lo escribe al añadir o clonar.
-  No se duplica en ningún otro archivo.
+- **`scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el inventario propio de
+  Git Studio**: lo leen `sync.sh`, `status.sh` y la GUI
+  (`scripts_git_studio/app/services/config_service.py`), y la GUI lo reescribe entero al añadir o
+  clonar. Es paralelo a `meta/workspace.yml`, que es el manifiesto del workspace: no lo presentes como
+  registro de repos del ecosistema (`docs/decisiones.md` §2.3 y §Pendientes).
 - **`scripts_git_studio/app/services/git_service.py` es la única implementación de comandos git**
   de Git Studio: sync, estado, clonado y reportes la reutilizan.
 - **Lo generado no se edita**: los bloques `<!-- suite:inicio -->`/`<!-- suites:inicio -->` de los
@@ -58,11 +60,16 @@ si el cambio es en una GUI, y `docs/decisiones.md` (por qué el repo es así y q
   `docs/README.md`, de `core/docs.py indice`; `resources_rc.py` lo escribe
   `scripts_filesystem_studio/tools/build_resources.sh`; `reports/` y `estructura.txt` no se
   versionan.
-- **Documentación por concepto**: lo de una herramienta va a su README; lo transversal, a `docs/`
-  (decisiones con fecha en `docs/decisiones.md`, lo cumplido en `docs/historial/`). Nunca un `.md`
-  por sesión, ni cantidades que cambian (las cuenta `python3 core/suites.py listar`).
+- **Dónde va cada cosa nueva** (NORMATIVA §15.11, concretada aquí): el uso o una opción de una
+  herramienta, a su README (`Qué es`, `Uso`, `Estructura`, `Límite honesto`; sin versión en el H1,
+  `docs/decisiones.md` §1.6); el porqué, a `docs/decisiones.md`; un fallo o una tarea, a su
+  §Pendientes con fecha y dueño; quién invoca una herramienta desde otro proyecto, a `docs/README.md`
+  §Consumidores; un dato que un `suite.yml` contiene, al `suite.yml` (el bloque se regenera). Nunca un
+  `.md` por sesión ni en la raíz, ni historia de bugs en un README, ni cantidades que cambian (las
+  cuenta `python3 core/suites.py listar`).
 - **Español con tildes** en mensajes, comentarios y docs (excepción heredada: el código y los
-  docstrings de `script_dni_a_copia` están en inglés); nada del despacho en este repo.
+  docstrings de `script_dni_a_copia` están en inglés). Nada del despacho ni de sus personas en este
+  repo, ni secretos ni datos personales en un documento: es público.
 
 ## Cómo se verifica un cambio
 
@@ -87,10 +94,10 @@ stdout, stderr, código de salida).
 
 ## Detalles que cuesta redescubrir
 
-- **Los nombres viejos no existen**: la GUI de archivos es `scripts_filesystem_studio/` (no
-  `filesystem-studio/`), el árbol es `script_proyect_tree` (no `script_project_tree`), los hard
-  links viven en `scripts_filesystem_studio/backend/` (no en repos `hardlinks-*` aparte), y el PDF
-  migró a `scripts_document_studio/backends/` (`docs/decisiones.md` §1.2).
+- **Nombres que despistan**: la GUI de archivos es `scripts_filesystem_studio/`, el árbol es
+  `script_proyect_tree` (con esa grafía), las herramientas de hard links son
+  `scripts_filesystem_studio/backend/script_hardlinks-{creator,detector}/`, y el PDF vive en
+  `scripts_document_studio/backends/` (`docs/decisiones.md` §1.2).
 - **`script_proyect_tree` escribe `estructura.txt`**, derivado que la normativa no admite en un
   repo (§15.8, D07; `docs/decisiones.md` §1.3). Se usa para la vista previa de la GUI, `--list`,
   `--stats` o formatos `md`/`json` fuera de git. Su `config.sh` fija por nombre los grupos de
@@ -103,11 +110,12 @@ stdout, stderr, código de salida).
   diseño). Su reporte lo consume `script_hardlinks-detector --report`.
 - **`script_git_sync_respos` no tiene `main.sh`**: sus entradas son `sync.sh` y `status.sh`, y su
   parser de `repos-config.yml` es ligero (dos espacios antes de `- name`, cuatro en
-  `branch`/`enabled`; sin comillas ni anidación). El README describe una instalación opcional en
-  ~/bin/git-sync que no es parte del repo.
-- **`script_sync_usb` vino de `05_sgdp`** (`docs/decisiones.md` §3.2): nunca borra, gana el más
-  nuevo con papelera .sgdp-papelera/, conserva ambos en conflicto y pide una clave que hoy vive en
-  el código (`SGDP_USB_CLAVE` la evita en modo no interactivo; `--si` omite la confirmación).
+  `branch`/`enabled`; sin comillas, sin anidación y **sin comentarios en la línea de una entrada**:
+  el comentario pasa a formar parte del nombre). Su `install.sh` no deja una copia que funcione.
+- **`script_sync_usb` está atada al archivo documental del SGDP** (`docs/decisiones.md` §3.2):
+  sincroniza una carpeta `SGDP`, gana el más nuevo con papelera .sgdp-papelera/, conserva ambos en
+  conflicto, mueve a la papelera los PDF gemelos de nombre antiguo y pide una clave fija en el código
+  (`SGDP_USB_CLAVE` la evita; `--si` omite la confirmación). Nunca escribas la clave en un documento.
 - **`script_dni_a_copia/config.py` trae por defecto las rutas de un DNI real** en un repo público
   (pendiente en `docs/decisiones.md`): no copies ese número a ningún README. Las entradas son
   `--front`/`--back`, no posicionales; `--pre-cropped` es obligatorio con DNIe o escaneos planos.
@@ -124,7 +132,8 @@ stdout, stderr, código de salida).
 |---|---|
 | qué suites hay, cómo se invocan, qué escribe cada una | `README.md` y el bloque generado `suites:` |
 | por qué el repo es así; qué queda pendiente | `docs/decisiones.md` (mapa por lector en `docs/README.md`) |
-| de dónde salieron las dos GUI y la suite de respaldo | `docs/historial/` (visiones de producto; historia, no pendientes) |
+| de dónde salieron las dos GUI y qué no se construyó | `docs/decisiones.md` §1.5 y §2.4 |
+| quién usa estas herramientas desde otros proyectos | `docs/README.md` §Consumidores |
 | módulos y cómo extender cada GUI | `scripts_filesystem_studio/README.md`, `scripts_git_studio/README.md` |
 | manual de una herramienta absorbida | `scripts_*_studio/backend/<herramienta>/README.md` |
 | manual de una suite de primer nivel | `<suite>/README.md` |
