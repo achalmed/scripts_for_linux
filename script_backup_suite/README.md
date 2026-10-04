@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_backup_suite/ — respaldo rsync del home a un disco externo por perfiles, con exclusiones, confirmación y resumen (v3.0)
+# script_backup_suite/ — respaldo rsync del home a un disco externo por perfiles, con exclusiones, confirmación y resumen
 <!-- suite:inicio -->
 **Suite `backup_suite`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
 
@@ -23,437 +23,126 @@ main.sh --help
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Script modular de backup para Linux que sincroniza tu directorio home
-> hacia un disco externo con control total, perfiles configurables,
-> detección automática de distro y compatibilidad con Kubuntu y Arch Linux.
+## Qué es
 
----
+Copia carpetas del directorio personal a un disco externo montado, carpeta por carpeta y en tres pasos:
 
-## 📋 Tabla de Contenidos
+1. **Nuevos**: los archivos que no están en el disco se copian sin preguntar (`rsync --ignore-existing`).
+2. **Modificados**: por cada archivo que difiere pregunta `[s]` actualizar, `[v]` ver diferencias (texto: `diff`
+   o `colordiff`; binario: tamaño y fecha), `[i]` ignorar, `[t]` actualizar todos los de la carpeta, `[n]` ignorar
+   todos. `--force` actualiza sin preguntar.
+3. **Huérfanos** (están en el disco y ya no en el origen): `[e]` eliminar todos, `[r]` revisar uno a uno,
+   `[c]` conservar. `--delete-all` los elimina sin preguntar.
 
-- [Descripción](#descripción)
-- [Novedades v3.0.0](#novedades-v300)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Perfiles de Backup](#perfiles-de-backup)
-- [Arquitectura](#arquitectura)
-- [Bugs Corregidos](#bugs-corregidos)
-- [Automatización con systemd](#automatización-con-systemd)
-- [Solución de Problemas](#solución-de-problemas)
-- [Cómo Agregar Funcionalidades](#cómo-agregar-funcionalidades)
-- [Notas y Advertencias](#notas-y-advertencias)
+- **Qué escribe:** en `<montaje>/backup_<usuario>/<carpeta>/`, donde `<montaje>` es `/media/<usuario>/<ETIQUETA>`,
+  `/run/media/<usuario>/<ETIQUETA>` o el punto que `lsblk` dé para esa etiqueta (`DISK_LABEL` en `config.sh`). Con
+  `-l`/`--log`, además, «~/backup_suite.log» (cabecera con usuario y nombre de equipo; se archiva como `.bak` al pasar
+  de 10 MB).
+- **Qué borra:** los huérfanos que se aprueben se eliminan con `rm -rf`, sin papelera.
+- **Qué no hace:** no versiona, no cifra, no restaura y no copia a destinos remotos; el destino es un disco montado.
+- **Simulación:** no simula por defecto; `-s`/`--simulate` (no `--dry-run`) muestra el plan sin copiar ni borrar.
 
----
-
-## 📖 Descripción
-
-`backup-suite` sincroniza carpetas de tu directorio home hacia un disco externo
-usando `rsync` con comparación por checksum real. A diferencia de un simple
-`cp -r`, el script detecta exactamente qué cambió, te pregunta qué hacer con
-cada archivo modificado, y gestiona los archivos que ya no existen en tu laptop.
-
-**Flujo de backup por carpeta:**
-
-```
-Para cada carpeta del perfil activo:
-  │
-  ├─ PASO A: Archivos NUEVOS
-  │   └─ Se copian automáticamente
-  │
-  ├─ PASO B: Archivos MODIFICADOS
-  │   └─ Pregunta qué hacer:
-  │       [s] Actualizar  [v] Ver diff  [i] Ignorar
-  │       [t] Todos       [n] Ignorar todos
-  │
-  └─ PASO C: Archivos HUÉRFANOS (en disco pero no en laptop)
-      └─ Pregunta qué hacer:
-          [e] Eliminar todos  [r] Revisar uno a uno  [c] Conservar
-```
-
----
-
-## 🆕 Novedades v3.0.0
-
-| Característica                 | Descripción                                                          |
-| ------------------------------ | -------------------------------------------------------------------- |
-| Arquitectura modular           | 7 archivos con responsabilidad única (SRP) — fácil de mantener       |
-| Detección automática de distro | Soporta `/media` (Kubuntu) y `/run/media` (Arch) sin configuración   |
-| Perfiles de backup             | `home`, `docs`, `full`, `custom` — seleccionables con `--profile`    |
-| `--folder`                     | Respalda una sola carpeta sin modificar el perfil completo           |
-| `--src` / `--dest`             | Origen y destino completamente libres (reemplaza grsync para esto)   |
-| `--fast`                       | Modo rápido sin checksum (fecha/tamaño) — ideal para backups diarios |
-| `--compress`                   | Compresión rsync activable (útil para rsync sobre red)               |
-| `--no-confirm`                 | Omite confirmación inicial (para cron/systemd)                       |
-| `--post-cmd`                   | Ejecuta un comando al finalizar (notificaciones, scripts, etc.)      |
-| Opciones grsync replicadas     | hardlinks, protect-args, itemize-changes incluidos por defecto       |
-| Exclusiones por patrón         | `*.tmp`, `*.swp`, `*.pyc`, `node_modules`, etc. desde `config.sh`    |
-| Logging mejorado               | Encabezado de sesión, niveles DEBUG visibles solo con `--verbose`    |
-
----
-
-## ⚙️ Requisitos
-
-### Sistema Operativo
-
-- Kubuntu / Ubuntu 22.04 o superior
-- Arch Linux / Archcraft (cualquier versión reciente)
-- Bash >= 4.0
-
-### Dependencias
-
-| Paquete     | Tipo        | Instalación (Arch)         | Instalación (Kubuntu)        |
-| ----------- | ----------- | -------------------------- | ---------------------------- |
-| `rsync`     | Obligatorio | `sudo pacman -S rsync`     | `sudo apt install rsync`     |
-| `pv`        | Recomendado | `sudo pacman -S pv`        | `sudo apt install pv`        |
-| `colordiff` | Opcional    | `sudo pacman -S colordiff` | `sudo apt install colordiff` |
-
-> `bc` ya no es necesario — los cálculos de tamaño usan `awk` puro.
-
----
-
-## 🚀 Instalación
-
-### 1. Ubicar la herramienta
-
-Vive en el repo `scripts_for_linux`, en `script_backup_suite/`; no se copia a ningún otro sitio.
-
-### 2. Dar permisos de ejecución
+## Uso
 
 ```bash
-chmod +x ~/Documents/scripts_for_linux/script_backup_suite/main.sh
-chmod +x ~/Documents/scripts_for_linux/script_backup_suite/lib/*.sh
+./main.sh --simulate --verbose          # simula con detalle: empezar siempre así
+./main.sh                               # perfil home, interactivo
+./main.sh --profile docs                # solo Documents
+./main.sh --folder Pictures             # una sola carpeta del perfil
+./main.sh --profile list                # lista los perfiles
+./main.sh --fast --profile home         # compara por fecha y tamaño, sin checksum
+./main.sh --src ~/Proyectos --dest "/media/<usuario>/<ETIQUETA>/otra/Proyectos"   # perfil custom
+./main.sh --log --post-cmd "notify-send 'Respaldo' 'Terminado'"
 ```
 
-### 3. Añadir alias conveniente (opcional)
+| opción | qué hace | por defecto (`config.sh`) |
+|---|---|---|
+| `-h`, `--help` | ayuda | — |
+| `--version` | imprime la versión | — |
+| `-v`, `--verbose` | lista cada archivo y el tamaño de cada carpeta | `false` |
+| `-s`, `--simulate` | simula; anula `--force` | `false` |
+| `-l`, `--log` | escribe el log en «~/backup_suite.log» | `false` |
+| `--no-confirm` | no pide la confirmación inicial (sí las de cada archivo) | `false` |
+| `-p`, `--profile NOMBRE` | `home`, `docs`, `full` o `custom`; `list` los muestra | `home` |
+| `--src RUTA` / `--dest RUTA` | origen y destino libres; van juntos y fuerzan el perfil `custom` | — |
+| `-F`, `--folder NOMBRE` | solo esa carpeta; si no está en el perfil, la intenta igual desde el origen | — |
+| `-f`, `--force` | actualiza los modificados sin preguntar | `false` |
+| `-d`, `--delete-all` | elimina los huérfanos sin preguntar | `false` |
+| `--fast` | quita `-c`: compara por fecha y tamaño | `false` |
+| `--compress` | añade `--compress` a rsync (solo sirve por red) | `false` |
+| `--post-cmd CMD` | ejecuta `CMD` con `eval` al terminar (no en simulación) | — |
 
-```bash
-# En ~/.bashrc o ~/.zshrc
-alias backup='~/Documents/scripts_for_linux/script_backup_suite/main.sh'
+Perfiles (`config.sh`): `home` recorre la lista `PROFILE_HOME_FOLDERS`; `docs`, solo `Documents`; `full`, cada
+carpeta de primer nivel del home salvo `GLOBAL_EXCLUDE`; `custom`, la de `--src`. Las opciones de rsync son
+`-ahc --human-readable --stats` más `--itemize-changes --copy-links --hard-links --protect-args`, con las exclusiones
+de `GLOBAL_EXCLUDE` (carpetas) y `RSYNC_PATTERN_EXCLUDE` (patrones).
+
+Códigos de salida: 0 hecho o cancelado · 1 disco no montado, sin carpetas válidas u otro error · 2 argumentos ·
+5 falta rsync.
+
+Requisitos: Bash ≥ 4.3 (`local -n`), `rsync`, `df`, `lsblk`, `file`; opcionales `pv` (barra de progreso),
+`colordiff` o `diff`. Comprueba `bc` y avisa si falta, pero nada lo usa.
+
+**Automatización al conectar el disco** (ejemplo; ver el Límite honesto antes de usarlo). Regla udev en
+`/etc/udev/rules.d/99-backup-suite.rules`:
+
+```text
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="<ETIQUETA>", \
+    RUN+="/bin/systemctl start --no-block backup-disco.service"
 ```
 
-### 4. Probar en modo simulación primero
-
-```bash
-~/Documents/scripts_for_linux/script_backup_suite/main.sh --simulate --verbose
-```
-
-### 5. Verificar que el disco se detecta correctamente
-
-```bash
-# Debe mostrar la ruta detectada (Kubuntu: /media/..., Arch: /run/media/...)
-~/Documents/scripts_for_linux/script_backup_suite/main.sh --simulate
-```
-
----
-
-## 💻 Uso
-
-```bash
-./main.sh [OPCIONES]
-```
-
-### Opciones disponibles
-
-| Flag                   | Descripción                                          | Default |
-| ---------------------- | ---------------------------------------------------- | ------- |
-| `-h, --help`           | Muestra la ayuda y sale                              | —       |
-| `--version`            | Muestra la versión                                   | —       |
-| `-v, --verbose`        | Modo detallado (lista cada archivo procesado)        | false   |
-| `-s, --simulate`       | Simulación: sin cambios reales                       | false   |
-| `-l, --log`            | Guarda log en ~/backup_suite.log                   | false   |
-| `--no-confirm`         | Omite la confirmación inicial                        | false   |
-| `-p, --profile <name>` | Selecciona perfil (`home`, `docs`, `full`, `custom`) | `home`  |
-| `--profile list`       | Lista todos los perfiles disponibles                 | —       |
-| `--src <ruta>`         | Carpeta de origen personalizada                      | —       |
-| `--dest <ruta>`        | Carpeta de destino personalizada                     | —       |
-| `-F, --folder <name>`  | Respalda solo esta carpeta del perfil                | —       |
-| `-f, --force`          | Sobreescribe modificados sin preguntar               | false   |
-| `-d, --delete-all`     | Elimina huérfanos sin preguntar                      | false   |
-| `--fast`               | Sin checksum (usa fecha/tamaño — más rápido)         | false   |
-| `--compress`           | Activa compresión rsync                              | false   |
-| `--post-cmd <cmd>`     | Comando a ejecutar al finalizar                      | —       |
-
-### Ejemplos de uso
-
-```bash
-# Inicio
-cd ~/Documents/scripts_for_linux/script_backup_suite
-
-# Backup interactivo con perfil por defecto (recomendado para uso diario)
-./main.sh
-
-# Ver qué cambiaría sin tocar nada
-./main.sh --simulate --verbose
-
-# Backup solo de Documents (rápido)
-./main.sh --profile docs
-
-# Backup de una sola carpeta
-./main.sh --folder Pictures
-
-# Backup sin preguntas (ideal para cron o systemd)
-./main.sh --force --delete-all --log --no-confirm
-
-# Origen y destino personalizados (equivale a grsync en modo manual)
-./main.sh --src ~/Documents --dest /run/media/user/DISK/Documents
-
-# Backup rápido sin checksum (más veloz, menos preciso)
-./main.sh --fast --profile home
-
-# Con notificación de escritorio al finalizar
-./main.sh --log --post-cmd "notify-send 'Backup' 'Completado exitosamente'"
-
-# Ver todos los perfiles disponibles
-./main.sh --profile list
-```
-
----
-
-## 🗂️ Perfiles de Backup
-
-Los perfiles se definen en `config.sh` y se seleccionan con `--profile`:
-
-### `home` (default)
-
-Respalda las carpetas principales del usuario:
-
-```
-Desktop, Documents, Downloads, Music, Pictures, Public,
-Reading_Goal, Templates, Videos, dotfiles, gretl, R, sources, Zotero
-```
-
-### `docs`
-
-Solo `Documents` — backup rápido del trabajo activo diario.
-
-### `full`
-
-Todo el home excepto las exclusiones globales de `config.sh` (miniconda3, paru, .cache, snap, etc.)
-
-### `custom`
-
-Requiere `--src` y `--dest`. Origen y destino completamente libres:
-
-```bash
-./main.sh --profile custom \
-  --src /home/user/Proyectos \
-  --dest /run/media/user/ARCHDISK/Proyectos
-```
-
----
-
-## 🗂️ Arquitectura
-
-```
-backup-suite/
-├── main.sh                  # Punto de entrada — orquesta todos los módulos (~120 líneas)
-├── config.sh                # Configuración centralizada: perfiles, rutas, opciones rsync
-├── README.md                # Esta documentación
-└── lib/
-    ├── logger.sh            # Sistema de logging: colores, niveles, rotación de log
-    ├── validator.sh         # Validaciones: dependencias, disco, carpetas origen
-    ├── cli.sh               # CLI: parseo de flags, ayuda, lista de perfiles
-    ├── analyzer.sh          # Análisis rsync: archivos nuevos, modificados, huérfanos
-    ├── processor.sh         # Lógica de backup por carpeta: copia, interactividad
-    └── summary.sh           # Resumen final, estado del disco, post-comando
-```
-
-### Descripción de módulos
-
-| Archivo            | Responsabilidad única                                            |
-| ------------------ | ---------------------------------------------------------------- |
-| `main.sh`          | Orquestación del flujo completo (sin lógica de negocio)          |
-| `config.sh`        | Variables, perfiles, opciones rsync — el único lugar para editar |
-| `lib/logger.sh`    | Todo el output del script pasa por aquí                          |
-| `lib/validator.sh` | Verificaciones previas al backup (falla rápido si algo falta)    |
-| `lib/cli.sh`       | Definición y parseo de todos los flags CLI                       |
-| `lib/analyzer.sh`  | Comparaciones rsync para detectar cambios (sin modificar nada)   |
-| `lib/processor.sh` | Ejecuta las operaciones de backup y gestiona la interactividad   |
-| `lib/summary.sh`   | Informe final y post-comando                                     |
-
----
-
-## 🐛 Bugs Corregidos
-
-### Bug #1: `bc` como dependencia implícita
-
-- **Descripción**: `bytes_legibles()` usaba `bc` para aritmética decimal,
-  pero `bc` no está instalado por defecto en muchas distros.
-- **Impacto**: El script fallaba silenciosamente con cálculos de tamaño incorrectos.
-- **Corrección**: Reemplazado por `awk` puro en `format_file_size()` (lib/analyzer.sh).
-
-### Bug #2: `MODO_FORZAR_CARPETA` no declarada con `local`
-
-- **Descripción**: La variable `MODO_FORZAR_CARPETA` se usaba sin declarar en el
-  scope local de `procesar_carpeta()`, pudiendo persistir entre carpetas.
-- **Impacto**: En ciertas condiciones, el flag "actualizar todos" se aplicaba
-  a la carpeta siguiente involuntariamente.
-- **Corrección**: Convertida en variable local dentro de `_handle_modified()`.
-
-### Bug #3: Punto de montaje hardcodeado para Arch
-
-- **Descripción**: El disco externo solo se buscaba en `/run/media/`.
-  En Kubuntu/Ubuntu el punto de montaje es `/media/`.
-- **Impacto**: El script nunca detectaba el disco en Kubuntu.
-- **Corrección**: `detect_mount_point()` en validator.sh prueba ambas rutas
-  y también hace fallback via `lsblk`.
-
-### Bug #4: `set -e` + `rsync` con código 24 (archivos desaparecidos)
-
-- **Descripción**: rsync puede retornar código 24 (archivo desaparecido durante
-  transferencia) sin que sea un error crítico. Con `set -euo pipefail` el script
-  abortaba en estos casos.
-- **Impacto**: Backups interrumpidos en sistemas con archivos temporales activos.
-- **Corrección**: Las llamadas rsync críticas usan `|| true` donde el código 24
-  es esperado (archivos temporales desaparecen durante la copia).
-
-### Bug #5: `diff` sin `--label` producía cabeceras confusas
-
-- **Descripción**: El diff mostraba rutas completas del sistema en las cabeceras,
-  lo que dificultaba identificar cuál era el archivo origen y cuál el destino.
-- **Impacto**: El usuario no sabía cuál versión era "nueva" y cuál "en disco".
-- **Corrección**: `show_file_diff()` añade `--label` con textos descriptivos
-  ("DISCO EXTERNO" / "ORIGEN laptop").
-
----
-
-## ⚙️ Automatización con systemd
-
-Para ejecutar el backup automáticamente al conectar el disco:
-
-### 1. Regla udev (`/etc/udev/rules.d/99-backup-suite.rules`)
-
-```
-ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_LABEL}=="ARCHDISK", \
-    RUN+="/bin/systemctl start --no-block backup-archdisk.service"
-```
-
-### 2. Servicio systemd (`/etc/systemd/system/backup-archdisk.service`)
+Servicio en `/etc/systemd/system/backup-disco.service` (la unidad `.mount` es `media-<usuario>-<ETIQUETA>.mount`
+si el disco monta en `/media`, `run-media-<usuario>-<ETIQUETA>.mount` si monta en `/run/media`):
 
 ```ini
 [Unit]
-Description=Backup automático a ARCHDISK
-After=media-achalmaedison-ARCHDISK.mount
+Description=Respaldo al disco externo
+After=media-<usuario>-<ETIQUETA>.mount
 
 [Service]
 Type=oneshot
-User=<usuario>Environment=DISPLAY=:0
-ExecStartPre=/bin/sleep 5
-ExecStart=/home/<usuario>/Documents/scripts_for_linux/script_backup_suite/main.sh \
-    --force --delete-all --log --no-confirm \
-    --post-cmd "notify-send 'Backup ARCHDISK' 'Completado'"
-StandardOutput=journal
-StandardError=journal
+User=<usuario>
+Environment=TERM=xterm
+ExecStart=<ruta-del-repo>/script_backup_suite/main.sh --force --delete-all --log --no-confirm
 ```
 
-### 3. Activar regla udev
+`TERM` hace falta porque `main.sh` empieza con `clear`. Tras `sudo udevadm control --reload-rules`, la salida queda
+en `journalctl -u backup-disco.service`.
 
-```bash
-sudo udevadm control --reload-rules
-```
+## Estructura
 
-> Con `--no-confirm` el servicio no hará preguntas interactivas.
-> Revisa el log después: `journalctl -u backup-archdisk.service`
-
----
-
-## 🔧 Solución de Problemas
-
-| Problema                                  | Solución                                                                    |
-| ----------------------------------------- | --------------------------------------------------------------------------- |
-| `El disco no está montado`                | Conecta el disco; el script detecta `/media` y `/run/media` automáticamente |
-| `rsync: command not found`                | `sudo pacman -S rsync` o `sudo apt install rsync`                           |
-| `Permission denied`                       | No ejecutes como root; usa tu usuario normal                                |
-| `pv: command not found`                   | Opcional: `sudo pacman -S pv` (el script funciona sin él)                   |
-| Backup muy lento                          | Usa `--fast` para comparar por fecha/tamaño en vez de checksum              |
-| Disco NTFS/exFAT: permisos no preservados | Normal en NTFS/exFAT; usa ext4 para backup completo de permisos             |
-| `validate_source_folders: nameref`        | Requiere Bash >= 4.3; actualiza con `sudo pacman -Syu bash`                 |
-
----
-
-## 🤝 Cómo Agregar Funcionalidades
-
-La arquitectura modular hace que extender el script sea simple:
-
-### Para agregar un nuevo perfil de backup:
-
-1. Abre `config.sh`
-2. Añade tu array:
-   ```bash
-   PROFILE_MYPROFILE_FOLDERS=("Carpeta1" "Carpeta2")
-   ```
-3. Abre `main.sh` y añade el caso en el bloque `case "${OPT_PROFILE}"`:
-   ```bash
-   myprofile)
-       carpetas_backup=("${PROFILE_MYPROFILE_FOLDERS[@]}")
-       ;;
-   ```
-4. Documenta el nuevo perfil en `lib/cli.sh` → `show_profiles()`
-
-### Para agregar un nuevo flag CLI:
-
-1. Abre `lib/cli.sh`
-2. Añade la variable default al inicio:
-   ```bash
-   OPT_MY_FLAG=false
-   ```
-3. Añade el caso en `parse_args()`:
-   ```bash
-   --my-flag)
-       OPT_MY_FLAG=true
-       shift
-       ;;
-   ```
-4. Úsalo en `lib/processor.sh` o `main.sh` según corresponda.
-
-### Para agregar un nuevo módulo:
-
-1. Crea lib/<tema>.sh con funciones de responsabilidad única.
-2. Agrégalo en el bloque de `source` de `main.sh`.
-3. Llama sus funciones desde la fase correspondiente en `main()`.
-
-### Estándares de código
-
-- Máximo 30 líneas por función
-- Prefijo `_` para funciones privadas de un módulo
-- `local` para todas las variables dentro de funciones
-- Documenta el "por qué", no el "qué"
-- Usa `|| true` explícitamente cuando un fallo no es crítico
-
----
-
-## ⚠️ Notas y Advertencias
-
-**Compatibilidad de nameref (Bash 4.3+):**
-`validate_source_folders()` usa `local -n` (nameref de Bash 4.3+).
-En sistemas muy antiguos con Bash < 4.3 esta función fallará.
-Kubuntu 22.04+ y Arch reciente incluyen Bash 5.x, por lo que no debería ser problema.
-
-**Checksum vs. velocidad:**
-La opción `-c` (checksum) es más precisa pero más lenta que comparar por fecha/tamaño.
-Para backups diarios de archivos que cambias frecuentemente, `--fast` puede ser
-preferible. Para backups semanales o de verificación, mantén el checksum.
-
-**`--delete-all` con `--no-confirm` en systemd:**
-Esta combinación elimina huérfanos sin ninguna confirmación.
-Úsala solo cuando estés seguro de que el disco externo no tiene archivos
-que quieras conservar independientemente del laptop.
-
-**Límite de archivos con `set -euo pipefail`:**
-El script usa `set -euo pipefail` para fallar rápido ante errores inesperados.
-Las llamadas rsync que pueden devolver códigos no-cero esperables (como el código 24)
-usan `|| true` explícitamente para no abortar el backup.
-
----
-
-_backup-suite v3.0.0 — Compatible con Kubuntu y Arch Linux_
-_achalmaedison — del home al disco externo `/media/*/ARCHDISK`_
+| archivo | qué hace |
+|---|---|
+| `main.sh` | orquesta: argumentos → logger → validación → lista de carpetas del perfil → confirmación → carpeta a carpeta → resumen |
+| `config.sh` | etiqueta del disco, carpeta destino, ruta del log, opciones de rsync, perfiles, exclusiones, valores por defecto |
+| `lib/cli.sh` | parser de opciones, ayuda, lista de perfiles y combinaciones inválidas |
+| `lib/logger.sh` | envoltorio del logger común (carpeta core del espacio de trabajo, shell-lib); abre el log solo con `--log` |
+| `lib/validator.sh` | root, dependencias, punto de montaje, espacio y sistema de archivos del disco, carpetas de origen, exclusiones |
+| `lib/analyzer.sh` | listas de nuevos, modificados (rsync `-n --itemize-changes`) y huérfanos (`find` + `comm`); diff; tamaños |
+| `lib/processor.sh` | los tres pasos por carpeta, las preguntas, la copia de cada archivo y el borrado de huérfanos |
+| `lib/summary.sh` | banner de configuración, resumen final, estado del disco y `--post-cmd` |
 
 ## Límite honesto
 
-- **No simula por defecto**: `--simulate` (o `-s`) hay que pedirlo; `--delete-all --no-confirm` borra huérfanos del destino sin preguntar.
-- **Requiere Bash ≥ 4.3** (`local -n`) y `rsync`; toda invocación, también `--help`, necesita una terminal (`TERM`) porque `main.sh` empieza con `clear`.
-- **El destino es un disco externo montado** (`/media/*` o `/run/media/*`): sin él no hay respaldo, no hay modo remoto ni nube.
-- **Checksum (`-c`) es más lento que comparar por fecha y tamaño** (`--fast`); la precisión se paga en tiempo.
-- **Los códigos de salida esperables de rsync (24) no abortan** por `|| true` explícito; cualquier otro error detiene el respaldo (`set -euo pipefail`).
+- **Los contadores abortan el respaldo.** Bajo `set -euo pipefail`, `(( x++ ))` con `x` en cero devuelve 1 y termina
+  el script: la primera carpeta del perfil que no existe (`validate_source_folders`), el primer archivo omitido,
+  actualizado o borrado detienen la ejecución sin resumen. Con el perfil `home`, basta una carpeta de la lista que no
+  exista en el home. Es un fallo del código, no del uso; hasta corregirlo, el ejemplo de systemd se detiene en la
+  primera actualización o borrado.
+- **Los errores de la copia de nuevos se ocultan.** Esa copia lleva `2>/dev/null || true`: cualquier fallo de rsync
+  (no solo el código 24) se ignora y el resumen cuenta los archivos como copiados (ver `docs/decisiones.md`
+  §Pendientes).
+- **Nombres con espacios en el paso de modificados**: la lista sale de `awk '{print $2}'` sobre la salida de rsync,
+  así que una ruta con espacios se corta en el primero y ese archivo no se actualiza (da error); lo mismo afecta a la
+  cuenta de nuevos, no a su copia.
+- **`--simulate` sigue preguntando**: las preguntas de modificados y huérfanos aparecen, pero nada se escribe.
+- **`custom` no es libre del todo**: exige igualmente el disco de `DISK_LABEL` montado (crea en él
+  `backup_<usuario>/`), y el destino real es la carpeta madre de `--dest` más el nombre de `--src`; si los dos nombres
+  difieren, la copia no cae en `--dest`.
+- **Un perfil desconocido** no da error de argumento: se queda sin carpetas y sale con «No hay carpetas válidas».
+- **`--copy-links` está activo**: los enlaces simbólicos se copian como archivos reales.
+- **Necesita terminal** (`TERM`) incluso para `--help`, porque empieza con `clear`; como root, pregunta antes de seguir.
+- **`--post-cmd` pasa por `eval`**: el texto se ejecuta tal cual en el shell.
+- **Discos NTFS o exFAT** no conservan permisos Unix; avisa, no lo impide.
+- Escrito para Linux con `/media` o `/run/media`; usa `stat --printf` y `df --block-size` de GNU, así que no corre en
+  macOS.

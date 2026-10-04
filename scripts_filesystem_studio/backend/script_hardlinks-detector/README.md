@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_hardlinks-detector/ — detección de hard links por inodo, en árbol, CSV, JSON o reporte de auditoría (v3.1)
+# script_hardlinks-detector/ — detecta los hard links de un árbol y los presenta por inodo como árbol, CSV, JSON o reporte
 
 <!-- suite:inicio -->
 **Suite `hardlinks_detector`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
@@ -26,377 +26,85 @@ main.sh --help
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
-> Detecta y visualiza todos los hard links existentes en un árbol de directorios,
-> en formato árbol jerárquico, CSV o JSON — con filtros por inodo y conteo mínimo de enlaces.
+## Qué es
 
-**Proyecto complementario:** [`hardlinks-creator`](../hardlinks-creator/) — crea hard links entre archivos con contenido idéntico.
+Recorre un árbol con `find -links` y `stat`, agrupa por inodo los archivos que tienen dos o más nombres (hard links) y
+los presenta como árbol jerárquico, CSV o JSON, con el espacio total y el espacio que los enlaces ahorran. En formato
+árbol añade un resumen y una guía breve de cómo se gestionan los hard links. Con `--report` escribe además un
+reporte de auditoría en Markdown (estado general, inventario, categorías por tipo de archivo, los más compartidos,
+los críticos —cinco enlaces o más—, resumen por carpeta, lista de comprobación y órdenes útiles).
 
----
+No crea, borra ni modifica enlaces: solo lee. Escribe únicamente lo que se le pide: el archivo de `-o` (que se
+sobrescribe) y, con `--report`, `reports/hardlinks-report.md` dentro de esta carpeta, que se sobrescribe en cada
+corrida. `reports/` no se versiona. No tiene modo de simulación porque no lo necesita.
 
-## 📋 Tabla de Contenidos
+Es el backend de las pestañas Detectar y Reportes de la página Hardlinks de [Filesystem Studio](../../README.md), que
+lo porta a `../../app/services/hardlink_service.py`. Para crear los enlaces, use
+[`script_hardlinks-creator`](../script_hardlinks-creator/README.md).
 
-- [Descripción](#-descripción)
-- [Novedades v3.1](#-novedades-v31)
-- [Novedades v3.0](#-novedades-v30-respecto-al-script-original)
-- [Bugs corregidos](#-bugs-corregidos)
-- [Requisitos](#-requisitos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Reporte de auditoría](#-reporte-de-auditoría---report)
-- [Arquitectura](#-arquitectura)
-- [Casos de uso comunes](#-casos-de-uso-comunes)
-- [Solución de problemas](#-solución-de-problemas)
-- [Cómo contribuir](#-cómo-contribuir)
-- [Notas y advertencias](#️-notas-y-advertencias)
-
----
-
-## 📖 Descripción
-
-`hardlinks-detector` escanea recursivamente un directorio usando `find -links +1`,
-agrupa los archivos por inodo y los presenta en:
-
-- **Árbol jerárquico** (por defecto) — para revisión visual
-- **CSV** — para importar en hojas de cálculo o Zotero/Calibre workflows
-- **JSON** — para CI/CD pipelines o consumir desde `hardlinks-creator`'s reporter
-
-Diseñado como la herramienta de verificación y auditoría del par
-`hardlinks-creator` / `hardlinks-detector`, usados juntos para optimizar
-los proyectos Quarto/blog de publicaciones académicas.
-
----
-
-## 🆕 Novedades v3.1
-
-| Característica nueva | Descripción                                                                  |
-| -------------------- | ---------------------------------------------------------------------------- |
-| **`--report`**       | Genera un Reporte Ejecutivo de Auditoría en Markdown                         |
-| **`lib/report.sh`**  | Nuevo módulo con responsabilidad única: construir el reporte                 |
-| **`reports/`**       | Carpeta fija del reporte (`hardlinks-report.md`), pensada para diffs con Git |
-
-El reporte se construye **reutilizando los datos ya obtenidos por `scanner.sh`**
-(sin segundo escaneo del filesystem) y se sobrescribe en cada ejecución de forma
-intencional: el historial de versiones se delega a Git.
-
----
-
-## 🆕 Novedades v3.0 (respecto al script original)
-
-| Característica nueva           | Descripción                                                 |
-| ------------------------------ | ----------------------------------------------------------- |
-| **Formato CSV**                | `--format csv` exporta datos para hojas de cálculo          |
-| **Formato JSON**               | `--format json` para integración con CI y otros scripts     |
-| **`--output FILE`**            | Guarda la salida en archivo y también la muestra en consola |
-| **`--min-links N`**            | Filtra grupos con menos de N enlaces                        |
-| **`--filter-inode N`**         | Muestra solo el grupo de un inodo específico                |
-| **Un solo `stat` por archivo** | El scan original hacía 2 llamadas a stat; ahora es 1        |
-| **Arquitectura modular**       | 5 módulos con responsabilidad única                         |
-
----
-
-## 🐛 Bugs corregidos
-
-### Bug #1 — `format_size()` requería `bc` sin verificar disponibilidad (`lib/ui.sh`)
-
-- **Original:** Usaba `$(echo "$size >= 1024" | bc -l)` en un bucle `while`.
-  Si `bc` no está instalado (ausente en imágenes Docker mínimas), el script
-  fallaba silenciosamente produciendo output vacío.
-- **Corrección:** Reimplementado con aritmética entera pura de Bash
-  (`(( size >= 1024 ))`), sin dependencias externas.
-
-### Bug #2 — Padding desalineado en la caja de resumen (`lib/ui.sh`)
-
-- **Original:** El padding usaba `${#variable} / 10` (longitud de string como
-  entero crudo), produciendo columnas desalineadas cuando el número tenía
-  más de un dígito.
-- **Corrección:** Reimplementado con `printf "%-Ns"` de ancho fijo que alinea
-  correctamente independientemente del valor.
-
----
-
-## ⚙️ Requisitos
-
-- **Bash** ≥ 4.0 (arrays asociativos con `declare -A`)
-- **Herramientas:** `find`, `stat`, `sort`, `realpath` (paquete `coreutils`)
-- **Sistema:** Linux/Unix
-- **Permisos:** lectura en el directorio a escanear
+## Uso
 
 ```bash
-# Verificar versión de Bash
-bash --version
-
-# Instalar dependencias si faltan (Debian/Ubuntu)
-sudo apt install coreutils findutils
+./main.sh                                              # analiza el directorio actual
+./main.sh "$HOME/Documents/04 index"                   # el directorio va siempre primero
+./main.sh ~/Documents -f json -o salida.json           # JSON a pantalla y a archivo
+./main.sh ~/Documents -f csv -o enlaces.csv --no-color
+./main.sh ~/Documents --min-links 5                    # solo inodos con cinco nombres o más
+./main.sh ~/Documents --filter-inode 14820714          # un solo grupo
+./main.sh ~/Documents --report                         # además, reports/hardlinks-report.md
+./main.sh --version                                    # imprime la versión
 ```
 
----
-
-## 🚀 Instalación
-
-```bash
-# 1. Vive en el repo scripts_for_linux, como backend de Filesystem Studio
-cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector
-
-# 2. Dar permisos de ejecución
-chmod +x main.sh lib/*.sh
-
-# 3. (Opcional) Acceso global
-mkdir -p ~/.local/bin
-ln -s "$(pwd)/main.sh" ~/.local/bin/hardlinks-detector
-
-# Agregar al PATH si no está (añadir a ~/.zshrc o ~/.bashrc)
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
-```
-
----
-
-## 💻 Uso
-
-### Sintaxis
-
-```bash
-./main.sh [DIRECTORIO] [OPCIONES]
-# o si está en el PATH:
-hardlinks-detector [DIRECTORIO] [OPCIONES]
-```
-
-### Opciones disponibles
-
-| Flag                  | Descripción                                   | Por defecto       |
-| --------------------- | --------------------------------------------- | ----------------- |
-| `DIRECTORIO`          | Directorio raíz a analizar                    | Directorio actual |
-| `-f, --format FORMAT` | Formato de salida: `tree`, `csv`, `json`      | `tree`            |
-| `-o, --output FILE`   | Guardar salida en archivo (además de consola) | —                 |
-| `--min-links N`       | Solo grupos con ≥ N enlaces                   | `2`               |
-| `--filter-inode N`    | Solo el grupo con ese inodo                   | —                 |
-| `--report`            | Generar reporte de auditoría Markdown         | —                 |
-| `--no-color`          | Desactivar colores ANSI                       | —                 |
-| `-v, --verbose`       | Mensajes de depuración                        | —                 |
-| `--version`           | Mostrar versión                               | —                 |
-| `-h, --help`          | Mostrar ayuda                                 | —                 |
-
-### Ejemplos
-
-```bash
-# Inicio
-cd ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector
-
-# Ver hard links en el directorio actual
-./main.sh
-
-# Analizar directorio de publicaciones
-./main.sh ~/Documents
-
-# Exportar como JSON
-./main.sh ~/Documents --format json --output links.json
-
-# Exportar como CSV
-./main.sh ~/Documents --format csv --output links.csv
-
-# Solo grupos con 10 o más enlaces (proyectos grandes)
-./main.sh ~/Documents --min-links 10
-
-# Inspeccionar un inodo específico (tras ver el reporte)
-./main.sh ~/Documents --filter-inode 14820714
-
-# Sin colores para log de CI o pipe
-./main.sh ~/Documents --no-color | grep "Conjunto"
-
-# Generar el reporte ejecutivo de auditoría
-./main.sh ~/Documents --report
-
-git add reports/hardlinks-report.md
-git commit -m "chore: actualizar hardlinks-report con nuevos datos escaneados"
-```
-
----
-
-## 📊 Reporte de auditoría (`--report`)
-
-Con `--report`, además de la salida normal, se escribe un Reporte Ejecutivo
-de Auditoría en Markdown en una **ubicación fija** dentro del proyecto:
-
-```
-script_hardlinks-detector/reports/hardlinks-report.md
-```
-
-Características:
-
-- **Un único archivo, siempre sobrescrito.** Sin timestamps ni historial propio:
-  las diferencias entre ejecuciones se revisan con Git
-  (`git diff -- reports/hardlinks-report.md`), usando el reporte como línea base.
-- **Sin segundo escaneo.** El reporte se construye únicamente con los arrays
-  `INODE_*` que ya pobló `scanner.sh`.
-- **Orden determinista.** Los conjuntos se ordenan por ruta (no por orden de hash)
-  para que los diffs de Git sean estables y significativos.
-
-Secciones del reporte:
-
-1. **Encabezado** — fecha, hora, directorio, tiempo de ejecución, versión, SO
-2. **Resumen Ejecutivo** — tabla de indicadores generales
-3. **Estado General** — anomalías detectadas (enlaces externos, tamaños 0)
-4. **Inventario Completo** — una fila por conjunto, sin omitir ninguno
-5. **Agrupación por categorías** — SCSS, JavaScript, HTML, YAML, Markdown, QMD, Lua, Scripts, Otros
-6. **Top archivos más compartidos** — ordenados por cantidad de enlaces
-7. **Archivos críticos** — inferidos automáticamente (umbral: `CRITICAL_LINKS_THRESHOLD` en `config.sh`)
-8. **Resumen por directorios** — archivos compartidos y ahorro por proyecto
-9. **Checklist de auditoría** — para comparar ejecuciones futuras
-10. **Comandos útiles** — `stat`, `find -inum`, `find -samefile`, `find -links +1`
-11. **Conclusión** — resumen automático del estado general
-
-Ajustes disponibles en `config.sh`: `REPORT_DIR_NAME`, `REPORT_FILE_NAME`,
-`CRITICAL_LINKS_THRESHOLD`, `TOP_SHARED_LIMIT`.
-
----
-
-## 🗂️ Arquitectura
-
-```
-hardlinks-detector/
-├── main.sh          # Punto de entrada: orquesta las 6 fases del pipeline
-├── config.sh        # Constantes, paths, valores predefinidos
-├── lib/
-│   ├── logger.sh    # Logging centralizado (INFO/WARN/ERROR/DEBUG) + colores ANSI
-│   ├── ui.sh        # Output formateado: headers, separadores, mensajes, format_size
-│   ├── validator.sh # Validación de directorio, permisos, herramientas del sistema
-│   ├── cli.sh       # Parsing de argumentos y función show_help
-│   ├── scanner.sh   # find + stat, agrupación por inodo en arrays asociativos
-│   ├── renderer.sh  # Tres renderers: render_tree, render_csv, render_json
-│   └── report.sh    # Reporte de auditoría Markdown (--report); no accede al FS
-└── reports/
-    └── hardlinks-report.md  # Reporte generado (se crea con --report)
-```
-
-### Descripción de módulos
-
-| Módulo             | Responsabilidad única                                       |
-| ------------------ | ----------------------------------------------------------- |
-| `main.sh`          | Orquestar las 6 fases; sin lógica de negocio propia         |
-| `config.sh`        | Todas las constantes y valores predefinidos                 |
-| `lib/logger.sh`    | Funciones de log y constantes de color ANSI                 |
-| `lib/ui.sh`        | Todo el output formateado; no toma decisiones               |
-| `lib/validator.sh` | Validar entradas y herramientas; aborta temprano            |
-| `lib/cli.sh`       | Parsear argumentos; no valida ni ejecuta                    |
-| `lib/scanner.sh`   | Descubrir hard links; popula arrays globales                |
-| `lib/renderer.sh`  | Renderizar datos en tree/csv/json; no accede al FS          |
-| `lib/report.sh`    | Construir el reporte Markdown desde los datos ya escaneados |
-
----
-
-## 💡 Casos de uso comunes
-
-### Verificar después de usar hardlinks-creator
-
-```bash
-# Crear links
-python ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator/main.py _metadata.yml --auto
-
-# Verificar resultado
-hardlinks-detector ~/Documents
-```
-
-### Auditoría en formato JSON para reporte automatizado
-
-```bash
-hardlinks-detector ~/Documents \
-    --format json \
-    --output ~/reports/hardlinks-$(date +%Y-%m-%d).json
-```
-
-### Integración con blog manager scripts
-
-```bash
-# Ver cuántos _metadata.yml comparten inodo (confirmación de sync)
-hardlinks-detector ~/Documents \
-    --format csv \
-    --no-color | grep "_metadata.yml" | wc -l
-```
-
-### Diagnosticar un inodo específico
-
-```bash
-# Primero obtener el inodo
-stat -c '%i' ~/Documents/blog/posts/_metadata.yml
-
-# Luego ver todos los enlaces de ese inodo
-hardlinks-detector ~/Documents --filter-inode 14820714
-```
-
----
-
-## 🔧 Solución de problemas
-
-### "Permission denied" al ejecutar
-
-```bash
-chmod +x main.sh lib/*.sh
-```
-
-### "bash: declare -A: invalid option" (Bash < 4.0)
-
-En macOS, el Bash del sistema es 3.x. Instala Bash moderno:
-
-```bash
-brew install bash
-# Luego ejecuta con:
-/usr/local/bin/bash main.sh
-```
-
-### "realpath: command not found"
-
-```bash
-# Debian/Ubuntu
-sudo apt install coreutils
-
-# Arch Linux
-sudo pacman -S coreutils
-```
-
-### La salida JSON no es válida
-
-Verifica que el directorio no contenga nombres de archivo con comillas dobles o backslashes,
-que se generan raramente pero podrían romper el JSON manual. En ese caso usa `--format csv`.
-
----
-
-## 🤝 Cómo contribuir
-
-1. Fork el repositorio
-2. `git checkout -b feature/nueva-funcion`
-3. Crea tu módulo en lib/<tema>.sh con responsabilidad única
-4. Agrégalo con `source` en `main.sh`
-5. Documenta cada función con el bloque de comentario estándar
-6. Actualiza este README
-7. Abre Pull Request
-
-**Estándares:** Bash 4.0+, `set -uo pipefail`, funciones ≤ 30 líneas, sin `2>/dev/null` sin comentario explicativo, variables locales siempre declaradas con `local`.
-
----
-
-## ⚠️ Notas y advertencias
-
-- **Los arrays asociativos requieren Bash 4.0+.** En macOS el shell por defecto es zsh; este script es Bash-only.
-- **Directorios con millones de archivos** pueden tardar; el scan hace una sola pasada de `find` pero el `stat` por archivo es inevitable.
-- **El formato JSON es manual** (sin `jq`), por diseño de cero dependencias. Si necesitas JSON robusto con caracteres especiales, pasa la salida por `jq .`.
-- **`--filter-inode` es case-sensitive** respecto al número; cópialo exactamente del output de `stat -c '%i'`.
-
----
-
-## 👤 Autor
-
-**Edison Achalma** — Economista | Universidad Nacional de San Cristóbal de Huamanga  
-GitHub: [@achalmed](https://github.com/achalmed) · LinkedIn: [achalmaedison](https://www.linkedin.com/in/achalmaedison) · Ayacucho, Perú
-
-## 📄 Licencia
-
-MIT License — ver `LICENSE` en la raíz del repo.
+| opción | por defecto | qué hace |
+|---|---|---|
+| `DIRECTORIO` (primer argumento) | directorio actual | raíz del análisis; tiene que ir antes que cualquier opción |
+| `-f`, `--format FORMAT` | `tree` | `tree`, `csv` o `json` |
+| `-o`, `--output FILE` | — | guarda la salida en un archivo, además de mostrarla |
+| `--min-links N` | `2` | solo inodos con al menos N enlaces (entero ≥ 2) |
+| `--filter-inode N` | — | solo el grupo de ese inodo |
+| `--report` | apagado | escribe el reporte de auditoría en `reports/hardlinks-report.md` |
+| `--no-color` | apagado | sin colores ANSI |
+| `-v`, `--verbose` | apagado | mensajes de depuración |
+| `--version`, `-h`, `--help` | — | versión y ayuda |
+
+En `config.sh` se cambian el ancho de cabeceras y separadores (80), el nombre y la carpeta del reporte, el umbral de
+«crítico» (5 enlaces) y cuántas filas lleva la tabla de los más compartidos (10). Su `DEFAULT_FORMAT` no tiene
+efecto: el formato por defecto está fijo en `lib/cli.sh`.
+
+Códigos de salida: 0 bien (también sin enlaces), 1 falta una herramienta o no se puede escribir el archivo de `-o`,
+2 argumento inválido, 3 directorio inexistente, 4 sin permiso de lectura.
+
+Requisitos: bash 4 o superior, GNU findutils y coreutils (`find`, `stat --format`, `sort`, `realpath`, `tee`), y
+`core/shell-lib/logger.sh` del espacio de trabajo.
+
+## Estructura
+
+| archivo | qué hace |
+|---|---|
+| `main.sh` | orquesta: argumentos → validación → escaneo → filtro → salida → resumen y guía → reporte |
+| `config.sh` | versión, ancho, carpeta y nombre del reporte, umbrales, códigos de salida |
+| `lib/cli.sh` | lectura de opciones y ayuda |
+| `lib/logger.sh` | carga el logger común de `core/shell-lib/` |
+| `lib/validator.sh` | herramientas requeridas, directorio y ruta de salida |
+| `lib/scanner.sh` | `find -links` + `stat`; agrupa por inodo y suma espacio usado y ahorrado; filtro por inodo |
+| `lib/renderer.sh` | salidas árbol, CSV y JSON con rutas relativas |
+| `lib/ui.sh` | cabeceras, separadores, tamaños legibles y caja de resumen |
+| `lib/report.sh` | reporte de auditoría en Markdown |
+| `suite.yml` | manifiesto de la suite (de él sale el bloque generado de arriba) |
 
 ## Límite honesto
 
-- **Solo lee**; escribe únicamente el archivo que se le pide con `-o` o el reporte de `--report`.
-- **Bash ≥ 4** (arrays asociativos) y GNU findutils: no corre en el bash 3.2 de macOS.
-- **Árboles con millones de archivos tardan**: una pasada de `find`, pero un `stat` por archivo.
-- **El JSON se escribe a mano, sin `jq`**: con caracteres especiales conviene pasarlo por `jq .`.
-- **`--filter-inode` exige el número exacto** del inodo (`stat -c '%i'`).
+- **El reporte no tiene historial.** `reports/hardlinks-report.md` se sobrescribe y `reports/` está en el `.gitignore`:
+  el mensaje final y la lista de comprobación del propio reporte sugieren compararlo con `git diff`, pero git no lo
+  sigue y no debe añadirse con `git add`. Para comparar dos corridas, copie el reporte anterior antes de generar otro.
+- **El directorio tiene que ser el primer argumento**: `./main.sh --report ~/Documents` falla con «Argumento
+  desconocido».
+- **Redirigir la salida mezcla los mensajes**: la cabecera y los avisos de información salen por la salida estándar;
+  para un CSV o un JSON limpios use `-o`.
+- **CSV y JSON no escapan las rutas**: una coma en el nombre rompe la fila del CSV y unas comillas o una barra
+  invertida dejan el JSON inválido. Un `;` o un salto de línea en el nombre también parten el grupo.
+- **Cuenta los enlaces de todo el disco, no solo los del árbol**: el número de enlaces y el espacio ahorrado salen de
+  `stat`, así que un archivo con nombres fuera del directorio analizado aparece con menos rutas que enlaces.
+- **Solo GNU/Linux** (`stat --format`, `realpath --relative-to`, `date --iso-8601`); no excluye carpetas y entra en
+  `.git` y similares.
+- **Necesita el espacio de trabajo**: `lib/logger.sh` busca `core/shell-lib/logger.sh` subiendo desde su carpeta.

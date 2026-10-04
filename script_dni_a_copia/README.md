@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_dni_a_copia/ — dos fotos de un DNI a una copia limpia a tamaño real, en DOCX o PDF (v1.5)
+# script_dni_a_copia/ — dos fotos de un DNI a una copia limpia a tamaño real, en DOCX o PDF
 <!-- suite:inicio -->
 **Suite `dni_a_copia`** · objetivo *personal* · estado *activo* · python · interfaz cli
 
@@ -21,297 +21,102 @@ main.py --front anverso.jpg --back reverso.jpg --dry-run
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-03); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Arma una copia limpia, a tamaño real y **alta resolución**, del anverso y
-> reverso de un DNI a partir de dos fotos de celular: endereza, recorta, blanquea
-> el fondo (conservando el marco de laminado), **restaura la calidad** (quita
-> artefactos JPEG, reduce ruido y reescala con nitidez), corrige el color y
-> centra ambas caras en una hoja A4 → Word y, opcionalmente, PDF listo para
-> imprimir.
+## Qué es
 
-## 📋 Tabla de Contenidos
+Toma dos imágenes de un DNI peruano (anverso y reverso) y arma una hoja A4 con las dos caras centradas a su tamaño
+físico (ISO/IEC 7810 ID-1, 85,6 × 53,98 mm), como si se hubieran escaneado:
 
-- [Descripción](#-descripción)
-- [Requisitos](#️-requisitos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Arquitectura](#️-arquitectura)
-- [Bugs Corregidos](#-bugs-corregidos)
-- [Solución de Problemas](#-solución-de-problemas)
-- [Cómo Contribuir](#-cómo-contribuir)
-- [Notas y Advertencias](#️-notas-y-advertencias)
+1. **Detecta la tarjeta** por color saturado y brillante (el turquesa impreso) y toma su envolvente convexa.
+2. **Rectifica**: corrige la perspectiva con las cuatro esquinas (`--no-perspective` la quita y deja solo el
+   enderezado por rotación) y orienta la cara (`--rotate`).
+3. **Compone** sobre blanco conservando el borde del laminado, con una sombra tenue, y corrige el color (balance de
+   blancos y realce suave).
+4. **Restaura** (activa por defecto; `--no-enhance` la quita): suaviza la crominancia, reescala con Lanczos a los
+   DPI pedidos, quita ruido con un filtro bilateral si está `scikit-image` y aplica un realce final.
+5. **Exporta** a Word y, con `--to-pdf`, a PDF con LibreOffice sin compresión con pérdida ni reducción de resolución.
 
-## 📖 Descripción
+Con `--pre-cropped` la imagen se toma como la tarjeta ya recortada y plana (DNIe o escaneo): se omiten detección,
+perspectiva, orientación y color, y solo se reescala, se realza (salvo `--no-enhance`), se redondean las esquinas y se añade la sombra.
 
-Herramienta CLI que convierte dos fotografías (anverso y reverso) de un DNI
-peruano —normalmente tomadas con celular, torcidas y con fondo— en una copia de
-aspecto profesional, como si se hubiera escaneado en alta calidad:
+- **Qué escribe**, en `--output-dir`: `<nombre>.docx`; con `--to-pdf`, `<nombre>.pdf`; con `--save-caras`,
+  `<nombre>_anverso.png` y `<nombre>_reverso.png` (cada cara a tamaño real, con los DPI en el PNG). Sobrescribe sin
+  preguntar. El perfil temporal de LibreOffice se borra al terminar. No escribe log en disco (`LOG_FILE = None`).
+- **Qué no hace:** no lee ni altera los datos del documento; la restauración es solo visual y no inventa detalle.
+- **Simulación:** no simula por defecto; `-d`/`--dry-run` procesa las imágenes pero no escribe ningún archivo.
 
-1. **Segmenta** la tarjeta por saturación (el turquesa impreso destaca sobre el
-   fondo gris) y calcula su **envolvente convexa** como silueta sólida.
-2. **Rectifica la geometría**: corrige la **perspectiva** (keystone) con una
-   homografía de 4 esquinas — los lados opuestos quedan iguales y proporción
-   ID-1 exacta — y endereza cualquier inclinación residual. Desactivable con
-   `--no-perspective` (cae a solo deskew rotacional).
-3. Conserva el **marco de laminado** translúcido pero **blanquea su fondo**,
-   compone la tarjeta sobre blanco con borde suavizado y añade una **sombra muy
-   sutil** para separarla del papel sin que parezca un recorte.
-4. Corrige el **color** (balance de blancos "white-patch" + realce suave) para
-   un turquesa natural, sin dominante azul.
-5. **Restaura la calidad** (etapa `--enhance`, activa por defecto): de-JPEG de
-   crominancia antes de escalar, *upscaling* Lanczos a alta resolución (600 dpi
-   por defecto), denoise bilateral que preserva bordes y realce final suave.
-   Es restauración clásica: limpia artefactos y reescala **sin inventar detalle**
-   ni alterar ningún dato del documento.
-6. Lleva cada cara a su **tamaño físico exacto** (ISO/IEC 7810 ID-1,
-   85.6 × 53.98 mm) y las **centra** —horizontal y verticalmente— en A4.
-7. Exporta a **Word** y, con `--to-pdf`, también a **PDF**.
-
-## ⚙️ Requisitos
-
-### Sistema Operativo
-
-- Linux (probado). macOS/Windows deberían funcionar salvo la exportación a PDF.
-
-### Dependencias
-
-- Python >= 3.9
-- `numpy`, `scipy`, `Pillow`, `python-docx` (ver `requirements.txt`)
-- `scikit-image` — recomendada; habilita el denoise bilateral de `--enhance`
-  (sin ella, la restauración degrada a de-JPEG de crominancia + realce)
-- **LibreOffice** — solo para `--to-pdf` (`libreoffice`/`soffice` en el PATH)
-
-## 🚀 Instalación
+## Uso
 
 ```bash
-cd script_dni_a_copia
-pip install -r requirements.txt
-# PDF opcional:
-sudo apt install libreoffice
+python3 main.py --front frente.jpg --back reverso.jpg -o ~/copias -n dni_copia --to-pdf
+python3 main.py --front frente.jpg --back reverso.jpg -o ~/copias -n dni_copia --dry-run --verbose
+python3 main.py --front dnie_a.png --back dnie_r.png -o ~/copias -n dnie_copia --pre-cropped
+python3 main.py --front frente.jpg --back reverso.jpg -o ~/copias -n dni_bn --bn --save-caras
 ```
 
-## 💻 Uso
+**Pasar siempre `--front`, `--back`, `-o` y `-n`.** Los valores por defecto de `config.py` apuntan a las imágenes,
+la carpeta y el nombre de un DNI concreto (bajo `PERSONAL_DIR`), no a valores de ejemplo: sin esas opciones, la
+herramienta lee esas imágenes o deja la salida en esa carpeta con ese nombre (ver `docs/decisiones.md` §Pendientes).
 
-### Sintaxis
+| opción | qué hace | por defecto (`config.py`) |
+|---|---|---|
+| `--front IMG` | imagen del anverso | la del DNI de `config.py` |
+| `--back IMG` | imagen del reverso | la del DNI de `config.py` |
+| `-o`, `--output-dir DIR` | carpeta de salida; la crea si no existe | la del DNI de `config.py` |
+| `-n`, `--name NOMBRE` | nombre base de los archivos | el del DNI de `config.py` |
+| `--dpi N` | resolución, entre 72 y 1200 | `300` (`DEFAULT_DPI`) |
+| `--to-pdf` | exporta también a PDF | no |
+| `--no-enhance` | desactiva la restauración | restauración activa |
+| `--rotate MODO` | `auto`, `0`, `90`, `180` o `270` (grados antihorarios) | `auto` |
+| `--no-perspective` | sin corrección de perspectiva | corrección activa |
+| `--pre-cropped` | la imagen ya es la tarjeta recortada y plana | no |
+| `--grayscale`, `--bn` | salida en escala de grises | no |
+| `--save-caras` | guarda además el PNG de cada cara | no |
+| `-d`, `--dry-run` | simula | no |
+| `-v`, `--verbose` | nivel DEBUG | no |
+| `--version` | imprime la versión | — |
+| `-h`, `--help` | ayuda | — |
 
-```bash
-python3 main.py [OPCIONES]
-```
+Al imprimir, escala al 100 % («tamaño real»), nunca «ajustar a la página». Códigos de salida: 0 hecho · 1 no se
+detectó la tarjeta o falló LibreOffice · 2 DPI fuera de rango o salida que no es carpeta · 3 imagen inexistente ·
+4 sin permisos · 5 falta LibreOffice con `--to-pdf` · 130 interrumpido.
 
-### Opciones disponibles
+Requisitos: Python 3 con `numpy`, `scipy`, `Pillow` y `python-docx` (`requirements.txt`); `scikit-image`
+recomendado (sin él no hay filtro bilateral); LibreOffice (`libreoffice` o `soffice`) solo para `--to-pdf`.
 
-| Flag                | Descripción                                          | Requerido |
-| ------------------- | ---------------------------------------------------- | --------- |
-| `--front IMG`       | Imagen del anverso                                   | No¹       |
-| `--back IMG`        | Imagen del reverso                                   | No¹       |
-| `-o, --output-dir`  | Directorio de salida del Word/PDF                    | No        |
-| `-n, --name NOMBRE` | Nombre base de los archivos de salida                | No        |
-| `--dpi N`           | Resolución de las imágenes (72–1200; def. 300)       | No        |
-| `--to-pdf`          | Además del Word, exporta a PDF (LibreOffice)         | No        |
-| `--no-enhance`      | Desactiva la restauración (de-JPEG/denoise/realce)   | No        |
-| `--rotate MODO`     | Orientación: `auto` (def.) o grados CCW 0/90/180/270 | No        |
-| `--no-perspective`  | Desactiva la corrección de perspectiva (keystone)   | No        |
-| `--pre-cropped`     | La imagen ya es el DNI recortado y plano (DNIe/scan)| No        |
-| `--grayscale`,`--bn`| Salida en blanco y negro (escala de grises)         | No        |
-| `--save-caras`      | Guarda cada cara recortada a tamaño real (PNG @ DPI) | No        |
-| `-d, --dry-run`     | Simula: muestra qué se generaría sin escribir nada   | No        |
-| `-v, --verbose`     | Salida detallada (nivel DEBUG)                       | No        |
-| `--version`         | Muestra la versión y sale                            | No        |
-| `-h, --help`        | Muestra la ayuda y sale                              | No        |
+## Estructura
 
-¹ Tienen valores por defecto (los archivos de un DNI concreto, en `config.py`); ver Notas.
-
-### Ejemplos de uso
-
-```bash
-# Reproducir la copia por defecto (rutas de `config.py`) -> Word
-python3 main.py
-
-# Cualquier DNI, con salida y nombre propios, y PDF
-python3 main.py --front frente.jpg --back reverso.jpg \
-    -o ~/copias -n dni_juan --to-pdf
-
-# Archivos más ligeros (menor resolución) o acabado anterior (sin restaurar)
-python3 main.py --dpi 450 --to-pdf
-python3 main.py --no-enhance
-
-# Simulación detallada (no escribe nada)
-python3 main.py --dry-run --verbose
-```
-
-> **Al imprimir/exportar:** usa escala **100 % / "Tamaño real"** (no "Ajustar a
-> página") para que el DNI salga exactamente a su tamaño físico.
-
-## 🗂️ Arquitectura
-
-Sigue el patrón modular del repo: `main` orquesta, `lib/` implementa, `config`
-centraliza todo valor ajustable.
-
-```
-script_dni_a_copia/
-├── main.py            # Orquestación: valida -> procesa caras -> Word -> (PDF)
-├── config.py          # TODO valor editable + geometría derivada (build_geometry)
-├── requirements.txt
-├── README.md
-└── lib/
-    ├── logger.py      # Logging INFO/WARN/ERROR (consola + archivo opcional)
-    ├── validator.py   # Valida args, entradas, dependencias, permisos
-    ├── cli.py         # argparse (flags + ejemplos)
-    ├── card_detect.py # Segmentación + deskew + recorte/orientación
-    ├── card_render.py # White balance + acabado (laminado, composición, sombra)
-    ├── enhance.py     # Restauración: de-JPEG + denoise + realce hi-res
-    └── docx_builder.py# Construye el Word y exporta a PDF
-```
-
-### Descripción de módulos
-
-| Archivo              | Responsabilidad                                              |
-| -------------------- | ----------------------------------------------------------- |
-| `main.py`            | Orquesta las fases; no contiene lógica de negocio           |
-| `config.py`          | Tamaño ID-1, DPI, umbrales, laminado, sombra, restauración, layout, rutas |
-| `lib/logger.py`      | Logging con colores en TTY y archivo opcional               |
-| `lib/validator.py`   | Chequeos previos con códigos de salida                      |
-| `lib/cli.py`         | Definición de todas las flags                               |
-| `lib/card_detect.py` | `card_mask`, `estimate_tilt`, `deskew`, `extract_face`      |
-| `lib/card_render.py` | `white_balance`, `render_face` y sus etapas                 |
-| `lib/enhance.py`     | `reduce_artifacts` (de-JPEG), `restore_highres` (denoise+realce) |
-| `lib/docx_builder.py`| `build_document`, `export_pdf`                              |
-
-## 🐛 Bugs Corregidos
-
-Migración desde el script monolítico `build_copia.py`:
-
-### Bug #1: Parámetro que ocultaba una función global
-- **Descripción**: en `finish(...)` el parámetro `card_mask` sombreaba la
-  función global `card_mask()`.
-- **Impacto**: bomba de tiempo de mantenimiento; cualquier llamada futura a la
-  función dentro de esa scope habría usado el array.
-- **Corrección**: parámetro renombrado a `card_region`.
-
-### Bug #2: `card_mask` reventaba sin región saturada
-- **Descripción**: con 0 componentes, `sizes.max()` lanzaba `ValueError`, y
-  `ConvexHull` fallaba con menos de 3 puntos.
-- **Impacto**: crash con traza críptica ante una imagen en blanco/ilegible.
-- **Corrección**: se validan componentes y nº de puntos y se lanza un error de
-  dominio claro ("no se detectó una tarjeta").
-
-### Bug #3: Sin validación de entradas ni dependencias
-- **Descripción**: archivos inexistentes o librerías faltantes provocaban trazas
-  crudas; sin códigos de salida.
-- **Corrección**: `lib/validator.py` con mensajes accionables y códigos 3/4/5.
-
-### Bug #4: Todo se ejecutaba al importar (sin `main`)
-- **Descripción**: el pipeline corría en el ámbito del módulo y una función se
-  definía después del código que ya se había ejecutado.
-- **Corrección**: orquestación en `main()` bajo `if __name__ == "__main__":`.
-
-### Bug #5: Rutas absolutas hardcodeadas (scratch efímero)
-- **Descripción**: rutas fijas, incluida una carpeta temporal de sesión que no
-  existiría en ejecuciones futuras (crash al guardar).
-- **Corrección**: rutas y tunables en `config.py`, sobreescribibles por flags;
-  archivos temporales de LibreOffice con `tempfile` y limpieza garantizada.
-
-### Bug #6: `print()` en vez de logging con niveles
-- **Corrección**: `lib/logger.py` (INFO/WARN/ERROR, `--verbose`, salida a stderr).
-
-## 🔧 Solución de Problemas
-
-### `Faltan dependencias de Python`
-```bash
-pip install -r requirements.txt
-```
-
-### `Falta LibreOffice para exportar a PDF`
-```bash
-sudo apt install libreoffice   # o quita --to-pdf y convierte el .docx aparte
-```
-
-### `no se detectó una tarjeta en la imagen`
-La foto no tiene suficiente turquesa reconocible (muy oscura, recortada o el DNI
-ocupa muy poco). Reencuadra la foto con la tarjeta bien visible sobre un fondo
-claro y uniforme.
-
-### El PDF no sale a tamaño real
-Imprime/exporta a escala **100 %**, nunca "Ajustar a página".
-
-## 🤝 Cómo Contribuir
-
-### Para agregar un nuevo módulo o flag
-1. Crea lib/<tema>.py con funciones de responsabilidad única (< 30 líneas).
-2. Añade los valores ajustables en `config.py` (nunca hardcodeados en `lib/`).
-3. Si aporta una opción, declárala en `lib/cli.py` y consúmela en `main.py`.
-4. Actualiza este README.
-
-### Estándares de código
-- Máximo 30 líneas por función; nombres descriptivos en inglés técnico.
-- Comentarios sobre el "por qué", no el "qué".
-- Mensajes al usuario en español; código y docstrings en inglés.
-
-## ⚠️ Notas y Advertencias
-
-- **Datos personales**: `config.py` trae como valores por defecto las rutas de un
-  DNI real para comodidad de un uso concreto. Si versionas este
-  repositorio en un remoto público, **cambia esos defaults o no los subas**
-  (p. ej. añádelos a `.gitignore` o reemplázalos por rutas de ejemplo). Las
-  imágenes del DNI nunca deben salir de la máquina.
-- **Orientación**: la herramienta asume que ambas fotos están en vertical con la
-  tarjeta girada 90° (caso típico de foto de celular) y las gira 90° antihorario.
-  Si tus fotos vienen en otra orientación, gíralas antes o ajusta
-  `extract_face`.
-- **Decisión de diseño**: el centrado vertical se logra con márgenes
-  superior/inferior simétricos (LibreOffice ignora `w:vAlign`; MS Word sí lo
-  respeta, y se deja activado por compatibilidad).
-- **Restauración = solo visual**: la etapa `--enhance` limpia artefactos de
-  compresión, reduce ruido y reescala; **no inventa detalle** ni modifica dato
-  alguno del documento. Está calibrada suave para conservar microtexto, huella y
-  demás elementos de seguridad; si algún elemento se ve demasiado suave, baja
-  `BILATERAL_SIGMA_*` en `config.py` o usa `--no-enhance`.
-- **Rendimiento y tamaño**: a 600 dpi con restauración, procesar ambas caras
-  toma ~15 s y el `.docx` pesa varios MB (el PDF re-comprime y queda pequeño).
-  Baja `--dpi` (p. ej. 450) si necesitas archivos más ligeros.
-- **Orientación**: por defecto (`--rotate auto`) la herramienta detecta si la
-  tarjeta viene de lado (vertical → gira 90° CCW) o ya horizontal (no gira). Los
-  otros sentidos (horario, boca abajo) no se pueden deducir sin leer el
-  contenido: fuérzalos con `--rotate 270` o `--rotate 180`.
-- **Fondos oscuros**: la detección exige color **saturado y brillante**
-  (`SAT_THRESHOLD` + `VALUE_MIN`), de modo que una superficie oscura pero con
-  algo de color (no negro puro) no se confunde con la tarjeta.
-- **Perspectiva**: la corrección asume que las 4 esquinas de la tarjeta se
-  detectan bien (borde saturado visible). Si una esquina tiene un parche que
-  tapa el borde y sale deformada, usa `--no-perspective` para esa imagen.
-- **Dos tipos de entrada**: fotos de celular del DNI azul (tarjeta pequeña sobre
-  un fondo, con perspectiva → detección + rectificación), y **DNIe/escaneos ya
-  recortados y planos** (`--pre-cropped`: se omite detección/perspectiva/color y
-  se preservan los colores originales). El DNIe no es turquesa, así que la
-  detección por saturación no aplica: usa siempre `--pre-cropped` con él.
-- **Peso de archivo**: los PDF/DOCX salen sin pérdida a la resolución elegida.
-  A 300 dpi (por defecto) rondan 1.5–3 MB; a 600 dpi se cuadruplican sin aportar
-  detalle real (el origen suele tener ~220 dpi efectivos). Usa 300 salvo que
-  necesites 600 por algún requisito.
-- **Historial de cambios**:
-  - **v1.5.0** — salida en blanco y negro (`--grayscale`/`--bn`) y `--save-caras`
-    ahora exporta cada cara recortada al tamaño real (PNG con DPI = 85.6×54 mm),
-    lista para subir por separado.
-  - **v1.4.1** — DPI por defecto 300 (peso ~1/4, misma nitidez real) y PDF de
-    exportación sin pérdida y sin submuestreo (`UseLosslessCompression`,
-    `ReduceImageResolution=false`): el PDF ya no recomprime ni baja resolución.
-  - **v1.4.0** — modo `--pre-cropped` para imágenes ya recortadas y planas
-    (DNIe/escaneos): tamaño real + esquinas + sombra + realce, sin alterar color.
-  - **v1.3.1** — esquinas por intersección de rectas ajustadas a los bordes
-    (alineación exacta a 0°) y warp con supersampling (`SUPERSAMPLE`) para
-    anti-aliasing de las líneas.
-  - **v1.3.0** — corrección de perspectiva (keystone) por homografía de 4
-    esquinas a proporción ID-1 exacta (`--no-perspective` para desactivar).
-  - **v1.2.0** — auto-orientación de las caras (`--rotate`) y detección robusta
-    ante fondos oscuros/no uniformes (piso de brillo `VALUE_MIN`).
-  - **v1.1.0** — etapa de restauración (`--enhance`, por defecto) y DPI por
-    defecto 600 para acabado de escáner de alta resolución.
-  - **v1.0.0** — reestructuración 1:1 del script original + exportación
-    integrada a PDF (`--to-pdf`).
+| archivo | qué hace |
+|---|---|
+| `main.py` | orquesta: argumentos → validación → cada cara (detectar o pre-recortada, componer) → PNG → Word → PDF |
+| `config.py` | rutas y nombre por defecto, tamaño ID-1, DPI, umbrales de detección, laminado, sombra, restauración, página A4, filtro de exportación PDF |
+| `requirements.txt` | paquetes de Python |
+| `lib/__init__.py` | marca `lib/` como paquete |
+| `lib/cli.py` | parser `argparse` y ejemplos |
+| `lib/logger.py` | envoltorio del logger común (carpeta core del espacio de trabajo, py-common) |
+| `lib/validator.py` | paquetes, LibreOffice, imágenes de entrada, carpeta de salida y rango de DPI |
+| `lib/card_detect.py` | máscara de la tarjeta, inclinación, esquinas y homografía, orientación y recorte |
+| `lib/card_render.py` | balance de blancos, borde del laminado, composición sobre blanco, sombra, acabado de la pre-recortada |
+| `lib/enhance.py` | suavizado de crominancia, reescalado, filtro bilateral y realce |
+| `lib/docx_builder.py` | Word A4 con las dos caras centradas y exportación a PDF con LibreOffice |
 
 ## Límite honesto
 
-- **`config.py` trae por defecto las rutas de un DNI real**: las imágenes nunca salen de la máquina y, antes de publicar, esos valores se sustituyen por rutas de ejemplo.
-- **La restauración (`--enhance`) es solo visual**: limpia compresión y ruido, no inventa detalle ni altera dato alguno del documento.
-- **La detección exige tarjeta saturada y cuatro esquinas visibles**: los DNIe y los escaneos planos van siempre con `--pre-cropped`; una esquina tapada, con `--no-perspective`.
-- **`--rotate auto` solo distingue vertical de horizontal**; boca abajo u horario se fuerzan con `--rotate 180`/`270`.
-- **No simula por defecto**: `--dry-run` hay que pedirlo.
+- **Los valores por defecto son de un DNI real**: el número y las rutas de una persona viven en `config.py` y en la
+  ayuda de `lib/cli.py`, en un repositorio público. Retirarlos es decisión del autor (ver `docs/decisiones.md`
+  §Pendientes); mientras tanto, la salida y el nombre se pasan siempre por opción.
+- **La ayuda dice «600 dpi por defecto» y es 300** (`DEFAULT_DPI`): manda `config.py` (ver `docs/decisiones.md`
+  §Pendientes).
+- **La detección exige color saturado y brillante y las cuatro esquinas visibles**: el DNIe no es turquesa y va
+  siempre con `--pre-cropped`; una esquina tapada o deformada, con `--no-perspective`; un fondo muy oscuro o una
+  foto con poca tarjeta acaban en «no se detectó una tarjeta» (código 1).
+- **`--rotate auto` solo distingue vertical de horizontal** (si es más alta que ancha gira 90°); al revés o en
+  sentido horario se fuerza con `--rotate 180` o `--rotate 270`. Con `--pre-cropped`, `--rotate` y `--no-perspective`
+  no tienen efecto.
+- **Sin un paquete obligatorio no sale el mensaje de dependencias**: `main.py` importa Pillow, numpy y scipy antes de
+  validar, así que falta un paquete y Python termina con su propia traza.
+- **`--dry-run` no es rápido**: procesa las dos imágenes completas y solo se ahorra la escritura.
+- **El centrado vertical se hace con márgenes simétricos**: LibreOffice ignora `w:vAlign`; Word sí lo respeta.
+- **Las imágenes de un documento de identidad no deben salir de la máquina**; la herramienta no las envía a ningún
+  sitio, pero tampoco cifra ni borra la salida.
+- Probada en Linux; en macOS o Windows el procesado debería funcionar, la exportación a PDF depende de encontrar
+  LibreOffice en el `PATH`.

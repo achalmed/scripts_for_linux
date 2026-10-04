@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_proyect_tree/ — árbol de carpetas (txt, md, json) de la carpeta actual o de los proyectos del workspace por grupos (v2.1)
+# script_proyect_tree/ — escribe en cada proyecto un archivo con su árbol de directorios (txt, md o json)
 
 <!-- suite:inicio -->
 **Suite `proyect_tree`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
@@ -27,408 +27,96 @@ main.sh --help
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
-> Genera y actualiza archivos `estructura.txt` con el árbol de directorios
-> de cada proyecto en `~/Documents`, con soporte para grupos (`pub_*`,
-> `scripts_*`, `CampusTeX-*`, `website-achalma`), actualización individual
-> o global, múltiples formatos de salida y control total de exclusiones.
+## Qué es
 
----
+Genera con `tree` un archivo con la estructura de directorios de cada proyecto y lo deja **dentro de la carpeta del
+proyecto**: `estructura.txt` (con una cabecera de proyecto, ruta, fecha, profundidad y exclusiones), `estructura.md` o
+`estructura.json` según `--format`. Excluye por defecto los artefactos de Quarto, LaTeX, Python, Node, git y del
+sistema operativo, y el propio `estructura.txt`.
 
-## 📋 Tabla de Contenidos
+Los proyectos se eligen por grupos que se buscan en el primer nivel de `~/Documents` (`config.sh`):
 
-- [Descripción](#descripción)
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Arquitectura](#arquitectura)
-- [Solución de Problemas](#solución-de-problemas)
-- [Cómo Extender el Script](#cómo-extender-el-script)
-- [Notas y Advertencias](#notas-y-advertencias)
+| grupo | qué busca | qué encuentra hoy |
+|---|---|---|
+| `pub` | carpetas `pub_*` | nada (los blogs viven en `04 index/_pubs/`) |
+| `scripts` | carpetas `scripts_*` | los repos de scripts del espacio de trabajo |
+| `campustex` | carpetas `CampusTeX-*` | nada (los repos se llaman `10 Class` y `11 Book` en disco) |
+| `website` | la carpeta `04 index` | el hub |
+| `extra` | la lista `EXTRA_PROJECTS` | `03 writing` |
 
----
+`all` es la unión de todos. Sin `--target`, trabaja sobre la carpeta actual, salvo si se ejecuta desde `~/Documents`
+o desde `$HOME`, donde equivale a `all`.
 
-## 📖 Descripción
+Qué escribe: el archivo de estructura de cada proyecto elegido, que se sobrescribe (lo escribe primero en un temporal
+`.estructura_tmp.*` del mismo proyecto y luego lo mueve). No deja log. **No simula por defecto**: la simulación se
+pide con `--dry-run`; `--list` y `--stats` tampoco escriben.
 
-`script_proyect_tree` automatiza la documentación de la estructura de
-carpetas de todos tus proyectos de desarrollo. Cada vez que ejecutas el
-script, genera (o actualiza) un archivo `estructura.txt` en la raíz de
-cada proyecto seleccionado.
+Es el backend del modo «Proyectos» de la página Árbol de [Filesystem Studio](../../README.md), que ejecuta este
+`main.sh` (con la simulación marcada por defecto); la vista previa y la exportación de un árbol suelto las hace la GUI
+por su cuenta.
 
-**Casos de uso principales:**
-
-- Comparar la estructura de un proyecto entre fechas distintas
-- Generar snapshots en formato Markdown para incluir en READMEs
-- Auditar el uso de disco por proyecto
-- Listar todos los proyectos detectados en `~/Documents`
-
-**Versión 2.0 — arquitectura modular:**
-El script original (monolítico, 669 líneas) fue refactorizado en 8 archivos
-independientes. Cada módulo tiene una única responsabilidad, es testeable de
-forma aislada y puede extenderse sin tocar el resto del código.
-
----
-
-## ⚙️ Requisitos
-
-### Sistema Operativo
-
-- Kubuntu 22.04+ / Debian / Ubuntu (o cualquier distro con APT)
-- Bash >= 5.0
-
-### Dependencias
-
-| Herramienta | Versión mínima | Para qué se usa                 |
-| ----------- | -------------- | ------------------------------- |
-| `tree`      | >= 1.7         | Generar el árbol de directorios |
-| `find`      | GNU findutils  | Descubrir proyectos por patrón  |
-| `du`        | GNU coreutils  | Estadísticas de disco           |
-| `date`      | GNU coreutils  | Timestamps en los encabezados   |
-
----
-
-## 🚀 Instalación
-
-### Paso 1: Ubicar la herramienta
-
-Vive en el repo, en `scripts_filesystem_studio/backend/script_proyect_tree/`; no se copia a
-ningún otro sitio.
-
-### Paso 2: Dar permisos de ejecución
+## Uso
 
 ```bash
-chmod +x ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/main.sh
-chmod +x ~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/lib/*.sh
+cd "$HOME/Documents/03 writing" && /ruta/a/main.sh   # estructura.txt de la carpeta actual
+./main.sh --target all --dry-run                      # qué se escribiría en todos los grupos
+./main.sh --target scripts                            # solo los scripts_*
+./main.sh --target "03 writing" --format md --depth 4 # un proyecto por su nombre exacto
+./main.sh --target website --exclude-dir data -x "*.csv"
+./main.sh --list                                      # proyectos detectados por grupo
+./main.sh --stats --target scripts                    # tamaño y número de archivos, sin escribir
+./main.sh --version                                   # imprime nombre y versión
 ```
 
-### Paso 3: Instalar `tree` (si no lo tienes)
-
-```bash
-sudo apt install tree
-```
-
-### Paso 4: Crear alias para acceso global (recomendado)
-
-Agrega esta línea a tu shell de configuración y ya no necesitas escribir
-la ruta completa nunca más:
-
-```bash
-# ~/.zshrc  (zsh — tu shell actual en Kubuntu/Arch)
-alias ptree='~/Documents/scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree/main.sh'
-```
-
-Recarga la configuración:
-
-```bash
-source ~/.zshrc      # zsh
-# o abre una nueva terminal
-```
-
-Desde este momento puedes usar `ptree` desde cualquier directorio.
-
----
-
-## 💻 Uso
-
-### Sintaxis
-
-```bash
-./main.sh [OPCIONES]
-```
-
-### Opciones disponibles
-
-| Flag                     | Descripción                                               | Default                |
-| ------------------------ | --------------------------------------------------------- | ---------------------- |
-| `-t, --target TARGET`    | Qué proyectos actualizar (ver valores abajo)              | `.` (carpeta actual)\* |
-| `-L, --depth N`          | Profundidad del árbol                                     | `6`                    |
-| `-X, --exclude-dir DIR`  | Excluir carpeta adicional (repetible)                     | —                      |
-| `-x, --exclude-file PAT` | Excluir patrón de archivo adicional (repetible)           | —                      |
-| `-f, --format FORMAT`    | Formato de salida: `txt` \| `md` \| `json`                | `txt`                  |
-| `--no-meta`              | Omitir tamaños y fechas en el árbol                       | off                    |
-| `-l, --list`             | Listar proyectos detectados y salir                       | off                    |
-| `-s, --summary`          | Mostrar tabla resumen al finalizar                        | off                    |
-| `--stats`                | Mostrar solo estadísticas de disco (sin generar archivos) | off                    |
-| `-v, --verbose`          | Activar mensajes de depuración                            | off                    |
-| `--dry-run`              | Simular sin escribir ningún archivo                       | off                    |
-| `--no-color`             | Deshabilitar colores en la terminal                       | off                    |
-| `--version`              | Mostrar versión                                           | —                      |
-| `-h, --help`             | Mostrar ayuda                                             | —                      |
-
-### Valores de `--target` (--TARGET Actualiza los archivos `estructra.txt`)
-
-| Valor                  | Proyectos afectados                                       |
-| ---------------------- | --------------------------------------------------------- |
-| `.`                    | La carpeta actual (donde se ejecutó el comando)           |
-| `all`                  | Todos los grupos + carpetas de `EXTRA_PROJECTS`           |
-| `pub`                  | Todos los `pub_*`                                         |
-| `scripts`              | Todos los `scripts_*`                                     |
-| `campustex`            | Todos los `CampusTeX-*`                                   |
-| `website`              | Solo `website-achalma`                                    |
-| `extra`                | Solo las carpetas enlistadas en `EXTRA_PROJECTS` (config) |
-| `pub_numerus-scriptum` | Solo ese proyecto exacto (nombre de carpeta)              |
-
-> **\*Comportamiento por defecto (sin `--target`):** el script trabaja sobre
-> la **carpeta actual**, así que basta con `cd` a cualquier carpeta y ejecutar
-> `ptree` para generar su `estructura.txt` ahí mismo. Las dos excepciones son
-> ejecutarlo desde `~/Documents` o desde `$HOME`, donde equivale a `--target all`
-> (el comportamiento clásico).
-
-### Carpetas enlistadas manualmente (`EXTRA_PROJECTS`)
-
-Los proyectos renombrados que ya no coinciden con ningún glob de
-`PROJECT_GROUPS` (por ejemplo, una carpeta CampusTeX con nuevo nombre) pueden
-declararse por su nombre exacto en el array `EXTRA_PROJECTS` de `config.sh`:
-
-```bash
-EXTRA_PROJECTS=(
-    "Academic_Writing_Framework"
-    # "otra-carpeta-renombrada"
-)
-```
-
-Estas carpetas se incluyen en `--target all`, aparecen en `--list` bajo el
-grupo `[extra]`, y pueden procesarse solas con `--target extra`. Si una
-entrada ya no existe en disco, se omite con una advertencia (no aborta).
-
----
-
-### Ejemplos de uso
-
-```bash
-# ── CARPETA ACTUAL ──────────────────────────────────────────────────────────
-
-# Generar estructura.txt de la carpeta donde estás parado
-cd ~/Documents/03 writing && ptree
-
-# Lo mismo pero en Markdown y sin metadatos
-ptree --format md --no-meta
-
-# ── ACTUALIZACIÓN GLOBAL ────────────────────────────────────────────────────
-
-# Actualizar todos los proyectos
-./main.sh --target all
-
-# Actualizar todos con resumen de disco al final
-./main.sh --summary
-
-# Simular todo sin escribir nada (ver qué haría)
-./main.sh --dry-run --verbose
-
-# ── POR GRUPO ───────────────────────────────────────────────────────────────
-
-# Solo publicaciones
-./main.sh --target pub
-
-# Solo scripts
-./main.sh --target scripts
-
-# Solo CampusTeX
-./main.sh --target campustex
-
-# Solo el website
-./main.sh --target website
-
-# ── PROYECTO ESPECÍFICO ─────────────────────────────────────────────────────
-
-# Un pub_ concreto
-./main.sh --target pub_numerus-scriptum
-
-# Un script concreto
-./main.sh --target scripts_for_latex
-
-# ── EXCLUSIONES ADICIONALES ─────────────────────────────────────────────────
-
-# Excluir carpeta "data" y "raw" además de las exclusiones por defecto
-./main.sh --target pub --exclude-dir "data" --exclude-dir "raw"
-
-# Excluir archivos .csv en esta ejecución
-./main.sh --exclude-file "*.csv"
-
-# ── FORMATOS ALTERNATIVOS ───────────────────────────────────────────────────
-
-# Generar estructura.md en lugar de estructura.txt
-./main.sh --target pub_numerus-scriptum --format md
-
-# Generar estructura.json para procesar con jq u otro programa
-./main.sh --target pub_numerus-scriptum --format json
-
-# ── INFORMACIÓN Y ESTADÍSTICAS ──────────────────────────────────────────────
-
-# Ver todos los proyectos detectados (sin generar nada)
-./main.sh --list
-
-# Ver estadísticas de disco por proyecto (sin generar archivos)
-./main.sh --stats
-./main.sh --stats --target pub
-
-# ── PROFUNDIDAD Y METADATOS ─────────────────────────────────────────────────
-
-# Árbol más superficial (ideal para proyectos muy grandes)
-./main.sh --target website --depth 3
-
-# Sin tamaños ni fechas (salida más limpia)
-./main.sh --target pub --no-meta
-
-# Árbol profundo con todos los metadatos
-./main.sh --target pub_numerus-scriptum --depth 8 --summary
-```
-
----
-
-## 🗂️ Arquitectura
-
-La versión 2.0 separa el monolito original en módulos con responsabilidad única.
-`main.sh` solo orquesta — toda la lógica vive en `lib/`.
-
-```
-script_proyect_tree/
-├── main.sh              # Punto de entrada — carga módulos y orquesta el flujo
-├── config.sh            # Constantes y variables de runtime (única fuente de verdad)
-├── README.md            # Esta documentación
-└── lib/
-    ├── logger.sh        # Funciones de logging: info / ok / warn / error / verbose / section
-    ├── validator.sh     # Validación de dependencias, rutas y argumentos
-    ├── cli.sh           # Parsing de flags CLI y texto de ayuda
-    ├── tree_utils.sh    # Construcción de patrones de exclusión y runners por formato
-    ├── generator.sh     # Descubrimiento de proyectos y escritura atómica de archivos
-    └── stats.sh         # Estadísticas de disco, resumen y listado de proyectos
-```
-
-### Descripción de módulos
-
-| Archivo             | Responsabilidad                                                                  |
-| ------------------- | -------------------------------------------------------------------------------- |
-| `main.sh`           | Carga módulos, llama `parse_arguments`, valida, despacha y reporta               |
-| `config.sh`         | Define `PROJECT_GROUPS`, `DEFAULT_EXCLUDE_*`, `DEFAULT_DEPTH` y runtime vars     |
-| `lib/logger.sh`     | `log_info/ok/warn/error/verbose/section` + `_setup_colors()`                     |
-| `lib/validator.sh`  | `validate_dependencies`, `validate_projects_root`, `validate_target`             |
-| `lib/cli.sh`        | `parse_arguments`, `show_help`, helpers `_parse_target/depth/format`             |
-| `lib/tree_utils.sh` | `build_exclude_pattern`, `build_meta_flags`, `run_tree_txt/json/markdown`        |
-| `lib/generator.sh`  | `find_projects_by_pattern`, `collect_target_paths`, `generate_project_structure` |
-| `lib/stats.sh`      | `show_disk_stats`, `show_summary`, `list_all_projects`                           |
-
-### Flujo de ejecución
-
-```
-main.sh
-  ├── parse_arguments()       ← cli.sh
-  ├── _setup_colors()         ← logger.sh
-  ├── validate_*()            ← validator.sh
-  ├── list_all_projects()     ← stats.sh       [solo --list]
-  ├── collect_target_paths()  ← generator.sh
-  ├── show_disk_stats()       ← stats.sh       [solo --stats]
-  ├── generate_project_structure() × N         [bucle principal]
-  │     ├── _resolve_output_file()  ← generator.sh
-  │     ├── _build_tree_output()    ← generator.sh → tree_utils.sh
-  │     └── _write_structure_file() ← generator.sh
-  ├── show_disk_stats()       ← stats.sh       [solo --summary]
-  └── show_summary()          ← stats.sh       [solo --summary]
-```
-
----
-
-## 🔧 Solución de Problemas
-
-### Error: `tree: command not found`
-
-```bash
-sudo apt install tree
-```
-
-### El script no encuentra ningún proyecto
-
-Verifica que el directorio raíz sea correcto. La variable `PROJECTS_ROOT`
-apunta a `${HOME}/Documents` en `config.sh`. Si tus proyectos están en
-otra ruta, edita esa línea.
-
-### `Permission denied` al ejecutar
-
-```bash
-chmod +x main.sh lib/*.sh
-```
-
-### El archivo `estructura.txt` incluye carpetas que no quiero
-
-Usa `--exclude-dir` para añadir exclusiones en esa ejecución, o edita
-`DEFAULT_EXCLUDE_DIRS` en `config.sh` para que el cambio sea permanente.
-
-### La salida en JSON está vacía o malformada
-
-Verifica que la versión de `tree` soporta `-J`:
-
-```bash
-tree --version
-# Se recomienda tree >= 1.8 para JSON limpio
-```
-
----
-
-## 🤝 Cómo Extender el Script
-
-### Agregar un nuevo grupo de proyectos
-
-En `config.sh`, añade una entrada al array `PROJECT_GROUPS`:
-
-```bash
-PROJECT_GROUPS[misitio]="mi-sitio-*"
-```
-
-A partir de ahí, `--target misitio` funciona automáticamente.
-
-### Cambiar las exclusiones permanentes
-
-Edita `DEFAULT_EXCLUDE_DIRS` o `DEFAULT_EXCLUDE_FILES` en `config.sh`.
-
-### Añadir un nuevo formato de salida
-
-1. En `lib/tree_utils.sh`, añade una función `run_tree_<formato>()`.
-2. En `lib/generator.sh`, añade un `case` en `_build_tree_output()`.
-3. En `lib/generator.sh`, actualiza `_resolve_output_file()` con la extensión.
-4. En `lib/cli.sh`, actualiza la validación en `_parse_format()`.
-5. En `lib/cli.sh`, actualiza `show_help()` con el nuevo valor válido.
-
-### Estándares de código
-
-- Máximo 30 líneas por función
-- Nombres descriptivos en inglés técnico: `verbo_sustantivo()`
-- Comenta el _por qué_, no el _qué_
-- Usa `local` para todas las variables dentro de funciones
-- Valida argumentos antes de usarlos
-
----
-
-## ⚠️ Notas y Advertencias
-
-- **Escritura atómica**: el script escribe primero a un archivo temporal
-  y luego lo mueve al destino final. Si el proceso se interrumpe, el
-  archivo anterior no queda corrupto.
-
-- **El propio `estructura.txt` se excluye**: el patrón de exclusión
-  incluye el nombre del archivo de salida para evitar que aparezca
-  dentro de su propio árbol.
-
-- **`website-achalma` es un nombre fijo**: a diferencia de los otros
-  grupos que usan globs, `website` apunta exactamente a `website-achalma`.
-  Si renombras la carpeta, actualiza `PROJECT_GROUPS[website]` en `config.sh`.
-
-- **Colores en CI/CD**: si el script se ejecuta sin terminal (cron,
-  GitHub Actions, etc.), los colores se desactivan automáticamente
-  porque se detecta que `stdout` no es un TTY. También puedes forzarlo
-  con `--no-color`.
-
-- **Los `doc_*`, `01 notes`, `meta`, `biblioteca`** y otros directorios
-  que no coinciden con ningún grupo son ignorados por diseño. Si quieres
-  incluirlos, añade un nuevo grupo en `PROJECT_GROUPS` o enlista la carpeta
-  por su nombre exacto en `EXTRA_PROJECTS`, ambos dentro de `config.sh`.
-
-- **`_GEN_SUCCESS` y `_GEN_FAIL`**: son variables globales usadas para
-  comunicar el conteo entre `_run_generation_loop()` y `_print_final_status()`.
-  Son privadas por convención (prefijo `_`) y no deben usarse fuera de `main.sh`.
+| opción | por defecto | qué hace |
+|---|---|---|
+| `-t`, `--target TARGET` | carpeta actual (`all` desde `~/Documents` o `$HOME`) | `all`, `pub`, `scripts`, `campustex`, `website`, `extra`, `.` o el nombre exacto de una carpeta de `~/Documents` |
+| `-L`, `--depth N` | `6` | profundidad del árbol |
+| `-X`, `--exclude-dir DIR` | — | carpeta adicional que se excluye (repetible) |
+| `-x`, `--exclude-file PAT` | — | patrón de archivo adicional que se excluye (repetible) |
+| `-f`, `--format FORMAT` | `txt` | `txt`, `md` o `json` |
+| `--no-meta` | apagado | sin tamaños ni fechas en el árbol (`-h -D` de `tree`) |
+| `-l`, `--list` | — | lista los proyectos detectados y sale |
+| `-s`, `--summary` | apagado | al terminar, tamaño en disco y resumen de lo escrito |
+| `--stats` | — | solo estadísticas de disco (`du`, número de archivos); no escribe |
+| `--dry-run` | apagado | simula; con `-v` muestra las 30 primeras líneas de cada árbol |
+| `-v`, `--verbose` | apagado | mensajes de depuración |
+| `--no-color` | apagado | sin colores |
+| `--version`, `-h`, `--help` | — | versión y ayuda |
+
+En `config.sh` se cambian la raíz de proyectos, los grupos, `EXTRA_PROJECTS`, las exclusiones, la profundidad y las
+banderas de metadatos.
+
+Códigos de salida: 0 bien (también si un grupo no encuentra nada), 2 argumento o target inválido, 3 no existe la raíz
+de proyectos, 5 falta una dependencia.
+
+Requisitos: bash 5 (lo declara `main.sh`), `tree`, `find`, `du`, `date`, y
+`core/shell-lib/logger.sh` del espacio de trabajo.
+
+## Estructura
+
+| archivo | qué hace |
+|---|---|
+| `main.sh` | orquesta: argumentos → colores → target por defecto → validación → lista, estadísticas o generación → resumen |
+| `config.sh` | versión, raíz de proyectos, grupos, `EXTRA_PROJECTS`, exclusiones, profundidad, estado de ejecución |
+| `lib/cli.sh` | lectura de opciones, ayuda y target por defecto según la carpeta actual |
+| `lib/logger.sh` | carga el logger común de `core/shell-lib/` y decide si hay colores |
+| `lib/validator.sh` | dependencias, raíz de proyectos y target |
+| `lib/generator.sh` | resuelve los proyectos de cada grupo y escribe (o simula) cada archivo de estructura |
+| `lib/tree_utils.sh` | patrón de exclusión, cabecera y llamadas a `tree` en txt, md y json |
+| `lib/stats.sh` | estadísticas de disco, resumen final y `--list` |
+| `suite.yml` | manifiesto de la suite (de él sale el bloque generado de arriba) |
 
 ## Límite honesto
 
-- **Escribe `estructura.txt`, un derivado que NORMATIVA §15.8 (D07) ya no admite dentro de un repo** (retirado de este repo en DOC2, 2026-09-20): úsese para la vista previa de la GUI, `--list`, `--stats` o formatos `md`/`json` fuera de git.
-- **Los grupos de proyectos son nombres fijos en `config.sh`** (`pub_*`, `scripts_*`, `CampusTeX-*`, `website-achalma`, `EXTRA_PROJECTS`); lo que no coincide se ignora por diseño.
-- **Depende de `tree`** (≥ 1.8 para JSON limpio); profundidad 6 por defecto.
-- **No simula por defecto**: `--dry-run` hay que pedirlo; la escritura es atómica (temporal + `mv`).
+- **Los grupos `pub` y `campustex` ya no encuentran nada**: buscan `pub_*` y `CampusTeX-*` en el primer nivel de
+  `~/Documents`, y esas carpetas ya no están ahí. `--target all` solo cubre los `scripts_*`, `04 index` y
+  `03 writing` (ver `../../../docs/decisiones.md` §Pendientes).
+- **La raíz de proyectos está escrita en `config.sh`** (`$HOME/Documents`) y no pasa por `core/env.sh`.
+- **Escribe dentro de los repos.** `estructura.txt` no se versiona: lo ignoran el `.gitignore` de varios repos (este
+  incluido) y el gitignore global del usuario. `estructura.md` y `estructura.json` no los ignora ni el de este repo ni
+  el global, y aparecen como archivos nuevos en `git status`; además, el árbol txt no excluye esos dos.
+- **Sin `--target` escribe en la carpeta actual**: ejecutado desde cualquier carpeta que no sea `~/Documents` ni
+  `$HOME`, deja ahí un `estructura.txt`.
+- **La cabecera del txt lleva la ruta absoluta** del proyecto.
+- **Necesita el espacio de trabajo**: `lib/logger.sh` busca `core/shell-lib/logger.sh` subiendo desde su carpeta.

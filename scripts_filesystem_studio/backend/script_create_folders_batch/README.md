@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_create_folders_batch/ — creación de carpetas por lote desde una lista o un archivo, con vista previa y dry-run (v2.0)
+# script_create_folders_batch/ — creación de carpetas en lote desde una lista, con vista previa y simulación
 
 <!-- suite:inicio -->
 **Suite `create_folders_batch`** · objetivo *sistema* · estado *activo* · bash · interfaz cli
@@ -25,207 +25,75 @@ main.sh --help
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Vive bajo la GUI `scripts_filesystem_studio` desde 2026-07-13 (Filesystem Studio); el CLI sigue funcionando desde esta carpeta y su `suite.yml` lo declara como suite.
-> Crea múltiples carpetas de forma masiva a partir de una lista predefinida
-> (en `config.sh`) o de un archivo de texto externo, con vista previa,
-> confirmación interactiva y modo dry-run.
+## Qué es
 
-## 📋 Tabla de Contenidos
+Crea carpetas en lote dentro de un directorio base, a partir de un archivo de lista (`-f`) o, si no se le da ninguno,
+de la lista predefinida de `config.sh`. El flujo es siempre: leer la lista → sanear nombres → vista previa (las
+diez primeras y el total) → confirmar → crear → resumen. Cada carpeta acaba en una de cuatro categorías: creada,
+ya existía, rechazada (nombre inseguro) o error de `mkdir`.
 
-- [Descripción](#-descripción)
-- [Requisitos](#-requisitos)
-- [Instalación](#-instalación)
-- [Uso](#-uso)
-- [Arquitectura](#-arquitectura)
-- [Bugs Corregidos](#-bugs-corregidos)
-- [Solución de Problemas](#-solución-de-problemas)
-- [Cómo Contribuir](#-cómo-contribuir)
-- [Notas y Advertencias](#-notas-y-advertencias)
+Solo crea carpetas (con `mkdir -p`, así que admite `carpeta/subcarpeta`): nunca borra, renombra ni escribe archivos,
+y no deja log ni reporte. **No simula por defecto**: la simulación se pide con `-d`/`--dry-run`, y la confirmación
+interactiva se salta con `-y`/`--yes`.
 
-## 📖 Descripción
+Es el backend de la página Carpetas de [Filesystem Studio](../../README.md), que lo porta a
+`../../app/services/folder_service.py` y le añade importación CSV y Markdown y deshacer.
 
-Pensado para preparar lotes de carpetas de cursos, proyectos o publicaciones.
-El flujo es siempre: leer lista → sanear nombres → vista previa → confirmar →
-crear → resumen. Cada carpeta termina clasificada en exactamente una
-categoría: **creada**, **ya existía**, **rechazada** (nombre inseguro) o
-**error** (fallo de `mkdir`).
+Formato del archivo de lista: un nombre por línea; se ignoran las líneas vacías y las que empiezan por `#`; se quitan
+los `\r` de archivos de Windows y los espacios al principio y al final (los internos se conservan). Se rechazan las
+rutas absolutas y cualquier componente `..`.
 
-Formato del archivo de lista (`-f`):
-
-```
-carpeta-uno
-carpeta-dos
-carpeta-tres/subcarpeta     # se admiten rutas relativas
-#las líneas que empiezan por # y las vacías se ignoran
-```
-
-Por seguridad se **rechazan** rutas absolutas (`/algo`) y componentes `..`:
-la herramienta nunca escribe fuera del directorio base.
-
-## ⚙️ Requisitos
-
-### Sistema Operativo
-
-- Linux/macOS con `bash` >= 4.0. Solo usa utilidades estándar (`mkdir`,
-  `grep`).
-
-## 🚀 Instalación
+## Uso
 
 ```bash
-cd script_create_folders_batch
-chmod +x main.sh lib/*.sh
+./main.sh -d -f lista.txt                       # simula: muestra qué se crearía
+./main.sh -f lista.txt -p "~/ruta/con espacios" # crea en otra carpeta, tras confirmar
+./main.sh -y -f lista.txt -p ~/proyectos        # sin confirmación (scripts, cron)
+./main.sh --version                             # imprime nombre y versión
 ```
 
-## 💻 Uso
+| opción | por defecto | qué hace |
+|---|---|---|
+| `-f`, `--file ARCHIVO` | — (lista predefinida de `config.sh`) | archivo con un nombre de carpeta por línea |
+| `-p`, `--path RUTA` | `.` (directorio actual) | directorio base; admite `~` aunque llegue entre comillas |
+| `-d`, `--dry-run` | apagado | simula: no crea las carpetas de la lista (y no pregunta) |
+| `-y`, `--yes` | apagado | no pide confirmación |
+| `-v`, `--verbose` | apagado | mensajes de diagnóstico |
+| `--no-color` | apagado | sin colores (también se apagan solos si la salida no es una terminal) |
+| `--version` | — | imprime nombre y versión y sale |
+| `-h`, `--help` | — | ayuda |
 
-### Sintaxis
+En `config.sh` se cambian el directorio base por defecto, cuántas carpetas enseña la vista previa (10) y la lista
+predefinida (`PREDEFINED_FOLDERS`).
 
-```bash
-./main.sh [OPCIONES]
-```
+Códigos de salida: 0 bien (las carpetas que ya existían no cuentan como fallo), 1 si alguna carpeta falló, 2 uso
+incorrecto o sin terminal para confirmar, 3 no existe el archivo o el directorio base (y no se acepta crearlo), 4 sin
+permisos.
 
-### Opciones disponibles
+Requisitos: bash 4 o superior, `grep`, y `core/shell-lib/logger.sh` del espacio de trabajo.
 
-| Flag                | Descripción                                       | Requerido |
-| ------------------- | ------------------------------------------------- | --------- |
-| `-f, --file ARCHIVO`| Leer nombres desde un archivo                     | No        |
-| `-p, --path RUTA`   | Directorio base destino (default: `.`)            | No        |
-| `-d, --dry-run`     | Simular sin crear nada                            | No        |
-| `-y, --yes`         | No pedir confirmación (cron, scripts)             | No        |
-| `-v, --verbose`     | Información detallada                             | No        |
-| `--no-color`        | Desactivar colores                                | No        |
-| `--version`         | Mostrar versión                                   | No        |
-| `-h, --help`        | Mostrar ayuda                                     | No        |
+## Estructura
 
-### Ejemplos de uso
-
-```bash
-# Lista predefinida (config.sh) en el directorio actual
-./main.sh
-
-# Leer desde archivo y simular
-./main.sh -d -f lista_carpetas.txt
-
-# Crear en otro directorio sin confirmación interactiva
-./main.sh -y -f lista.txt -p ~/proyectos
-```
-
-## 🗂️ Arquitectura
-
-```
-script_create_folders_batch/
-├── main.sh              # Punto de entrada — solo orquestación
-├── config.sh            # Defaults + lista predefinida de carpetas
-└── lib/
-    ├── logger.sh        # Logging INFO/WARN/ERROR/DEBUG con colores auto-desactivables
-    ├── cli.sh           # Parseo de argumentos → variables OPT_*
-    ├── validator.sh     # Directorio base, archivo de entrada, nombres seguros, confirmación
-    ├── reader.sh        # Lectura de la lista + saneamiento de nombres
-    ├── creator.sh       # mkdir con clasificación de resultados y contadores
-    └── ui.sh            # Vista previa y resumen final
-```
-
-### Descripción de módulos
-
-| Archivo            | Responsabilidad                                              |
-| ------------------ | ------------------------------------------------------------ |
-| `main.sh`          | Cargar módulos y ejecutar el pipeline en orden                |
-| `config.sh`        | Lista predefinida y tunables (ítems de vista previa, destino) |
-| `lib/logger.sh`    | Salida consistente; WARN/ERROR a stderr                       |
-| `lib/cli.sh`       | Flags cortas/largas compatibles con la v1.x                   |
-| `lib/validator.sh` | Precondiciones + regla de seguridad de nombres + confirmación |
-| `lib/reader.sh`    | Fuente única de la lista; saneo de `\r` y espacios            |
-| `lib/creator.sh`   | Creación con códigos de resultado distinguibles               |
-| `lib/ui.sh`        | Presentación pura (no decide ni crea nada)                    |
-
-## 🐛 Bugs Corregidos
-
-### Bug #1: Ruta construida antes de sanear el nombre
-- **Descripción**: en la v1.x `create_single_folder()` calculaba
-  `full_path="$BASE_DIR/$folder_name"` con el nombre **crudo** y lo saneaba
-  después; la comprobación de existencia y el `mkdir` usaban la ruta sucia.
-- **Impacto**: con listas que traían espacios finales o `\r` (archivos
-  editados en Windows) se creaban carpetas con caracteres invisibles en el
-  nombre, y la detección de duplicados fallaba.
-- **Corrección**: el saneo ocurre en `lib/reader.sh` antes de cualquier uso;
-  `create_single_folder()` recibe el nombre ya limpio.
-
-### Bug #2: Retornos de carro (`\r`) no eliminados
-- **Descripción**: la línea que quitaba `\r` estaba comentada "por si acaso".
-- **Impacto**: carpetas tipo `carpeta-uno\r` imposibles de distinguir a ojo.
-- **Corrección**: `sanitize_folder_name()` siempre elimina `\r`.
-
-### Bug #3: Dry-run contabilizado como "creadas"
-- **Descripción**: en modo simulación el resumen final decía "✓ Carpetas
-  creadas: N" y a la vez "no se creó ninguna carpeta realmente".
-- **Impacto**: resumen contradictorio y confuso.
-- **Corrección**: en dry-run la etiqueta cambia a "Se crearían:".
-
-### Bug #4: "Ya existía" y "error" compartían código de retorno
-- **Descripción**: `create_single_folder()` devolvía 1 en ambos casos y
-  `main` re-verificaba con `[ -d ... ]` para adivinar cuál fue.
-- **Impacto**: clasificación frágil (doble comprobación con posible carrera)
-  y conteos potencialmente erróneos.
-- **Corrección**: códigos de resultado distintos (`RESULT_CREATED/EXISTED/
-  REJECTED/FAILED`) clasificados una sola vez.
-
-### Bug #5: Escape del directorio base
-- **Descripción**: una línea ../otro o /ruta/absoluta en el archivo de
-  lista creaba carpetas **fuera** del directorio destino.
-- **Impacto**: escritura fuera del árbol elegido (riesgo de seguridad y de
-  desorden).
-- **Corrección**: `is_safe_folder_name()` rechaza rutas absolutas y
-  componentes `..`; los rechazos se cuentan y reportan.
-
-### Bug #6: Confirmación colgada sin terminal
-- **Descripción**: `read -p` en entornos no interactivos (cron, pipes)
-  fallaba o se quedaba esperando.
-- **Impacto**: la herramienta no era usable de forma automatizada.
-- **Corrección**: `confirm_action()` detecta la ausencia de TTY y pide usar
-  `--yes`; con `--yes` o `--dry-run` no pregunta.
-
-## 🔧 Solución de Problemas
-
-### Error: "Permission denied"
-
-```bash
-chmod +x main.sh lib/*.sh
-```
-
-### "No hay terminal interactiva; use --yes"
-
-Estás ejecutando desde cron o un pipe: añade `-y`/`--yes`.
-
-### Una línea aparece como "Rechazada (ruta insegura)"
-
-La línea contiene una ruta absoluta o `..`. Usa solo rutas relativas dentro
-del directorio base.
-
-## 🤝 Cómo Contribuir
-
-1. Crea el módulo en lib/<tema>.sh con una única responsabilidad.
-2. Añade sus flags en `lib/cli.sh` y sus tunables en `config.sh`.
-3. Cárgalo con `source` en `main.sh` en orden de dependencias.
-4. Verifica con `bash -n` y prueba siempre primero con `--dry-run`.
-
-### Estándares de código
-
-- Máximo ~30 líneas por función; nombres verbo+sustantivo en inglés.
-- Comentarios que explican el "por qué", no el "qué".
-- `set -euo pipefail` y errores por stderr.
-
-## ⚠️ Notas y Advertencias
-
-- La lista predefinida ahora vive en `config.sh` (`PREDEFINED_FOLDERS`), no
-  dentro del script principal: edítala ahí.
-- Los nombres de carpeta **pueden contener espacios internos**; solo se
-  recortan los espacios al inicio/final.
-- El código de salida es `1` si alguna carpeta falló, `0` en caso contrario
-  (que existieran previamente no se considera fallo).
+| archivo | qué hace |
+|---|---|
+| `main.sh` | carga la configuración y los módulos y ejecuta: argumentos → validación → lista → vista previa → confirmación → creación → resumen |
+| `config.sh` | valores editables: directorio base, tamaño de la vista previa, lista predefinida |
+| `lib/cli.sh` | lectura de opciones (`OPT_*`) y ayuda |
+| `lib/logger.sh` | carga el logger común de `core/shell-lib/` y decide si hay colores |
+| `lib/validator.sh` | directorio base (lo crea si se confirma), archivo de entrada, nombres seguros y confirmación |
+| `lib/reader.sh` | lee la lista (archivo o predefinida) y sanea cada nombre |
+| `lib/creator.sh` | crea o simula cada carpeta y lleva los cuatro contadores |
+| `lib/ui.sh` | vista previa y resumen final |
+| `suite.yml` | manifiesto de la suite (de él sale el bloque generado de arriba) |
 
 ## Límite honesto
 
-- **Solo crea**: nunca borra ni renombra; una carpeta existente se reporta y se deja como está.
-- **Rechaza rutas absolutas y componentes `..`**: nunca escribe fuera del directorio base.
-- **La lista predefinida vive en `config.sh`** (`PREDEFINED_FOLDERS`); no lee CSV ni Markdown (eso lo hace la GUI).
-- **No simula por defecto**: `-d`/`--dry-run` hay que pedirlo; `-y` salta la confirmación.
+- **Crea de verdad si no se pide `-d`.** Sin `-f` usa la lista predefinida de `config.sh`, que hoy son seis carpetas de
+  un curso de 2022: ejecutar `./main.sh` a secas en una carpeta cualquiera y confirmar las crea ahí (ver
+  `../../../docs/decisiones.md` §Pendientes).
+- **El directorio base se crea aunque se simule**: si `-p` apunta a una carpeta inexistente, con `-d` o `-y` la
+  confirmación se da por aceptada y `mkdir -p` crea el directorio base antes de simular la lista.
+- **Sin terminal pide `--yes`**: desde cron o una tubería sale con código 2 en vez de quedarse esperando.
+- **No lee CSV ni Markdown** (eso lo hace la GUI) **ni tiene deshacer**: lo creado se borra a mano.
+- **Necesita el espacio de trabajo**: `lib/logger.sh` busca `core/shell-lib/logger.sh` subiendo desde su carpeta;
+  copiado fuera de `~/Documents` no arranca.

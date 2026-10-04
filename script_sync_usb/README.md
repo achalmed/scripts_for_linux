@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# script_sync_usb/ — sincronización bidireccional de una carpeta por un USB compartido, con papelera y detección de conflictos
+# script_sync_usb/ — sincronización bidireccional de la carpeta SGDP por un USB compartido, con papelera y detección de conflictos
 <!-- suite:inicio -->
 **Suite `sync_usb`** · objetivo *sistema* · estado *activo* · python · interfaz cli
 
@@ -22,90 +22,83 @@ sincronizar_usb.sh --local <carpeta> --usb <montaje> [--dry-run]
 <sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-09-20); no se edita a mano.</sub>
 <!-- suite:fin -->
 
-> Suite genérica de `scripts_for_linux` desde 2026-09-15 (M10 D2; antes `05_sgdp/sincronizacion_usb`): sirve para cualquier carpeta que viaje en un USB entre dos equipos (el caso de origen es el archivo documental del SGDP). Invocación: `main.py --local <carpeta> --usb <montaje>` o `sincronizar_usb.sh`/`.bat`.
+## Qué es
 
-Herramienta **nativa** para compartir los documentos del SGDP entre las
-laptops de las secretarías usando un **USB que va y viene**, en **ambas
-direcciones**:
+Sincroniza en ambas direcciones la carpeta local `SGDP` de un equipo con su copia en un USB que va y viene entre
+dos equipos. No es una herramienta genérica de carpetas: está atada a la carpeta `SGDP` y a la convención de
+nombres del archivo documental del SGDP.
 
-```
-Laptop Secretaria 1  <->  USB compartido  <->  Laptop Secretaria 2
-```
+- **Cómo decide:** un archivo que está en un solo lado se copia al otro; si está en los dos y el contenido (tamaño y
+  SHA-256) es igual, se omite; si difiere, gana el de fecha de modificación más reciente. Si las dos fechas distan
+  3 segundos o menos (`TOLERANCIA_MTIME`; FAT redondea a 2 s), no elige: copia cada versión al otro lado como
+  `nombre (conflicto LAPTOP <hash>).ext` y `nombre (conflicto USB <hash>).ext` y avisa. La copia de conflicto lleva
+  un hash del contenido, así que repetir la corrida no la duplica.
+- **Qué escribe:** las copias en el otro lado (con `shutil.copy2`, que conserva la fecha) y, antes de sobrescribir un
+  archivo, lo mueve a `.sgdp-papelera/<AAAAMMDD-HHMMSS>/` en la raíz de su lado. Crea la carpeta del USB si no existe.
+- **Qué mueve sin que se lo pidan:** antes de comparar, en cada lado busca PDF gemelos en una misma carpeta (mismo
+  SHA-256) en los que uno sigue la convención de nombres vigente del SGDP (empieza por un prefijo de serie como
+  `OF-`, `MEM-`, `INF-`…) y otro no; el de nombre antiguo se mueve a la papelera `.sgdp-papelera`. Un PDF sin gemelo exacto no
+  se toca.
+- **Qué no hace:** no propaga borrados (lo que falta en un lado se vuelve a copiar desde el otro; borrar exige
+  hacerlo a mano en los dos), no resuelve conflictos, no sincroniza archivos ni carpetas ocultos (los que empiezan
+  por `.`) ni sus propios archivos internos.
+- **Simulación:** no simula por defecto; `--dry-run` muestra el plan sin escribir ni mover nada. Sin `--dry-run` ni
+  `--si`, antes de aplicar hace una pasada en seco, muestra las cifras y pide confirmación.
 
-## ¿Por qué una herramienta aparte y no el navegador?
+## Uso
 
-El botón **«Sincronizar»** de la plataforma solo copia **del servidor a una
-carpeta de la laptop**, en **una sola dirección**, y el navegador **no puede
-detectar el USB** al conectarlo (es una limitación de seguridad del navegador,
-no del sistema). Para copiar **laptop ↔ USB ↔ laptop** hace falta un programa
-nativo. Este lo es.
-
-Flujo recomendado: la plataforma baja los documentos del servidor a tu carpeta
-local `SGDP` (botón «Sincronizar» de la web); **esta** herramienta refleja esa
-carpeta `SGDP` con el USB en las dos direcciones.
-
-## Lo primero: nunca se pierde nada
-
-- **No borra nada.** Si un archivo falta en un lado, se vuelve a copiar del
-  otro; **una supresión no se propaga** (para borrar de verdad, hazlo a mano en
-  ambos lados).
-- **Gana el más nuevo**, pero **antes de sobrescribir** guarda la versión
-  anterior en `.sgdp-papelera/<fecha>/` del lado sobrescrito (recuperable).
-- Si dos versiones **difieren** y sus fechas están tan cerca que no se sabe
-  cuál es más nueva, **conserva AMBAS** (una queda como
-  `nombre (conflicto LAPTOP …).pdf` / `nombre (conflicto USB …).pdf`) y **te
-  avisa**. Nunca pisa el original.
-- Lo ya copiado (mismo tamaño y contenido) se **omite** (no re-descarga).
-
-## Requisitos
-
-- **Python 3** instalado (viene en Linux; en Windows, instálalo desde
-  python.org marcando «Add Python to PATH»).
-
-## Cómo usarla
-
-**Autorización:** pedirá la clave del USB (**`2026AM`**).
-
-### Linux / Mac
 ```bash
-./sincronizar_usb.sh            # autodetecta el USB y la carpeta SGDP local
-./sincronizar_usb.sh --dry-run  # SIMULA: muestra qué haría, sin escribir nada
+./sincronizar_usb.sh --dry-run                       # autodetecta USB y carpeta local; simula
+./sincronizar_usb.sh                                 # aplica, tras confirmar
+python3 main.py --local "$HOME/Documentos/SGDP" --usb "/media/<usuario>/<USB>" --dry-run
 ```
 
-### Windows
-Doble clic en **`sincronizar_usb.bat`** (o desde la consola:
-`python main.py`).
+Pide una clave de autorización antes de hacer nada, también con `--dry-run`. Esa clave hoy está fija en el código
+y debe rotarse (ver `docs/decisiones.md` §Pendientes); la variable de entorno `SGDP_USB_CLAVE` o `--clave` evitan
+la pregunta en uso no interactivo.
 
-### Opciones útiles
-```
---dry-run                 Simula; no escribe nada (pruébalo la primera vez).
---local  RUTA             Carpeta SGDP en la laptop (si no, se autodetecta
-                          ~/Documentos/SGDP).
---usb    RUTA             Carpeta/unidad del USB (si no, se autodetecta).
---si                      No pedir confirmación antes de aplicar.
---clave  CLAVE            Clave de autorización (si no, se pregunta).
-```
+| opción | qué hace | por defecto |
+|---|---|---|
+| `--local RUTA` | carpeta local | la primera que exista de «~/Documentos/SGDP», «~/Documents/SGDP», «~/SGDP» |
+| `--usb RUTA` | carpeta o unidad del USB | autodetectada (ver abajo) |
+| `--dry-run` | simula | no |
+| `--si` | aplica sin pedir confirmación | no |
+| `--clave CLAVE` | clave de autorización | se pregunta (o `SGDP_USB_CLAVE`) |
+| `-h`, `--help` | ayuda | — |
 
-Ejemplo indicando todo a mano:
-```bash
-./sincronizar_usb.sh --local ~/Documentos/SGDP --usb /media/usuario/KINGSTON
-```
+**La carpeta del USB.** Si `--usb` (o la unidad detectada) no se llama `SGDP` ni contiene una subcarpeta `Oficios`,
+la herramienta usa `<ruta>/SGDP`: con `--usb /media/<usuario>/<USB>` sincroniza `/media/<usuario>/<USB>/SGDP`. La
+autodetección busca carpetas escribibles en `/media/$USER`, `/run/media/$USER`, `/media` y `/mnt` (Linux), en
+`/Volumes` salvo el disco del sistema (macOS) o unidades extraíbles (Windows); si hay varias, pregunta cuál.
 
-## Recomendación
+Códigos de salida: 0 hecho o cancelado · 1 clave incorrecta, carpeta no encontrada o local igual al USB · 2 opción
+desconocida.
 
-1. La **primera vez**, corre con `--dry-run` para ver qué hará.
-2. Conéctalo, corre la herramienta, espera el resumen, y recién retira el USB
-   («expulsar» de forma segura).
-3. Si aparece un **conflicto**, abre esa carpeta, compara las dos versiones y
-   borra a mano la que no quieras.
+Requisitos: Python 3, solo biblioteca estándar.
 
-> La clave de autorización y otros ajustes (nombre de carpeta, tolerancia de fechas)
-> están al inicio de `main.py`, en la sección CONFIGURACIÓN.
+## Estructura
+
+| archivo | qué hace |
+|---|---|
+| `main.py` | todo: configuración al inicio (clave, nombre de carpeta, papelera, tolerancia), detección de USB y carpeta local, retiro de PDF de nombre antiguo, plan y copia, interfaz |
+| `sincronizar_usb.sh` | lanzador para Linux y macOS: `exec python3 main.py "$@"` |
+| `sincronizar_usb.bat` | lanzador para Windows; hoy roto (ver Límite honesto) |
 
 ## Límite honesto
 
-- **Nunca borra**: una supresión no se propaga; lo sobrescrito va a la papelera `.sgdp-papelera/<fecha>/` del lado que pierde.
-- **Gana el más nuevo; en empate conserva ambos** como «(conflicto …)» y avisa: resolver es manual.
-- **La clave de autorización vive en el código** (`main.py`, sección CONFIGURACIÓN; `SGDP_USB_CLAVE` la evita en modo no interactivo): no hay `.env` ni perfil.
-- **No sigue el patrón `main` + `config` + `lib`** (un solo archivo con lanzadores `.sh` y `.bat`): vino de otro repo el 2026-09-15 y se aceptó así.
-- **No simula por defecto**: `--dry-run` la primera vez.
+- **El lanzador de Windows no funciona**: `sincronizar_usb.bat` llama a `sincronizar_usb.py`, que no existe (el
+  archivo es `main.py`). En Windows hay que ejecutar `python main.py` desde la carpeta (ver `docs/decisiones.md`
+  §Pendientes).
+- **La clave está en el código** y no hay `.env` ni perfil: cambiarla es editar `main.py` (ver `docs/decisiones.md`
+  §Pendientes).
+- **Atada al SGDP**: el nombre `SGDP`, la papelera `.sgdp-papelera`, la excepción `Oficios` y el patrón de nombres
+  vigentes viven en `main.py`. Para otra carpeta habría que editarlos.
+- **El retiro de PDF de nombre antiguo mueve archivos del usuario** en los dos lados, en cada corrida; en `--dry-run`
+  el aviso «apartada(s)» se imprime aunque no se mueva nada.
+- **Gana el más nuevo por fecha**: si el reloj de un equipo está mal, la versión equivocada sobrescribe a la buena;
+  la buena queda en la papelera `.sgdp-papelera`, que nunca se vacía sola.
+- **Los conflictos se resuelven a mano**: abrir la pareja `(conflicto …)` y borrar la que sobra en los dos lados.
+- **Un archivo borrado reaparece**: como los borrados no se propagan, lo eliminado en un solo lado vuelve en la
+  siguiente corrida.
+- **No sigue el patrón `main` + `config` + `lib`** del repositorio: es un solo archivo con sus lanzadores.
+- Retirar el USB solo después del resumen final y con «expulsar» del sistema.
