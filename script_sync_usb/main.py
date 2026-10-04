@@ -26,8 +26,10 @@
 #      como copias «(conflicto …)» y se AVISA.
 #    - La identidad es por tamaño + SHA-256: lo ya sincronizado se OMITE.
 #
-#  AUTORIZACIÓN: pide la clave 2026AM para activar la sincronización
-#  (o variable de entorno SGDP_USB_CLAVE para uso no interactivo).
+#  AUTORIZACIÓN: pide una clave antes de hacer nada. La clave esperada NO está
+#  en el código: se lee del archivo ~/.config/scripts_for_linux/sgdp_usb_clave
+#  (una línea, permisos 600) o de la variable SGDP_USB_CLAVE_ESPERADA. La que
+#  se da en cada uso llega por --clave o por SGDP_USB_CLAVE (no interactivo).
 #
 #  Uso típico:
 #      python3 sincronizar_usb.py                 # autodetecta USB y local
@@ -49,7 +51,8 @@ from datetime import datetime
 from pathlib import Path
 
 # ------------------------------ CONFIGURACIÓN (editable) -------------
-CLAVE_AUTORIZACION = "2026AM"          # clave para activar la sincronización
+ARCHIVO_CLAVE = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) \
+    / "scripts_for_linux" / "sgdp_usb_clave"   # la clave esperada vive fuera del repo
 NOMBRE_CARPETA = "SGDP"                # nombre por convención de la carpeta
 PAPELERA = ".sgdp-papelera"            # respaldos de lo sobrescrito
 TOLERANCIA_MTIME = 3.0                 # segundos: FAT redondea a 2 s
@@ -338,8 +341,24 @@ def sincronizar(local: Path, usb: Path, dry: bool) -> Plan:
 
 # ------------------------------ interfaz -----------------------------
 
+def clave_esperada() -> str | None:
+    """La clave que autoriza: variable SGDP_USB_CLAVE_ESPERADA o el archivo
+    ARCHIVO_CLAVE (primera línea). Ninguna de las dos se versiona."""
+    esperada = os.environ.get("SGDP_USB_CLAVE_ESPERADA")
+    if esperada:
+        return esperada.strip()
+    try:
+        return ARCHIVO_CLAVE.read_text(encoding="utf-8").splitlines()[0].strip() or None
+    except (OSError, IndexError):
+        return None
+
+
 def autorizar(clave_cli: str | None) -> bool:
-    esperada = CLAVE_AUTORIZACION
+    esperada = clave_esperada()
+    if not esperada:
+        print(malo(f"No hay clave configurada: escribe una en {ARCHIVO_CLAVE} "
+                   "(chmod 600) o exporta SGDP_USB_CLAVE_ESPERADA."))
+        return False
     dada = clave_cli or os.environ.get("SGDP_USB_CLAVE")
     if dada is None:
         try:

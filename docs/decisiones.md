@@ -104,10 +104,11 @@ diagnóstico DOC10 (2026-10-04) del ecosistema.
 ### Prioritarios (seguridad y datos personales)
 
 - **Clave de autorización publicada** (anotado 2026-10-03; ampliado 2026-10-04 · dueño: el autor).
-  `script_sync_usb/main.py` fija la clave en una constante (y la repite en un comentario); `SGDP_USB_CLAVE`
-  solo la evita en modo no interactivo. Estuvo también en su README hasta el 2026-10-04, y el historial
-  público de git la conserva: hay que rotarla, sacarla del código (variable de entorno o archivo local
-  ignorado) y decidir si se reescribe la historia.
+  *Sacada del código el 2026-10-04:* `script_sync_usb/main.py` la lee ahora de
+  `~/.config/scripts_for_linux/sgdp_usb_clave` o de `SGDP_USB_CLAVE_ESPERADA`, y sin ellas se niega.
+  Queda del autor: escribir una clave **nueva** en ese archivo en cada máquina que sincroniza (la vieja
+  estuvo en el código y en un README y el historial público la conserva: se da por expuesta) y decidir
+  si se reescribe la historia.
 - **Nombres de personas de un cliente en el código** (N-01; anotado 2026-10-04 · dueño: el autor).
   `script_sync_usb/main.py` lleva en comentarios y mensajes nombres de personas del despacho, contra la
   regla 8 del `CLAUDE.md` raíz; el doctor (D12) no lo detecta. Retirarlos del código y, si se quiere,
