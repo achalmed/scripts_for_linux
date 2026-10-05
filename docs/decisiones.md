@@ -22,7 +22,7 @@ contador de páginas salieron de aquí; hoy son `scripts_document_studio/backend
 `scripts_document_studio/backends/page-counter/`.
 
 **1.3 Sin derivados de árbol en git** (2026-09-20, DOC2). `estructura.txt`, que escribe
-`script_proyect_tree`, es un derivado que `meta/NORMATIVA_ARCHIVOS.md` §15.8 (D07) no admite
+`script_proyect_tree`, es un derivado que `meta/docs/historial/NORMATIVA_ARCHIVOS.md` §15.8 (D07) no admite
 dentro de un repo: se retiró del árbol versionado y queda ignorado por `.gitignore`. La
 herramienta sigue sirviendo para la vista previa de Filesystem Studio, `--list`, `--stats` y
 salidas fuera de git.

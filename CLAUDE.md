@@ -139,4 +139,4 @@ stdout, stderr, código de salida).
 | manual de una suite de primer nivel | `<suite>/README.md` |
 | el contrato de suite, el patrón y los bloques generados | `core/suite.schema.yml`, `core/README.md` |
 | las suites de este repo entre las del workspace | `meta/INDICE_SCRIPTS.md` (generado) |
-| normativa de archivos, cabeceras y documentación | `meta/NORMATIVA_ARCHIVOS.md` (§6, §9, §15) |
+| normativa de archivos, cabeceras y documentación | `meta/docs/historial/NORMATIVA_ARCHIVOS.md` (§6, §9, §15) |
