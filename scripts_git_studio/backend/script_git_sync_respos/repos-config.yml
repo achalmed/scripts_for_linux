@@ -78,7 +78,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: scripts_for_latex
+  - name: scripts-latex
     branch: main
     enabled: true
 
