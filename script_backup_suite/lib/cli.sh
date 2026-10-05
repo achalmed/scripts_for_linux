@@ -92,7 +92,7 @@ ${CLR_BOLD}EJEMPLOS:${CLR_RESET}
     $(basename "$0") --folder Documents
 
     # Origen y destino personalizados
-    $(basename "$0") --profile custom --src /home/user/Proyectos --dest /mnt/backup/Proyectos
+    $(basename "$0") --profile custom --src ~/Proyectos --dest /mnt/backup/Proyectos
 
     # Backup con comando post-proceso (notificación de escritorio)
     $(basename "$0") --log --post-cmd "notify-send 'Backup' 'Completado'"

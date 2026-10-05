@@ -7,9 +7,16 @@
 #
 # =============================================================================
 
+# La raíz y las carpetas por nombre salen de core/env.sh (normativa 5.1-5.2; ola 0).
+_core_d="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+while [[ "$_core_d" != / && ! -f "$_core_d/core/env.sh" ]]; do _core_d="$(dirname "$_core_d")"; done
+# shellcheck source=/dev/null
+source "$_core_d/core/env.sh" || { echo "[ERROR] no encuentro core/env.sh subiendo desde ${BASH_SOURCE[0]}" >&2; exit 1; }
+unset _core_d
+
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_VERSION="2.1.0"
-readonly PROJECTS_ROOT="${HOME}/Documents"
+readonly PROJECTS_ROOT="$DOCS_ROOT"
 
 # Output file name written inside each project directory
 readonly OUTPUT_FILENAME="estructura.txt"
@@ -20,14 +27,14 @@ declare -A PROJECT_GROUPS=(
     [pub]="pub_*"
     [scripts]="scripts_*"
     [campustex]="CampusTeX-*"
-    [website]="04 index"
+    [website]="${INDEX_DIR#"$DOCS_ROOT"/}"
 )
 
 # Carpetas enlistadas manualmente (nombres exactos bajo PROJECTS_ROOT).
 # Útil para proyectos renombrados que ya no coinciden con ningún glob de
 # PROJECT_GROUPS. Se incluyen en --target all y en el grupo --target extra.
 EXTRA_PROJECTS=(
-    "03 writing"
+    "${WRITING_DIR#"$DOCS_ROOT"/}"
 )
 
 # Folders excluded from every tree call.
