@@ -1,9 +1,9 @@
 ---
 tipo: decision
-titulo: "Decisiones de scripts_for_linux"
+titulo: "Decisiones de scripts-linux"
 estado: activo
 ---
-# Decisiones de scripts_for_linux
+# Decisiones de scripts-linux
 
 Por qué el repo es como es. Una entrada por decisión, con su fecha y el commit o la fase que la
 aplicó; lo vigente que resulta de cada una está en `../README.md`, `../CLAUDE.md` y el README de

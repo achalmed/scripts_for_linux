@@ -54,7 +54,7 @@ python3 main.py --local "$HOME/Documentos/SGDP" --usb "/media/<usuario>/<USB>" -
 ```
 
 Pide una clave de autorización antes de hacer nada, también con `--dry-run`. La clave esperada no está en el
-código: se lee de `~/.config/scripts_for_linux/sgdp_usb_clave` (una línea, `chmod 600`) o de la variable
+código: se lee de `~/.config/scripts-linux/sgdp_usb_clave` (una línea, `chmod 600`) o de la variable
 `SGDP_USB_CLAVE_ESPERADA`; sin ninguna de las dos, el script se niega y dice dónde escribirla. La que se da en
 cada uso llega por `--clave` o por `SGDP_USB_CLAVE` (uso no interactivo).
 
@@ -90,7 +90,7 @@ Requisitos: Python 3, solo biblioteca estándar.
 - **El lanzador de Windows no funciona**: `sincronizar_usb.bat` llama a `sincronizar_usb.py`, que no existe (el
   archivo es `main.py`). En Windows hay que ejecutar `python main.py` desde la carpeta (ver `estado.md`
   §Por hacer).
-- **La clave vive fuera del repo** (`~/.config/scripts_for_linux/sgdp_usb_clave`); cambiarla es editar ese archivo
+- **La clave vive fuera del repo** (`~/.config/scripts-linux/sgdp_usb_clave`); cambiarla es editar ese archivo
   en cada máquina que sincroniza. La anterior estuvo publicada y debe darse por expuesta (`docs/decisiones.md`).
 - **Atada al SGDP**: el nombre `SGDP`, la papelera `.sgdp-papelera`, la excepción `Oficios` y el patrón de nombres
   vigentes viven en `main.py`. Para otra carpeta habría que editarlos.

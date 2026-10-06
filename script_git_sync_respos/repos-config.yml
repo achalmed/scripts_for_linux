@@ -74,7 +74,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: scripts_for_linux
+  - name: scripts-linux
     branch: main
     enabled: true
 

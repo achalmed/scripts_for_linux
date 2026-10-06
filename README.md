@@ -2,25 +2,25 @@
 tipo: readme
 estado: activo
 ---
-# scripts_for_linux/ — utilidades Linux del workspace: herramientas CLI (sus GUI viven en studios)
+# scripts-linux/ — utilidades Linux del workspace: herramientas CLI (sus GUI viven en studios)
 
 <!-- suites:inicio -->
 Suites de esta carpeta (12); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
-| `audio_converter` | [scripts_for_linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
-| `count_files_by_extension` | [scripts_for_linux/script_count_files_by_extension](script_count_files_by_extension/) | sistema | ninguno | no |  | activo | `MCL` |
-| `create_folders_batch` | [scripts_for_linux/script_create_folders_batch](script_create_folders_batch/) | sistema | archivos | no |  | activo | `MCL` |
-| `git_download_respos` | [scripts_for_linux/script_git_download_respos](script_git_download_respos/) | sistema | git | no |  | activo | `MCL` |
-| `git_sync_respos` | [scripts_for_linux/script_git_sync_respos](script_git_sync_respos/) | sistema | git | no |  | activo | `··L` |
-| `hardlinks_creator` | [scripts_for_linux/script_hardlinks-creator](script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
-| `hardlinks_detector` | [scripts_for_linux/script_hardlinks-detector](script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
-| `proyect_tree` | [scripts_for_linux/script_proyect_tree](script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
-| `sync_usb` | [scripts_for_linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
-| `video_downloader` | [scripts_for_linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
-| `whisper_transcriber` | [scripts_for_linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
-| `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
+| `audio_converter` | [scripts-linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
+| `count_files_by_extension` | [scripts-linux/script_count_files_by_extension](script_count_files_by_extension/) | sistema | ninguno | no |  | activo | `MCL` |
+| `create_folders_batch` | [scripts-linux/script_create_folders_batch](script_create_folders_batch/) | sistema | archivos | no |  | activo | `MCL` |
+| `git_download_respos` | [scripts-linux/script_git_download_respos](script_git_download_respos/) | sistema | git | no |  | activo | `MCL` |
+| `git_sync_respos` | [scripts-linux/script_git_sync_respos](script_git_sync_respos/) | sistema | git | no |  | activo | `··L` |
+| `hardlinks_creator` | [scripts-linux/script_hardlinks-creator](script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
+| `hardlinks_detector` | [scripts-linux/script_hardlinks-detector](script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
+| `proyect_tree` | [scripts-linux/script_proyect_tree](script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
+| `sync_usb` | [scripts-linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
+| `video_downloader` | [scripts-linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
+| `whisper_transcriber` | [scripts-linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
+| `photo_metadata_suite` | [scripts-linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
 <sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-06); no se edita a mano.</sub>
 <!-- suites:fin -->
@@ -45,7 +45,7 @@ Las herramientas de archivos (árbol de proyectos `script_proyect_tree`, conteo 
 README) y solo comparte `core/` (raíz del workspace y logger). Nada del despacho debe vivir aquí; hoy
 `script_sync_usb` lo incumple en el código (`estado.md` §Por hacer).
 Tampoco es el lugar de PDF y ofimática: eso vive en `scripts_document_studio`. El remoto en
-GitHub se llama igual que la carpeta (`scripts_for_linux`) y es público.
+GitHub se llama igual que la carpeta (`scripts-linux`) y es público.
 
 ## Uso
 

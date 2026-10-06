@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/run.sh — corre las pruebas de scripts_for_linux con pytest, con la carpeta temporal en disco y sin caché.
+# tests/run.sh — corre las pruebas de scripts-linux con pytest, con la carpeta temporal en disco y sin caché.
 # Uso: tests/run.sh [opciones de pytest]   (p. ej. -k audio_converter)
 # La carpeta temporal va a ~/.cache (no a /tmp, que es RAM); pytest no deja .pytest_cache en el repo.
 set -euo pipefail

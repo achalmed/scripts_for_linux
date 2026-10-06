@@ -2,7 +2,7 @@
 tipo: guia_ia
 estado: activo
 ---
-# CLAUDE.md — scripts_for_linux
+# CLAUDE.md — scripts-linux
 
 Guía para el asistente. En español, como todo el ecosistema. `AGENTS.md` es un enlace a este
 archivo. Léase antes: `README.md` (qué es, uso, estructura), el `suite.yml` y el README de la

@@ -91,7 +91,7 @@ def print_summary(stats: dict) -> None:
             f"{C.GRAY}   Usa hardlinks-detector para verificar los enlaces creados.{C.RESET}\n"
         )
         print(
-            f"{C.GRAY}   cd ~/Documents/scripts_for_linux/script_hardlinks-detector.{C.RESET}\n"
+            f"{C.GRAY}   cd ~/Documents/scripts-linux/script_hardlinks-detector.{C.RESET}\n"
         )
         print(f"{C.GRAY}   ./main.sh ~/Documents{C.RESET}\n")
     elif stats["groups_skipped"] > 0:

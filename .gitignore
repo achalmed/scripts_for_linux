@@ -1,4 +1,4 @@
-# scripts_for_linux/.gitignore — comentado por clase (NORMATIVA §5 y §15.8): lo interno no convive con lo listado.
+# scripts-linux/.gitignore — comentado por clase (NORMATIVA §5 y §15.8): lo interno no convive con lo listado.
 # Los patrones sin barra inicial valen en cualquier carpeta (las GUI viven en el repo studios desde la ola 4).
 
 # --- temporal: bytecode y cachés de herramientas Python ---------------------

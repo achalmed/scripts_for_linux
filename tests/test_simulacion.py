@@ -1,5 +1,5 @@
 # tests/test_simulacion.py — cada suite que escribe, en simulación sobre un HOME temporal, no escribe nada (ola 4, L1b).
-"""Prueba de simulación de las suites de scripts_for_linux.
+"""Prueba de simulación de las suites de scripts-linux.
 
 Para cada suite que escribe (``escribe_en`` distinto de ``[ninguno]`` en su ``suite.yml``) y admite
 simulación (``--dry-run``, ``--simulate``, ``-d``, ``-n``, ``--check`` o «sin ``--execute``»), la

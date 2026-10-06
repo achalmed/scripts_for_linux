@@ -3,7 +3,7 @@ tipo: estado
 estado: activo
 actualizado: 2026-10-06
 ---
-# estado.md — scripts_for_linux (repo `scripts_for_linux`)
+# estado.md — scripts-linux (repo `scripts_for_linux`)
 
 Lo primero que se lee y lo último que se escribe en cada sesión (regla 10 de la guía raíz). Lo decidido vive en
 `docs/decisiones.md`; lo pendiente, aquí, en §Por hacer, con fecha y dueño. El remoto es **público**: nada personal

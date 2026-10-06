@@ -2,7 +2,7 @@
 tipo: readme
 estado: activo
 ---
-# docs/ — documentación transversal de `scripts_for_linux`: las decisiones del repo y sus consumidores
+# docs/ — documentación transversal de `scripts-linux`: las decisiones del repo y sus consumidores
 
 Cada herramienta se documenta en su carpeta (su `README.md` es su manual); aquí vive solo lo que
 no pertenece a una herramienta sola: por qué el repo es como es, qué queda pendiente y quién usa
@@ -26,7 +26,7 @@ estas herramientas desde otros proyectos.
 - La decisión y su porqué van a [decisiones.md](decisiones.md); lo pendiente, a `../estado.md` §Por hacer.
 - Un proyecto nuevo que invoque una herramienta se añade a §Consumidores.
 - Las cantidades que cambian no se escriben: las suites las cuenta `python3 core/suites.py listar`.
-- La tabla de abajo la genera `python3 core/docs.py indice scripts_for_linux --aplicar` desde
+- La tabla de abajo la genera `python3 core/docs.py indice scripts-linux --aplicar` desde
   `~/Documents`.
 
 ## Índice
@@ -34,9 +34,9 @@ estas herramientas desde otros proyectos.
 <!-- docs:inicio -->
 | documento | tipo | estado | qué es |
 |---|---|---|---|
-| [decisiones.md](decisiones.md) | `decision` | `activo` | Decisiones de scripts_for_linux |
+| [decisiones.md](decisiones.md) | `decision` | `activo` | Decisiones de scripts-linux |
 
-<sub>Bloque generado por `core/docs.py indice` desde el frontmatter de docs/ (2026-10-04); no se edita a mano.</sub>
+<sub>Bloque generado por `core/docs.py indice` desde el frontmatter de docs/ (2026-10-06); no se edita a mano.</sub>
 <!-- docs:fin -->
 
 ## Consumidores
