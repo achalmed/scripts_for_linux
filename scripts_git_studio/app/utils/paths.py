@@ -10,7 +10,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 APP_DIR = PROJECT_ROOT / "app"
 UI_DIR = APP_DIR / "ui"
-BACKEND_DIR = PROJECT_ROOT / "backend"
+BACKEND_DIR = PROJECT_ROOT.parent   # transitorio (ola 4, fase B): los backends ya son suites de primer nivel
 RESOURCES_DIR = PROJECT_ROOT / "resources"
 ICONS_DIR = RESOURCES_DIR / "icons"
 THEMES_DIR = RESOURCES_DIR / "themes"

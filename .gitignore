@@ -25,7 +25,7 @@ reports/
 estructura.txt
 
 # --- temporal: lista de trabajo local de script_hardlinks-creator -----------
-scripts_filesystem_studio/backend/script_hardlinks-creator/archivos.txt
+script_hardlinks-creator/archivos.txt
 
 # --- ajustes locales del asistente ------------------------------------------
 .claude/

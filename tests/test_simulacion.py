@@ -23,8 +23,9 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parent.parent
-FS = REPO / "scripts_filesystem_studio" / "backend"
-GIT = REPO / "scripts_git_studio" / "backend"
+# los backends de Filesystem Studio y Git Studio son suites de primer nivel desde la ola 4 (fase B)
+FS = REPO
+GIT = REPO
 
 # Carpetas que no forman parte del contenido que una suite podría tocar: el propio git y los
 # cachés que crea pytest al importar este archivo.
