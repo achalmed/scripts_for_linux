@@ -99,7 +99,7 @@ repositories:
     enabled: true
 
 
-  - name: scripts_quarto_studio
+  - name: scripts-quarto
     branch: main
     enabled: true
 
