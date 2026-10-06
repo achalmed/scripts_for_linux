@@ -46,6 +46,12 @@ bloque `suite:` generado. El H1 no lleva versión: la versión es una constante 
 `--version` donde existe. Lo que el código corrigió en el pasado está en el historial de git, no en el
 README.
 
+**1.7 Lo personal sale a un repo privado** (2026-10-06, ola 4, L2). `script_dni_a_copia` y
+`script_firma_digital` trabajan con documentos y datos personales del autor, y este repo es público:
+pasaron con su historia (`git subtree split` + `git subtree add` desde la ruta local) a
+`herramientas-personales`, privado y sin remoto, y aquí se retiraron con `git rm`. El historial de este
+repo sigue conservando un número de documento (`estado.md` §Por hacer).
+
 ## 2. Las dos GUI
 
 **2.1 Siete scripts sueltos pasan a ser backends de dos GUI PySide6** (Filesystem Studio el

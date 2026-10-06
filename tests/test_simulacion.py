@@ -7,7 +7,7 @@ ejecuta sobre un ``HOME`` temporal y una carpeta de trabajo temporal con entrada
 un listado con tamaño y mtime de la carpeta temporal y del propio repo antes y después: nada se crea,
 nada se modifica, nada se borra.
 
-Las suites que necesitan red, GUI, hardware o datos personales se marcan ``skip`` con su motivo o se
+Las suites que necesitan red, GUI o hardware se marcan ``skip`` con su motivo o se
 prueban solo con ``--help`` (que tampoco debe escribir).
 
 Se corre con ``tests/run.sh`` (fija ``--basetemp`` fuera de /tmp y ``-p no:cacheprovider``).
@@ -258,14 +258,7 @@ def test_git_download_respos_dry_run(entorno):
                          "-r", "uno,dos", "-n", "-o", str(trabajo / "destino")], home.parent, trabajo, env)
 
 
-# --------------------------------------------------------------------------- personales y GUI
-
-@pytest.mark.parametrize("suite", ["script_dni_a_copia", "script_firma_digital"])
-def test_personales_solo_help(entorno, suite):
-    """Datos personales: no se ejecutan sobre imágenes; solo ``--help``."""
-    home, trabajo, env = entorno
-    correr_sin_escribir([PY, str(REPO / suite / "main.py"), "--help"], home.parent, trabajo, env)
-
+# --------------------------------------------------------------------------- GUI
 
 @pytest.mark.skip(reason="GUI (PySide6): filesystem_studio y git_studio escriben por sus backends, probados arriba")
 def test_gui_studios():

@@ -5,14 +5,12 @@ estado: activo
 # scripts_for_linux/ — utilidades Linux del workspace: herramientas CLI y dos GUI PySide6
 
 <!-- suites:inicio -->
-Suites de esta carpeta (17); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+Suites de esta carpeta (15); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
 | `audio_converter` | [scripts_for_linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
 | `backup_suite` | [scripts_for_linux/script_backup_suite](script_backup_suite/) | sistema | archivos | no |  | activo | `MCL` |
-| `dni_a_copia` | [scripts_for_linux/script_dni_a_copia](script_dni_a_copia/) | personal | archivos | no |  | activo | `MCL` |
-| `firma_digital` | [scripts_for_linux/script_firma_digital](script_firma_digital/) | personal | archivos | no |  | activo | `MCL` |
 | `sync_usb` | [scripts_for_linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
 | `video_downloader` | [scripts_for_linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
 | `whisper_transcriber` | [scripts_for_linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
@@ -27,7 +25,7 @@ Suites de esta carpeta (17); índice global en `meta/INDICE_SCRIPTS.md`. Patrón
 | `git_studio` | [scripts_for_linux/scripts_git_studio](scripts_git_studio/) | sistema | git | no |  | activo | `MCL` |
 | `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
-<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
+<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-06); no se edita a mano.</sub>
 <!-- suites:fin -->
 
 ## Qué es
@@ -36,9 +34,7 @@ Suites independientes, en Bash y Python 3, para las tareas de escritorio que no 
 herramienta gráfica cómoda o que se repiten demasiado como para hacerlas a mano: respaldar el home
 a un disco externo (`script_backup_suite`), descargar video o audio y recortar tramos
 (`script_video_downloader`), transcribir con Whisper (`script_whisper_transcriber`), convertir las
-notas de voz de WhatsApp a MP3 (`script_audio_converter`), sacar una copia limpia de un DNI a
-tamaño real (`script_dni_a_copia`), digitalizar una firma a SVG (`script_firma_digital`),
-sincronizar una carpeta por un USB que va y viene (`script_sync_usb`) y poner en orden fechas y
+notas de voz de WhatsApp a MP3 (`script_audio_converter`), sincronizar una carpeta por un USB que va y viene (`script_sync_usb`) y poner en orden fechas y
 nombres de fotos de cámara (`scripts_photo_metadata_suite`).
 
 Dos aplicaciones de escritorio agrupan las herramientas de archivos y de git:
@@ -68,8 +64,6 @@ script_video_downloader/main.sh --simulate <url>
 python3 script_whisper_transcriber/main.py <archivo> --dry-run
 # .opus de WhatsApp y otros → .mp3
 python3 script_audio_converter/main.py <carpeta> --dry-run
-python3 script_dni_a_copia/main.py --front anverso.jpg --back reverso.jpg --dry-run
-python3 script_firma_digital/main.py firma.jpg --dry-run
 python3 script_sync_usb/main.py --local <carpeta> --usb <montaje> --dry-run
 # analyze no toca nada; apply simula salvo --execute
 python3 scripts_photo_metadata_suite/main.py analyze <carpeta>
@@ -88,8 +82,6 @@ cada una, y cada herramienta tiene `--help`.
 |---|---|---|
 | `script_audio_converter/` | Python: `.opus` y otros → `.mp3` por lotes con ffmpeg | a mano |
 | `script_backup_suite/` | Bash: rsync del home a un disco externo por perfiles, con exclusiones y resumen | a mano |
-| `script_dni_a_copia/` | Python: dos fotos de un DNI → copia limpia a tamaño real en DOCX/PDF | a mano |
-| `script_firma_digital/` | Python: foto de una firma → SVG y PNG limpios, canal rojo + histéresis + potrace | a mano |
 | `script_sync_usb/` | Python: sincronización bidireccional carpeta ↔ USB con papelera y conflictos (sin `config`/`lib`, patrón `M··`) | a mano |
 | `script_video_downloader/` | Bash: descarga por URL o lote, recorte exacto con ffmpeg | a mano |
 | `script_whisper_transcriber/` | Python: transcripción y traducción local con Whisper, subtítulos | a mano |
@@ -125,7 +117,7 @@ una corrida no se versionan.
 ## Límite honesto
 
 - **La única prueba automática es la de simulación** (`tests/run.sh`): cada suite que escribe corre en
-  simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red, hardware o datos personales
+  simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red o hardware
   se prueban solo con `--help` o se saltan, y las GUI no se prueban. No hay lint ni build: el resto es
   `bash -n`, `py_compile` y `python3 main.py --smoke` en las GUI.
 - **Dependen de binarios del sistema** que no se instalan desde aquí: ffmpeg, yt-dlp, rsync,
@@ -143,10 +135,9 @@ una corrida no se versionan.
 - **`script_proyect_tree` genera `estructura.txt`**, un derivado que la normativa (§15.8, D07) no
   admite dentro de un repo: se usa para vista previa en la GUI, `--list`, `--stats` o salidas
   `md`/`json` fuera del árbol versionado.
-- **Dos suites traen valores de un uso concreto en un repo público**: `script_dni_a_copia` (número y
-  rutas de un DNI real en `script_dni_a_copia/config.py` y en la ayuda de
-  `script_dni_a_copia/lib/cli.py`) y `script_sync_usb` (clave de autorización fija en el código, que
-  debe rotarse). No hay `.env` ni perfil de usuario; ver `estado.md` §Por hacer.
+- **El repo es público y su historial conserva datos que ya no están en el código**: un número de documento
+  (de `script_dni_a_copia`, que pasó a `herramientas-personales`, privado) y la clave vieja de
+  `script_sync_usb`, que se da por expuesta. Reescribir la historia lo decide el autor (`estado.md` §Por hacer).
 - **`script_sync_usb` está atada al archivo documental del SGDP**: sincroniza una carpeta `SGDP`,
   aplica su convención de nombres y mueve a la papelera los PDF gemelos con nombre antiguo; su
   lanzador de Windows está roto (su README).

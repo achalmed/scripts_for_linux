@@ -68,8 +68,7 @@ si el cambio es en una GUI, `estado.md` (dónde está y qué queda pendiente) y 
   §Consumidores; un dato que un `suite.yml` contiene, al `suite.yml` (el bloque se regenera). Nunca un
   `.md` por sesión ni en la raíz, ni historia de bugs en un README, ni cantidades que cambian (las
   cuenta `python3 core/suites.py listar`).
-- **Español con tildes** en mensajes, comentarios y docs (excepción heredada: el código y los
-  docstrings de `script_dni_a_copia` están en inglés). Nada del despacho ni de sus personas en este
+- **Español con tildes** en mensajes, comentarios y docs. Nada del despacho ni de sus personas en este
   repo, ni secretos ni datos personales en un documento: es público.
 
 ## Cómo se verifica un cambio
@@ -118,9 +117,9 @@ stdout, stderr, código de salida).
   sincroniza una carpeta `SGDP`, gana el más nuevo con papelera .sgdp-papelera/, conserva ambos en
   conflicto, mueve a la papelera los PDF gemelos de nombre antiguo y pide una clave fija en el código
   (`SGDP_USB_CLAVE` la evita; `--si` omite la confirmación). Nunca escribas la clave en un documento.
-- **`script_dni_a_copia/config.py` trae por defecto las rutas de un DNI real** en un repo público
-  (pendiente en `estado.md`): no copies ese número a ningún README. Las entradas son
-  `--front`/`--back`, no posicionales; `--pre-cropped` es obligatorio con DNIe o escaneos planos.
+- **Lo personal no entra aquí**: `script_dni_a_copia` y `script_firma_digital` viven en
+  `herramientas-personales` (privado, sin remoto; `docs/decisiones.md` §1.7). Una herramienta nueva que
+  trabaje con documentos o datos personales va allí, no a este repo público.
 - **`script_video_downloader --clip` no usa `--download-sections`** de yt-dlp (trunca DASH): corta
   con ffmpeg desde las URL crudas y verifica con ffprobe (`docs/decisiones.md` §3.1). El modo audio
   es `-m audio`, no `--audio`. En `script_video_downloader/lib/options.sh` las funciones terminan
