@@ -62,6 +62,9 @@ def validate_inputs(front: str, back: str,
 
 def _validate_one_input(raw: str, label: str, logger: Logger) -> Path:
     """Exits on a missing or unreadable image: a clear early failure."""
+    if not raw:
+        logger.error("Falta la imagen del %s: pásela con --front/--back o defina DNI_A_COPIA_NUMERO.", label)
+        sys.exit(config.EXIT_NOT_FOUND)
     path = Path(raw).expanduser()
     if not path.is_file():
         logger.error("No existe la imagen del %s: '%s'.", label, path)

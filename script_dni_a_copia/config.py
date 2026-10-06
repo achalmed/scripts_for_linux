@@ -26,16 +26,18 @@ EXIT_PERMISSION = 4
 EXIT_DEPENDENCY = 5
 
 # --- Default inputs/outputs -------------------------------------------------
-# Personal defaults: running with no flags reproduces the [DNI-RETIRADO] copy.
+# Personal defaults: with DNI_A_COPIA_NUMERO in the environment (never in the repo), running with no
+# flags reproduces that copy; without it, --front and --back are required.
 # Override per run with --front/--back/--output-dir/--name.
 # NOTE: these paths point at a private archive; do not commit real values to
 # a public repository (see README, "Notas y Advertencias").
 _DNI_DIR = os.path.join(os.environ.get("PERSONAL_DIR", os.path.expanduser("~/Documents/08 personal")),
                         "01_identidad_y_registro_civil/dni")   # FS2: sin ruta literal (core/env.py → PERSONAL_DIR)
-DEFAULT_FRONT = f"{_DNI_DIR}/dni_[DNI-RETIRADO]_frontal.jpeg"
-DEFAULT_BACK = f"{_DNI_DIR}/dni_[DNI-RETIRADO]_adversa.jpeg"
+_NUMERO = os.environ.get("DNI_A_COPIA_NUMERO", "")   # dato personal: solo por entorno, nunca en el código
+DEFAULT_FRONT = f"{_DNI_DIR}/dni_{_NUMERO}_frontal.jpeg" if _NUMERO else None
+DEFAULT_BACK = f"{_DNI_DIR}/dni_{_NUMERO}_adversa.jpeg" if _NUMERO else None
 DEFAULT_OUTPUT_DIR = _DNI_DIR
-DEFAULT_NAME = "dni_[DNI-RETIRADO]_copia"      # base name for the .docx/.pdf
+DEFAULT_NAME = f"dni_{_NUMERO}_copia" if _NUMERO else "dni_copia"      # base name for the .docx/.pdf
 DEFAULT_SAVE_FACES = False               # also drop per-face PNGs next to output
 DEFAULT_TO_PDF = False                   # also export the .docx to PDF
 DEFAULT_ENHANCE = True                    # restoration stage (de-JPEG + sharpen)

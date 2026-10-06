@@ -11,7 +11,7 @@ import config
 
 _EPILOG = """\
 Ejemplos:
-  # Reproducir la copia por defecto (DNI [DNI-RETIRADO]) -> Word en la carpeta del DNI
+  # Reproducir la copia por defecto (con DNI_A_COPIA_NUMERO en el entorno) -> Word en la carpeta del DNI
   python3 main.py
 
   # Cualquier DNI: anverso + reverso, indicando salida y nombre base
@@ -51,10 +51,10 @@ def build_argument_parser() -> argparse.ArgumentParser:
     io_group = parser.add_argument_group("Entrada y salida")
     io_group.add_argument(
         "--front", default=config.DEFAULT_FRONT, metavar="IMG",
-        help="imagen del anverso (por defecto: la del DNI [DNI-RETIRADO])")
+        help="imagen del anverso (por defecto: la del DNI de DNI_A_COPIA_NUMERO)")
     io_group.add_argument(
         "--back", default=config.DEFAULT_BACK, metavar="IMG",
-        help="imagen del reverso (por defecto: la del DNI [DNI-RETIRADO])")
+        help="imagen del reverso (por defecto: la del DNI de DNI_A_COPIA_NUMERO)")
     io_group.add_argument(
         "-o", "--output-dir", default=config.DEFAULT_OUTPUT_DIR, metavar="DIR",
         help="directorio donde dejar el Word/PDF (por defecto: %(default)s)")
