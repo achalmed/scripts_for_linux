@@ -103,6 +103,11 @@ tres copias de la misma infraestructura Qt (`meta/programa/06-olas/ola-04-reinge
 **3.1 `--clip` corta con ffmpeg, no con `--download-sections`** (2026-07-25, `90fb4ad`). La
 opción de yt-dlp trunca los formatos DASH; `script_video_downloader` corta desde las URL crudas
 y verifica con ffprobe.
+Las grabaciones de vivos de Facebook son la excepción (2026-10-06): su manifiesto DASH es «dynamic» con una
+ventana de segundos y ffmpeg no puede saltar dentro de él (se queda esperando sin escribir). `script_video_downloader/lib/clipper_dash.sh`
+usa la plantilla por número de segmento que trae el propio manifiesto (`FBPredictedMedia`), calibra el número del
+INICIO contra la marca de tiempo real con ffprobe, baja solo los segmentos del tramo y deja el corte y la
+verificación al camino de siempre.
 
 **3.2 `script_sync_usb` se acepta fuera del patrón** (2026-09-15, `b39900b`, M10 D2). Vino de
 `05_sgdp/sincronizacion_usb` como un solo `main.py` con lanzadores `.sh` y `.bat`; se incorporó
