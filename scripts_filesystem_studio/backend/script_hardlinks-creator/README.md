@@ -104,7 +104,7 @@ Requisitos: Python 3.10 o superior (solo biblioteca estándar) y `core/py-common
   `_extensions/` dentro de un sitio) se recorren. Para excluir una carpeta profunda, pásela relativa a la raíz con
   `--exclude`.
 - **La lista de exclusiones por sitio de `config.py` está desfasada**: nombra `pub_*/` y `website-achalma/` en la raíz,
-  rutas que hoy no existen; no excluyen nada (ver `../../../docs/decisiones.md` §Pendientes).
+  rutas que hoy no existen; no excluyen nada (ver `../../../estado.md` §Por hacer).
 - **Sin terminal, enlaza sin preguntar**: la pregunta por grupo toma `[S/n]` como sí por defecto, también si la entrada
   se cierra (tubería, cron). Use `--dry-run` primero.
 - **La fuente de cada grupo es arbitraria**: es el primer inodo que aparece en el recorrido; como el contenido es

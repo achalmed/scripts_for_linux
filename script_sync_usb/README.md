@@ -88,8 +88,8 @@ Requisitos: Python 3, solo biblioteca estándar.
 ## Límite honesto
 
 - **El lanzador de Windows no funciona**: `sincronizar_usb.bat` llama a `sincronizar_usb.py`, que no existe (el
-  archivo es `main.py`). En Windows hay que ejecutar `python main.py` desde la carpeta (ver `docs/decisiones.md`
-  §Pendientes).
+  archivo es `main.py`). En Windows hay que ejecutar `python main.py` desde la carpeta (ver `estado.md`
+  §Por hacer).
 - **La clave vive fuera del repo** (`~/.config/scripts_for_linux/sgdp_usb_clave`); cambiarla es editar ese archivo
   en cada máquina que sincroniza. La anterior estuvo publicada y debe darse por expuesta (`docs/decisiones.md`).
 - **Atada al SGDP**: el nombre `SGDP`, la papelera `.sgdp-papelera`, la excepción `Oficios` y el patrón de nombres

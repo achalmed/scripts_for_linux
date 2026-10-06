@@ -113,8 +113,8 @@ Backends: [`script_count_files_by_extension`](backend/script_count_files_by_exte
 - **La regla de la UI se cumple a medias.** Las escrituras pasan por `app/services/` y las operaciones largas por
   workers con progreso y cancelación, pero varios controllers abren archivos y carpetas con `xdg-open`, consultan el
   disco (existencia de rutas, espacio libre con `shutil.disk_usage`) y el reporte de auditoría de la página Hardlinks se
-  genera y se guarda en el hilo de la interfaz (ver `../docs/decisiones.md` §Pendientes).
-- **La preferencia «hilos» se guarda y nada la usa** (ver `../docs/decisiones.md` §Pendientes).
+  genera y se guarda en el hilo de la interfaz (ver `../estado.md` §Por hacer).
+- **La preferencia «hilos» se guarda y nada la usa** (ver `../estado.md` §Por hacer).
 - **Carpetas crea de verdad por defecto**: marque «Simulación (dry-run)» antes de «Crear carpetas» si solo quiere ver el
   resultado. Deshacer borra solo las carpetas vacías de la última creación.
 - **El modo «Proyectos» de Árbol** ofrece los grupos del backend (`all`, `pub`, `scripts`, `campustex`, `website`,

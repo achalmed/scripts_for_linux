@@ -129,13 +129,13 @@ Una entrada sin `branch` o sin `enabled` toma `main` y `true`.
 - **`repos-config.yml` no es el registro del workspace**: es el inventario propio de Git Studio, escrito a mano y
   paralelo al manifiesto del workspace (`meta/workspace.yml`, fuera de este repo), con el que no coincide. Lo leen
   `sync.sh`, `status.sh` y la GUI, y la GUI lo reescribe entero al añadir un repo o registrar uno clonado,
-  perdiendo los comentarios. Si debe generarse desde el manifiesto está por decidir: ver `docs/decisiones.md`
-  §Pendientes.
+  perdiendo los comentarios. Si debe generarse desde el manifiesto está por decidir: ver `estado.md`
+  §Por hacer.
 - **Hoy una entrada lleva un comentario en su línea** («10 Class/docencia»), y por eso ni `sync.sh` ni
-  `status.sh` la encuentran (ver `docs/decisiones.md` §Pendientes).
+  `status.sh` la encuentran (ver `estado.md` §Por hacer).
 - **`sync.sh` no ve archivos nuevos sin seguimiento**: detecta cambios con `git diff-index HEAD`, así que un
   repo cuyo único cambio es un archivo nuevo queda «sin cambios» y no se commitea. `status.sh` (con
-  `git status --short`) y la GUI sí lo ven y lo marcan como cambio (ver `docs/decisiones.md` §Pendientes).
+  `git status --short`) y la GUI sí lo ven y lo marcan como cambio (ver `estado.md` §Por hacer).
 - **`git add -A` sube todo** lo que el `.gitignore` de cada repo no excluya, con un solo mensaje para todos los
   repos.
 - **Un repo se reconoce por una carpeta `.git`**: si `.git` es un archivo (worktree, submódulo con el gitdir
@@ -144,7 +144,7 @@ Una entrada sin `branch` o sin `enabled` toma `main` y `true`.
   upstream configurado.
 - **`install.sh` no es una vía de uso.** La copia que deja en ~/bin/git-sync no arranca, porque `lib/logging.sh`
   no encuentra `core/` fuera del workspace; además solo detecta repos de primer nivel de la carpeta base y
-  escribe alias en `~/.bashrc`. Se usa desde esta carpeta (ver `docs/decisiones.md` §Pendientes).
+  escribe alias en `~/.bashrc`. Se usa desde esta carpeta (ver `estado.md` §Por hacer).
 - **Si falta el registro**, el mensaje aconseja `--init-config`, una opción que no existe.
 - **No hay automatización en el repo**: ni unidad systemd ni entrada de cron; si se programa, hay que dar rutas
   absolutas y tener en cuenta que `sync.sh` hace push sin pedir confirmación.

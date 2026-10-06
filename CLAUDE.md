@@ -7,7 +7,8 @@ estado: activo
 Guía para el asistente. En español, como todo el ecosistema. `AGENTS.md` es un enlace a este
 archivo. Léase antes: `README.md` (qué es, uso, estructura), el `suite.yml` y el README de la
 herramienta que se toque, `scripts_filesystem_studio/README.md` o `scripts_git_studio/README.md`
-si el cambio es en una GUI, y `docs/decisiones.md` (por qué el repo es así y qué queda pendiente).
+si el cambio es en una GUI, `estado.md` (dónde está y qué queda pendiente) y `docs/decisiones.md`
+(por qué el repo es así).
 
 ## Reglas que no se negocian
 
@@ -52,7 +53,7 @@ si el cambio es en una GUI, y `docs/decisiones.md` (por qué el repo es así y q
   Git Studio**: lo leen `sync.sh`, `status.sh` y la GUI
   (`scripts_git_studio/app/services/config_service.py`), y la GUI lo reescribe entero al añadir o
   clonar. Es paralelo a `meta/workspace.yml`, que es el manifiesto del workspace: no lo presentes como
-  registro de repos del ecosistema (`docs/decisiones.md` §2.3 y §Pendientes).
+  registro de repos del ecosistema (`docs/decisiones.md` §2.3 y `estado.md` §Por hacer).
 - **`scripts_git_studio/app/services/git_service.py` es la única implementación de comandos git**
   de Git Studio: sync, estado, clonado y reportes la reutilizan.
 - **Lo generado no se edita**: los bloques `<!-- suite:inicio -->`/`<!-- suites:inicio -->` de los
@@ -62,8 +63,8 @@ si el cambio es en una GUI, y `docs/decisiones.md` (por qué el repo es así y q
   versionan.
 - **Dónde va cada cosa nueva** (NORMATIVA §15.11, concretada aquí): el uso o una opción de una
   herramienta, a su README (`Qué es`, `Uso`, `Estructura`, `Límite honesto`; sin versión en el H1,
-  `docs/decisiones.md` §1.6); el porqué, a `docs/decisiones.md`; un fallo o una tarea, a su
-  §Pendientes con fecha y dueño; quién invoca una herramienta desde otro proyecto, a `docs/README.md`
+  `docs/decisiones.md` §1.6); el porqué, a `docs/decisiones.md`; un fallo o una tarea, a
+  `estado.md` §Por hacer con fecha y dueño; quién invoca una herramienta desde otro proyecto, a `docs/README.md`
   §Consumidores; un dato que un `suite.yml` contiene, al `suite.yml` (el bloque se regenera). Nunca un
   `.md` por sesión ni en la raíz, ni historia de bugs en un README, ni cantidades que cambian (las
   cuenta `python3 core/suites.py listar`).
@@ -117,7 +118,7 @@ stdout, stderr, código de salida).
   conflicto, mueve a la papelera los PDF gemelos de nombre antiguo y pide una clave fija en el código
   (`SGDP_USB_CLAVE` la evita; `--si` omite la confirmación). Nunca escribas la clave en un documento.
 - **`script_dni_a_copia/config.py` trae por defecto las rutas de un DNI real** en un repo público
-  (pendiente en `docs/decisiones.md`): no copies ese número a ningún README. Las entradas son
+  (pendiente en `estado.md`): no copies ese número a ningún README. Las entradas son
   `--front`/`--back`, no posicionales; `--pre-cropped` es obligatorio con DNIe o escaneos planos.
 - **`script_video_downloader --clip` no usa `--download-sections`** de yt-dlp (trunca DASH): corta
   con ffmpeg desde las URL crudas y verifica con ffprobe (`docs/decisiones.md` §3.1). El modo audio
@@ -131,7 +132,8 @@ stdout, stderr, código de salida).
 | pregunta | documento |
 |---|---|
 | qué suites hay, cómo se invocan, qué escribe cada una | `README.md` y el bloque generado `suites:` |
-| por qué el repo es así; qué queda pendiente | `docs/decisiones.md` (mapa por lector en `docs/README.md`) |
+| dónde está el repo; qué queda pendiente | `estado.md` |
+| por qué el repo es así | `docs/decisiones.md` (mapa por lector en `docs/README.md`) |
 | de dónde salieron las dos GUI y qué no se construyó | `docs/decisiones.md` §1.5 y §2.4 |
 | quién usa estas herramientas desde otros proyectos | `docs/README.md` §Consumidores |
 | módulos y cómo extender cada GUI | `scripts_filesystem_studio/README.md`, `scripts_git_studio/README.md` |

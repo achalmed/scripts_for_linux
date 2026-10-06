@@ -83,8 +83,8 @@ Requisitos: bash 4 o superior, GNU findutils, `awk`, `sort`, y `core/shell-lib/l
 - **Solo GNU/Linux**: necesita `find -printf`; con el `find` de BSD o macOS sale con código 5.
 - **Necesita el espacio de trabajo**: `lib/logger.sh` busca `core/shell-lib/logger.sh` subiendo desde su carpeta;
   copiado fuera de `~/Documents` no arranca.
-- **El directorio por defecto está escrito en `config.sh`** y no pasa por `core/env.sh` (ver `../../../docs/decisiones.md`
-  §Pendientes).
+- **El directorio por defecto está escrito en `config.sh`** y no pasa por `core/env.sh` (ver `../../../estado.md`
+  §Por hacer).
 - **No excluye nada**: entra en `.git`, `node_modules` y similares (la página Estadísticas de la GUI sí tiene
   exclusiones).
 - **Cuenta entradas, no contenido**: no sigue enlaces simbólicos y cada nombre de un hardlink cuenta como un archivo

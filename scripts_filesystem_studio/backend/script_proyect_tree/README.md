@@ -111,7 +111,7 @@ Requisitos: bash 5 (lo declara `main.sh`), `tree`, `find`, `du`, `date`, y
 
 - **Los grupos `pub` y `campustex` ya no encuentran nada**: buscan `pub_*` y `CampusTeX-*` en el primer nivel de
   `~/Documents`, y esas carpetas ya no están ahí. `--target all` solo cubre los `scripts_*`, `04 index` y
-  `03 writing` (ver `../../../docs/decisiones.md` §Pendientes).
+  `03 writing` (ver `../../../estado.md` §Por hacer).
 - **La raíz de proyectos está escrita en `config.sh`** (`$HOME/Documents`) y no pasa por `core/env.sh`.
 - **Escribe dentro de los repos.** `estructura.txt` no se versiona: lo ignoran el `.gitignore` de varios repos (este
   incluido) y el gitignore global del usuario. `estructura.md` y `estructura.json` no los ignora ni el de este repo ni

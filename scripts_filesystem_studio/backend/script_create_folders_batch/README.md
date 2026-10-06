@@ -90,7 +90,7 @@ Requisitos: bash 4 o superior, `grep`, y `core/shell-lib/logger.sh` del espacio 
 
 - **Crea de verdad si no se pide `-d`.** Sin `-f` usa la lista predefinida de `config.sh`, que hoy son seis carpetas de
   un curso de 2022: ejecutar `./main.sh` a secas en una carpeta cualquiera y confirmar las crea ahí (ver
-  `../../../docs/decisiones.md` §Pendientes).
+  `../../../estado.md` §Por hacer).
 - **El directorio base se crea aunque se simule**: si `-p` apunta a una carpeta inexistente, con `-d` o `-y` la
   confirmación se da por aceptada y `mkdir -p` crea el directorio base antes de simular la lista.
 - **Sin terminal pide `--yes`**: desde cron o una tubería sale con código 2 en vez de quedarse esperando.

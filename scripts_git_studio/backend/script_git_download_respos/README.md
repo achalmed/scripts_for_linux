@@ -93,7 +93,7 @@ workspace (`core/shell-lib/logger.sh`, en su raíz), que `lib/logger.sh` busca s
 
 - **Repos privados**: el modo `all` consulta `users/<usuario>/repos`, que lista los repos públicos; el token
   solo se envía como cabecera de autorización. No está verificado contra la API si con token aparecen los
-  privados (ver `docs/decisiones.md` §Pendientes). Con `-m list` o `-m single` no se consulta la API: se clona
+  privados (ver `estado.md` §Por hacer). Con `-m list` o `-m single` no se consulta la API: se clona
   por nombre con las credenciales de git (clave SSH o HTTPS).
 - **`-t` deja el token visible** en la lista de procesos mientras corre; es preferible `GITHUB_TOKEN`.
 - **`-n` no es inocuo del todo**: crea la carpeta destino y, en modo `all`, consulta la API. En simulación,

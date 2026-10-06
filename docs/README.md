@@ -14,7 +14,7 @@ estas herramientas desde otros proyectos.
 |---|---|
 | **quien usa** una herramienta | `../README.md` (§Uso) → el `README.md` de la herramienta |
 | **quien amplía** una suite o una GUI | `../CLAUDE.md` → `../scripts_filesystem_studio/README.md` o `../scripts_git_studio/README.md` → [decisiones.md](decisiones.md) §2 |
-| **quien mantiene** el repo | [decisiones.md](decisiones.md) (con §Pendientes) → `core/README.md` y `core/suite.schema.yml` |
+| **quien mantiene** el repo | `../estado.md` (§Por hacer) → [decisiones.md](decisiones.md) → `core/README.md` y `core/suite.schema.yml` |
 | quien quiere saber **de dónde** salieron las GUI | [decisiones.md](decisiones.md) §1.5 y §2.4 |
 | **otro proyecto** que invoca una herramienta | §Consumidores, abajo |
 
@@ -22,7 +22,7 @@ estas herramientas desde otros proyectos.
 
 - Lo de una herramienta va a su README; lo transversal, aquí, en el documento de su concepto.
   Nunca un `.md` por sesión, fase o fecha.
-- La decisión y su porqué van a [decisiones.md](decisiones.md); lo pendiente, a su §Pendientes.
+- La decisión y su porqué van a [decisiones.md](decisiones.md); lo pendiente, a `../estado.md` §Por hacer.
 - Un proyecto nuevo que invoque una herramienta se añade a §Consumidores.
 - Las cantidades que cambian no se escriben: las suites las cuenta `python3 core/suites.py listar`.
 - La tabla de abajo la genera `python3 core/docs.py indice scripts_for_linux --aplicar` desde

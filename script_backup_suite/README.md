@@ -130,8 +130,8 @@ en `journalctl -u backup-disco.service`.
   exista en el home. Es un fallo del código, no del uso; hasta corregirlo, el ejemplo de systemd se detiene en la
   primera actualización o borrado.
 - **Los errores de la copia de nuevos se ocultan.** Esa copia lleva `2>/dev/null || true`: cualquier fallo de rsync
-  (no solo el código 24) se ignora y el resumen cuenta los archivos como copiados (ver `docs/decisiones.md`
-  §Pendientes).
+  (no solo el código 24) se ignora y el resumen cuenta los archivos como copiados (ver `estado.md`
+  §Por hacer).
 - **Nombres con espacios en el paso de modificados**: la lista sale de `awk '{print $2}'` sobre la salida de rsync,
   así que una ruta con espacios se corta en el primero y ese archivo no se actualiza (da error); lo mismo afecta a la
   cuenta de nuevos, no a su copia.

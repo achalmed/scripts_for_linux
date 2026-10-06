@@ -50,7 +50,7 @@ tabla de arriba es la lista completa; `python3 core/suites.py listar` la da para
 
 **No es** una biblioteca: cada suite es autónoma (`main.*` + `config.*` + `lib/`, `suite.yml`,
 README) y solo comparte `core/` (raíz del workspace y logger). Nada del despacho debe vivir aquí; hoy
-`script_sync_usb` lo incumple en el código (`docs/decisiones.md` §Pendientes).
+`script_sync_usb` lo incumple en el código (`estado.md` §Por hacer).
 Tampoco es el lugar de PDF y ofimática: eso vive en `scripts_document_studio`. El remoto en
 GitHub se llama igual que la carpeta (`scripts_for_linux`) y es público.
 
@@ -96,7 +96,8 @@ cada una, y cada herramienta tiene `--help`.
 | `scripts_photo_metadata_suite/` | Python: fechas y nombres de fotos y videos de cámara, OCR de la marca, digiKam | a mano |
 | `scripts_filesystem_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas CLI de archivos, cada una con `suite.yml` | a mano; `resources_rc.py` lo genera `scripts_filesystem_studio/tools/build_resources.sh` |
 | `scripts_git_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas Bash de git; `scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el inventario de repos que comparten CLI y GUI, escrito a mano y paralelo a `meta/workspace.yml` | a mano |
-| `docs/` | lo transversal: `decisiones.md` (con sus pendientes) y, en su README, quién consume estas herramientas | a mano; índice por `core/docs.py indice` |
+| `estado.md` | dónde está el repo: hecho (con la bitácora de cada ola), en curso, por hacer (con fecha y dueño) y futuro | a mano; primero que se lee y último que se escribe |
+| `docs/` | lo transversal: `decisiones.md` y, en su README, quién consume estas herramientas | a mano; índice por `core/docs.py indice` |
 | `vendor/` | código ajeno conservado tal cual: el cuaderno Colab de Jason Boog del que nació `script_whisper_transcriber` (MIT) | ajeno; no se edita |
 | `suite.yml` (uno por suite y por backend) | manifiesto de cada herramienta (`core/suite.schema.yml`) | a mano; los bloques de README los escribe `core/suites.py generar --aplicar` |
 | `CLAUDE.md` · `AGENTS.md` | guía para el asistente; `AGENTS.md` es un enlace a `CLAUDE.md` | a mano |
@@ -114,7 +115,8 @@ una corrida no se versionan.
 | `scripts_filesystem_studio/README.md` · `scripts_git_studio/README.md` | las GUI: módulos, arquitectura `ui → controllers → services`, cómo extender |
 | `scripts_filesystem_studio/backend/*/README.md` · `scripts_git_studio/backend/*/README.md` | manual de cada herramienta absorbida por una GUI |
 | `docs/README.md` | mapa por lector de lo transversal y §Consumidores (quién invoca estas herramientas) |
-| `docs/decisiones.md` | por qué el repo es como es, y sus pendientes |
+| `estado.md` | dónde está el repo y qué queda pendiente (§Por hacer) |
+| `docs/decisiones.md` | por qué el repo es como es |
 | `CLAUDE.md` | reglas para el asistente: patrón `main`/`config`/`lib`, las dos GUI, cómo verificar, trampas |
 | `meta/INDICE_SCRIPTS.md` | las suites de este repo entre las del workspace (generado) |
 | `core/README.md` · `core/suite.schema.yml` | el contrato de suite y los bloques generados |
@@ -134,14 +136,14 @@ una corrida no se versionan.
   de comportamiento hay que hacerlo en los dos sitios (`docs/decisiones.md` §2.2); `sync.sh` y la GUI
   ya divergen en qué cuentan como cambio.
 - **`repos-config.yml` es un inventario a mano, paralelo a `meta/workspace.yml`**, y no coincide con él
-  (`docs/decisiones.md` §2.3 y §Pendientes).
+  (`docs/decisiones.md` §2.3 y `estado.md` §Por hacer).
 - **`script_proyect_tree` genera `estructura.txt`**, un derivado que la normativa (§15.8, D07) no
   admite dentro de un repo: se usa para vista previa en la GUI, `--list`, `--stats` o salidas
   `md`/`json` fuera del árbol versionado.
 - **Dos suites traen valores de un uso concreto en un repo público**: `script_dni_a_copia` (número y
   rutas de un DNI real en `script_dni_a_copia/config.py` y en la ayuda de
   `script_dni_a_copia/lib/cli.py`) y `script_sync_usb` (clave de autorización fija en el código, que
-  debe rotarse). No hay `.env` ni perfil de usuario; ver `docs/decisiones.md` §Pendientes.
+  debe rotarse). No hay `.env` ni perfil de usuario; ver `estado.md` §Por hacer.
 - **`script_sync_usb` está atada al archivo documental del SGDP**: sincroniza una carpeta `SGDP`,
   aplica su convención de nombres y mueve a la papelera los PDF gemelos con nombre antiguo; su
   lanzador de Windows está roto (su README).

@@ -55,7 +55,7 @@ python3 main.py --front frente.jpg --back reverso.jpg -o ~/copias -n dni_bn --bn
 
 **Pasar siempre `--front`, `--back`, `-o` y `-n`.** Los valores por defecto de `config.py` apuntan a las imágenes,
 la carpeta y el nombre de un DNI concreto (bajo `PERSONAL_DIR`), no a valores de ejemplo: sin esas opciones, la
-herramienta lee esas imágenes o deja la salida en esa carpeta con ese nombre (ver `docs/decisiones.md` §Pendientes).
+herramienta lee esas imágenes o deja la salida en esa carpeta con ese nombre (ver `estado.md` §Por hacer).
 
 | opción | qué hace | por defecto (`config.py`) |
 |---|---|---|
@@ -102,10 +102,10 @@ recomendado (sin él no hay filtro bilateral); LibreOffice (`libreoffice` o `sof
 ## Límite honesto
 
 - **Los valores por defecto son de un DNI real**: el número y las rutas de una persona viven en `config.py` y en la
-  ayuda de `lib/cli.py`, en un repositorio público. Retirarlos es decisión del autor (ver `docs/decisiones.md`
-  §Pendientes); mientras tanto, la salida y el nombre se pasan siempre por opción.
-- **La ayuda dice «600 dpi por defecto» y es 300** (`DEFAULT_DPI`): manda `config.py` (ver `docs/decisiones.md`
-  §Pendientes).
+  ayuda de `lib/cli.py`, en un repositorio público. Retirarlos es decisión del autor (ver `estado.md`
+  §Por hacer); mientras tanto, la salida y el nombre se pasan siempre por opción.
+- **La ayuda dice «600 dpi por defecto» y es 300** (`DEFAULT_DPI`): manda `config.py` (ver `estado.md`
+  §Por hacer).
 - **La detección exige color saturado y brillante y las cuatro esquinas visibles**: el DNIe no es turquesa y va
   siempre con `--pre-cropped`; una esquina tapada o deformada, con `--no-perspective`; un fondo muy oscuro o una
   foto con poca tarjeta acaban en «no se detectó una tarjeta» (código 1).

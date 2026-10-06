@@ -109,13 +109,13 @@ carpeta de reportes, `fetch` antes del estado, tema y tamaño de iconos.
 - **El registro (repos-config.yml) es el inventario propio de Git Studio, no el del workspace.** Lo leen
   sync.sh, status.sh y la GUI; está escrito a mano, es paralelo al manifiesto del workspace
   (`meta/workspace.yml`, fuera de este repo) y no coincide con él. Si debe generarse desde allí está por
-  decidir: ver `docs/decisiones.md` §Pendientes.
+  decidir: ver `estado.md` §Por hacer.
 - **La GUI reescribe el registro entero** cada vez que lo guarda: pierde los comentarios y deja un cambio en
-  este repo (ver `docs/decisiones.md` §Pendientes).
+  este repo (ver `estado.md` §Por hacer).
 - **El parser del registro es estricto**: `- name:` con dos espacios delante, `branch:` y `enabled:` con
   cuatro, sin comillas ni anidación, y **sin comentarios en la misma línea de una entrada**: el comentario pasa
   a formar parte del nombre y ese repo no se encuentra. Hoy le ocurre a la entrada de «10 Class/docencia» (ver
-  `docs/decisiones.md` §Pendientes).
+  `estado.md` §Por hacer).
 - **La GUI y sync.sh no detectan los cambios igual**: `app/services/git_service.py` usa
   `git status --porcelain` y ve los archivos nuevos sin seguimiento; sync.sh usa `git diff-index` y no los ve.
   El botón que ejecuta sync.sh puede dar «sin cambios» donde la página no.
