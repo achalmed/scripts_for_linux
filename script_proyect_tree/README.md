@@ -42,7 +42,7 @@ Los proyectos se eligen por grupos que se buscan en el primer nivel de `~/Docume
 | `scripts` | carpetas `scripts_*` | los repos de scripts del espacio de trabajo |
 | `campustex` | carpetas `CampusTeX-*` | nada (los repos se llaman `docencia` y `11 Book` en disco) |
 | `website` | la carpeta `04 index` | el hub |
-| `extra` | la lista `EXTRA_PROJECTS` | `03 writing` |
+| `extra` | la lista `EXTRA_PROJECTS` | `escritura` |
 
 `all` es la unión de todos. Sin `--target`, trabaja sobre la carpeta actual, salvo si se ejecuta desde `~/Documents`
 o desde `$HOME`, donde equivale a `all`.
@@ -58,10 +58,10 @@ por su cuenta.
 ## Uso
 
 ```bash
-cd "$HOME/Documents/03 writing" && /ruta/a/main.sh   # estructura.txt de la carpeta actual
+cd "$HOME/Documents/escritura" && /ruta/a/main.sh   # estructura.txt de la carpeta actual
 ./main.sh --target all --dry-run                      # qué se escribiría en todos los grupos
 ./main.sh --target scripts                            # solo los scripts_*
-./main.sh --target "03 writing" --format md --depth 4 # un proyecto por su nombre exacto
+./main.sh --target "escritura" --format md --depth 4 # un proyecto por su nombre exacto
 ./main.sh --target website --exclude-dir data -x "*.csv"
 ./main.sh --list                                      # proyectos detectados por grupo
 ./main.sh --stats --target scripts                    # tamaño y número de archivos, sin escribir
@@ -111,7 +111,7 @@ Requisitos: bash 5 (lo declara `main.sh`), `tree`, `find`, `du`, `date`, y
 
 - **Los grupos `pub` y `campustex` ya no encuentran nada**: buscan `pub_*` y `CampusTeX-*` en el primer nivel de
   `~/Documents`, y esas carpetas ya no están ahí. `--target all` solo cubre los `scripts_*`, `04 index` y
-  `03 writing` (ver `../estado.md` §Por hacer).
+  `escritura` (ver `../estado.md` §Por hacer).
 - **La raíz de proyectos está escrita en `config.sh`** (`$HOME/Documents`) y no pasa por `core/env.sh`.
 - **Escribe dentro de los repos.** `estructura.txt` no se versiona: lo ignoran el `.gitignore` de varios repos (este
   incluido) y el gitignore global del usuario. `estructura.md` y `estructura.json` no los ignora ni el de este repo ni

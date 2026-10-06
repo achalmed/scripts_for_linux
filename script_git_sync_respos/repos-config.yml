@@ -103,7 +103,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: 03 writing
+  - name: escritura
     branch: main
     enabled: true
 
