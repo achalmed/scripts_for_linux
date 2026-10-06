@@ -82,7 +82,7 @@ repositories:
     branch: main
     enabled: true
 
-  - name: scripts_for_calibre
+  - name: scripts-biblioteca
     branch: main
     enabled: true
 
