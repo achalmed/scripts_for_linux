@@ -2,7 +2,7 @@
 """script_sync_usb/main.py — sincroniza en ambas direcciones una carpeta local con su copia en un USB compartido (papelera y conflictos)."""
 # =====================================================================
 #  sincronizar_usb.py  --  Sincronización BIDIRECCIONAL laptop <-> USB
-#  del SGDP (Despacho del Diputado Alejandro José Manay Pillaca).
+#  del SGDP (el despacho cliente, configurado por .env).
 # ---------------------------------------------------------------------
 #  ¿Para qué?  El navegador (botón «Sincronizar» de la plataforma) solo
 #  puede COPIAR del servidor a una carpeta de la laptop, en UNA dirección,
