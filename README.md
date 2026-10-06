@@ -97,6 +97,7 @@ cada una, y cada herramienta tiene `--help`.
 | `scripts_filesystem_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas CLI de archivos, cada una con `suite.yml` | a mano; `resources_rc.py` lo genera `scripts_filesystem_studio/tools/build_resources.sh` |
 | `scripts_git_studio/` | GUI PySide6 (`main.py`, `app/`, `resources/`) y `backend/` con las herramientas Bash de git; `scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el inventario de repos que comparten CLI y GUI, escrito a mano y paralelo a `meta/workspace.yml` | a mano |
 | `estado.md` | dónde está el repo: hecho (con la bitácora de cada ola), en curso, por hacer (con fecha y dueño) y futuro | a mano; primero que se lee y último que se escribe |
+| `tests/` | `test_simulacion.py` (pytest): cada suite que escribe, en simulación, no escribe nada; `run.sh` la corre con la carpeta temporal en `~/.cache` | a mano |
 | `docs/` | lo transversal: `decisiones.md` y, en su README, quién consume estas herramientas | a mano; índice por `core/docs.py indice` |
 | `vendor/` | código ajeno conservado tal cual: el cuaderno Colab de Jason Boog del que nació `script_whisper_transcriber` (MIT) | ajeno; no se edita |
 | `suite.yml` (uno por suite y por backend) | manifiesto de cada herramienta (`core/suite.schema.yml`) | a mano; los bloques de README los escribe `core/suites.py generar --aplicar` |
@@ -123,8 +124,10 @@ una corrida no se versionan.
 
 ## Límite honesto
 
-- **No hay pruebas automáticas, lint ni build**: la comprobación es `--help`, la simulación de cada
-  suite, `bash -n`, `py_compile` y `python3 main.py --smoke` en las GUI.
+- **La única prueba automática es la de simulación** (`tests/run.sh`): cada suite que escribe corre en
+  simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red, hardware o datos personales
+  se prueban solo con `--help` o se saltan, y las GUI no se prueban. No hay lint ni build: el resto es
+  `bash -n`, `py_compile` y `python3 main.py --smoke` en las GUI.
 - **Dependen de binarios del sistema** que no se instalan desde aquí: ffmpeg, yt-dlp, rsync,
   whisper, exiftool, tree, potrace, opencv, PySide6 (cada README dice cuáles). Las herramientas
   Bash son GNU/Linux (`find -printf`, Bash ≥ 4): no se prueban en macOS/BSD.

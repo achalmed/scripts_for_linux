@@ -18,6 +18,7 @@ ni del despacho en esta página.
 Bitácora de la ola 4 (etiqueta previa: `antes-ola-04-2026-10-06`):
 
 - 2026-10-06 · L1a · `estado.md`; los pendientes de `docs/decisiones.md` pasan a §Por hacer y las citas a `§Pendientes` de los README apuntan aquí.
+- 2026-10-06 · L1b · `tests/test_simulacion.py` + `tests/run.sh`: las suites que escriben corren en simulación sobre un `HOME` temporal sin escribir nada (las de red, hardware o datos personales, solo `--help` o `skip`; `pruebas:` en su `suite.yml`); `git_download_respos -n` ya no crea la carpeta destino y `photo_metadata apply` sin `--execute` ya no reescribe el plan.
 
 ## En curso
 
@@ -47,7 +48,7 @@ Herramientas:
 - 2026-10-04 · dueño: el autor · N-04: `sincronizar_usb.bat` llama a un archivo que no existe; debe invocar `main.py`.
 - 2026-10-04 · dueño: el autor · N-09: rutas que no pasan por `core/env.sh` / `core/env.py`: `script_count_files_by_extension/config.sh`, `script_proyect_tree/config.sh`, `script_hardlinks-creator/config.py`, `script_dni_a_copia/config.py` (`PERSONAL_DIR`), `repos-config.yml` (`base_directory`) y `scripts_git_studio/app/utils/paths.py`.
 - 2026-10-04 · dueño: el autor · N-10: listas con nombres de carpeta que ya no existen: los grupos `pub_*` y `CampusTeX-*` de `script_proyect_tree/config.sh` (los pubs viven en `04 index/_pubs`), las exclusiones `website-achalma` de `script_hardlinks-creator/config.py` y la lista por defecto de `script_create_folders_batch/config.sh`.
-- 2026-10-04 · dueño: el autor · N-11: en `scripts_photo_metadata_suite` no todo se deshace: `apply` sin `--execute` reescribe `rename_plan.csv`; `embed-date` y `sync-digikam` escriben con `-overwrite_original` sin registro; `fix-names` no tiene `undo`.
+- 2026-10-04 · dueño: el autor · N-11: en `scripts_photo_metadata_suite` no todo se deshace: `embed-date` y `sync-digikam` escriben con `-overwrite_original` sin registro; `fix-names` no tiene `undo`.
 - 2026-10-04 · dueño: el autor · `script_sync_usb` pide la clave aun con `--dry-run`, y en simulación anuncia PDF «apartados» que no mueve.
 - 2026-10-04 · dueño: el autor · `script_backup_suite` se detiene con el primer contador a cero: bajo `set -e`, `(( x++ ))` con valor 0 devuelve 1 (`lib/validator.sh`, `lib/processor.sh`); además `lib/analyzer.sh` corta en el espacio las rutas de los archivos modificados, y el perfil `custom` exige igualmente el disco de `DISK_LABEL`.
 - 2026-10-04 · dueño: el autor · N-12: las copias de `script_backup_suite` llevan `|| true` sin distinguir el código de salida de rsync; `script_video_downloader` crea su carpeta de archivo aun con `--simulate`.
@@ -55,9 +56,10 @@ Herramientas:
 - 2026-10-04 · dueño: el autor · N-16: en Filesystem Studio el reporte de Hardlinks se genera en el hilo de la interfaz, y la preferencia «hilos» se guarda sin que nada la use.
 - 2026-10-04 · dueño: el autor · `script_hardlinks-creator` toma las exclusiones como rutas relativas a la raíz de búsqueda (`_extensions/`, `_site/` y `.git/` solo se excluyen en el primer nivel; la GUI hereda lo mismo) y su confirmación por lote acepta por defecto y sin preguntar si la entrada se cierra.
 - 2026-10-04 · dueño: el autor · `script_hardlinks-detector`: `DEFAULT_FORMAT` de `config.sh` no tiene efecto (la CLI fija `tree`), CSV y JSON no escapan las rutas, los mensajes salen por la salida estándar y el conteo de enlaces lo da `stat` para todo el disco, no solo para el árbol.
-- 2026-10-04 · dueño: el autor · `script_create_folders_batch` crea la carpeta base al simular: con `-d` y un `-p` inexistente, `mkdir -p` la crea.
+- 2026-10-04 · dueño: el autor · `script_create_folders_batch` crea la carpeta base al simular: con `-d` y un `-p` inexistente, `mkdir -p` la crea (`tests/test_simulacion.py` lo fija como `xfail` estricto: al corregirlo, quitar la marca).
+- 2026-10-06 · dueño: el autor · las dos GUI no tienen prueba automática (`--smoke` necesita pantalla o `QT_QPA_PLATFORM=offscreen` y escribe preferencias en `~/.config`); `video_downloader --simulate` y `photo_metadata sync-digikam` quedan sin probar (red y base de digiKam).
 - 2026-10-04 · dueño: el autor · `script_proyect_tree` escribe `estructura.md`/`.json` sin que nada los ignore (solo `estructura.txt` está en `.gitignore`); sin `--target` escribe en la carpeta actual.
-- 2026-10-04 · dueño: el autor · `script_git_sync_respos/lib/git_ops.sh` y `git_service.py` exigen que `.git` sea una carpeta (un worktree o un submódulo con el gitdir fuera se rechaza); `script_git_download_respos -n` crea la carpeta destino y consulta la API, y `-m single` toma una lista como un solo nombre.
+- 2026-10-04 · dueño: el autor · `script_git_sync_respos/lib/git_ops.sh` y `git_service.py` exigen que `.git` sea una carpeta (un worktree o un submódulo con el gitdir fuera se rechaza); `script_git_download_respos -m single` toma una lista como un solo nombre.
 - 2026-10-04 · dueño: el autor · `scripts_photo_metadata_suite` carga Pillow y numpy en todos los subcomandos, y `fix-names` exige `exiftool` aunque solo renombre.
 - 2026-10-04 · dueño: orquestador DOC10 · manifiestos desfasados: varios `suite.yml` dicen cosas que el código no hace (resumen, `simula_por_defecto`, `escribe_en`, `depende_de`, `nota:` con historia); su corrección regenera bloques de README y `meta/INDICE_SCRIPTS.md`, y la hace la regeneración global.
 

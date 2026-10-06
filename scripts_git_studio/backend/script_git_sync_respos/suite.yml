@@ -16,4 +16,5 @@ entrada: repos-config.yml (base_directory y lista de repos habilitados)
 depende_de:
 - bash >= 4
 - git
+pruebas: tests/run.sh -k git_sync_respos   # desde la raíz del repo; simulación sobre un HOME temporal (tests/test_simulacion.py)
 nota: Backend de Git Studio (páginas Sincronizar, Repositorios y Reportes); sigue siendo utilizable desde la terminal. Sin main.sh a propósito, dos entradas (sync.sh y status.sh) y config en lib/config.sh; repos-config.yml es el registro de repos que comparte con la GUI.

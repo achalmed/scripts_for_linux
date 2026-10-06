@@ -17,4 +17,5 @@ entrada: la carpeta actual o los grupos de proyectos de config.sh
 depende_de:
 - bash
 - tree
+pruebas: tests/run.sh -k proyect_tree   # desde la raíz del repo; simulación sobre un HOME temporal (tests/test_simulacion.py)
 nota: Backend de Filesystem Studio (página Árbol, modo Proyectos); sigue siendo utilizable desde la terminal. Escribe estructura.txt, derivado que NORMATIVA §15.8 (D07) no admite dentro de un repo; úsese para vista previa, --list, --stats o salidas fuera de git.

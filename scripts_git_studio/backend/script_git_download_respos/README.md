@@ -96,8 +96,8 @@ workspace (`core/shell-lib/logger.sh`, en su raíz), que `lib/logger.sh` busca s
   privados (ver `estado.md` §Por hacer). Con `-m list` o `-m single` no se consulta la API: se clona
   por nombre con las credenciales de git (clave SSH o HTTPS).
 - **`-t` deja el token visible** en la lista de procesos mientras corre; es preferible `GITHUB_TOKEN`.
-- **`-n` no es inocuo del todo**: crea la carpeta destino y, en modo `all`, consulta la API. En simulación,
-  «Descargados» significa «se clonarían».
+- **`-n` no escribe, pero consulta la API** en modo `all`. Si la carpeta destino no existe, solo anuncia que
+  se crearía. En simulación, «Descargados» significa «se clonarían».
 - **`-m single` toma `-r` entero como un nombre**: `-r "a,b"` no clona dos repos, intenta uno llamado `a,b`.
 - **`-s` borra el historial de la copia sin vuelta atrás**; el remoto no se toca.
 - **No actualiza repos ya clonados**: los omite. Actualizar es `../script_git_sync_respos/`.

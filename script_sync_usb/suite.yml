@@ -12,4 +12,5 @@ comandos:
 estado: activo
 depende_de:
 - python3
+pruebas: tests/run.sh -k sync_usb   # desde la raíz del repo; simulación sobre un HOME temporal (tests/test_simulacion.py)
 nota: 'Fija la carpeta SGDP en el USB y aplica la convención de nombres del SGDP: los PDF gemelos de nombre antiguo pasan a la papelera (.sgdp-papelera).'

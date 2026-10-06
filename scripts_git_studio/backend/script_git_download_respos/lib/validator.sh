@@ -61,8 +61,13 @@ validate_options() {
 
 # prepare_dest_dir()
 # Crea la carpeta destino y entra en ella; los clones usan rutas
-# relativas a partir de aquí.
+# relativas a partir de aquí. En dry-run (-n) no crea nada: si la carpeta
+# no existe, lo anuncia y sigue en la carpeta actual.
 prepare_dest_dir() {
+    if [[ "${OPT_DRY_RUN}" == "true" ]] && [[ ! -d "${OPT_DEST_DIR}" ]]; then
+        log_warn "DRY-RUN: se crearía la carpeta destino '${OPT_DEST_DIR}'."
+        return 0
+    fi
     if ! mkdir -p "${OPT_DEST_DIR}"; then
         log_error "No se pudo crear la carpeta destino '${OPT_DEST_DIR}'."
         exit 4

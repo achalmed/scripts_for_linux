@@ -13,3 +13,4 @@ estado: activo
 depende_de:
 - python3 (numpy, scipy, scikit-image, Pillow)
 - potracer (paquete de Python; no el binario potrace)
+pruebas: tests/run.sh -k firma_digital   # desde la raíz del repo; solo --help: datos personales (tests/test_simulacion.py)

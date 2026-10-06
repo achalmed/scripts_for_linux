@@ -15,4 +15,5 @@ estado: activo
 entrada: un árbol de proyectos (por defecto la raíz del workspace)
 depende_de:
 - python3
+pruebas: tests/run.sh -k hardlinks_creator   # desde la raíz del repo; simulación sobre un HOME temporal (tests/test_simulacion.py)
 nota: Backend de Filesystem Studio (pestaña Crear de Hardlinks; la GUI reutiliza su lib/); sigue siendo utilizable desde la terminal. Enlace atómico; _extensions/ excluida por defecto.

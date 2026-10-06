@@ -13,3 +13,4 @@ estado: activo
 depende_de:
 - python3 (numpy, scipy, Pillow, python-docx; scikit-image recomendada)
 - LibreOffice (solo --to-pdf)
+pruebas: tests/run.sh -k dni_a_copia   # desde la raíz del repo; solo --help: datos personales (tests/test_simulacion.py)

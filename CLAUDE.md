@@ -89,8 +89,9 @@ scripts_for_linux/scripts_git_studio/backend/script_git_sync_respos/status.sh  #
 meta/doctor/main.sh --breve
 ```
 
-No hay pruebas automáticas: un cambio se prueba con `--help`, con la simulación de la suite sobre
-una carpeta de prueba y, si es de una GUI, abriéndola y mirando la Consola integrada (comando,
+La prueba automática es `tests/run.sh` (pytest; `-k <suite>` para una): cada suite que escribe corre en
+simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva que escriba entra ahí y declara
+`pruebas:`. Lo demás se prueba con `--help`, con la simulación sobre una carpeta de prueba y, si es de una GUI, abriéndola y mirando la Consola integrada (comando,
 stdout, stderr, código de salida).
 
 ## Detalles que cuesta redescubrir
