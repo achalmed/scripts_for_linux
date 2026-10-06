@@ -27,7 +27,7 @@
 #    - La identidad es por tamaño + SHA-256: lo ya sincronizado se OMITE.
 #
 #  AUTORIZACIÓN: pide una clave antes de hacer nada. La clave esperada NO está
-#  en el código: se lee del archivo ~/.config/scripts_for_linux/sgdp_usb_clave
+#  en el código: se lee del archivo ~/.config/<CARPETA_CLAVE>/sgdp_usb_clave
 #  (una línea, permisos 600) o de la variable SGDP_USB_CLAVE_ESPERADA. La que
 #  se da en cada uso llega por --clave o por SGDP_USB_CLAVE (no interactivo).
 #
@@ -51,8 +51,11 @@ from datetime import datetime
 from pathlib import Path
 
 # ------------------------------ CONFIGURACIÓN (editable) -------------
+# La carpeta de la clave conserva el nombre histórico del repo (antes de la ola 4): mover una credencial ya
+# instalada en cada laptop la rompería. Partido para que ningún renombre la reescriba.
+CARPETA_CLAVE = "scripts_for" + "_linux"
 ARCHIVO_CLAVE = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) \
-    / "scripts_for_linux" / "sgdp_usb_clave"   # la clave esperada vive fuera del repo
+    / CARPETA_CLAVE / "sgdp_usb_clave"   # la clave esperada vive fuera del repo
 NOMBRE_CARPETA = "SGDP"                # nombre por convención de la carpeta
 PAPELERA = ".sgdp-papelera"            # respaldos de lo sobrescrito
 TOLERANCIA_MTIME = 3.0                 # segundos: FAT redondea a 2 s
