@@ -91,10 +91,10 @@ repositories:
     branch: main
     enabled: true
 
-  - name: 10 Class/contenido            # M6 (2026-09-15): submódulo único de contenido (repo Academic_Class); sustituye a las 23 áreas
+  - name: docencia/contenido            # M6 (2026-09-15): submódulo único de contenido (repo Academic_Class); sustituye a las 23 áreas
     branch: main
     enabled: true
-  - name: 10 Class
+  - name: docencia
     branch: main
     enabled: true
 

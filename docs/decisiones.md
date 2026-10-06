@@ -78,7 +78,7 @@ de `script_git_sync_respos/` lo leen `sync.sh`, `status.sh` y la GUI
 (`gui-suites/git/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
 reescribe entero al añadir o clonar. Es
 un inventario escrito a mano, paralelo a `meta/workspace.yml` (el manifiesto del workspace), y no
-coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` se sustituyeron por `10 Class/contenido` el
+coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` se sustituyeron por `docencia/contenido` el
 2026-09-15 (`e7ce35b`, M6).
 
 **2.4 Cada GUI lleva su propia infraestructura** (2026-10-04, al retirar las visiones). Las visiones

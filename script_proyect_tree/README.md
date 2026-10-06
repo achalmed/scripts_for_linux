@@ -40,7 +40,7 @@ Los proyectos se eligen por grupos que se buscan en el primer nivel de `~/Docume
 |---|---|---|
 | `pub` | carpetas `pub_*` | nada (los blogs viven en `04 index/_pubs/`) |
 | `scripts` | carpetas `scripts_*` | los repos de scripts del espacio de trabajo |
-| `campustex` | carpetas `CampusTeX-*` | nada (los repos se llaman `10 Class` y `11 Book` en disco) |
+| `campustex` | carpetas `CampusTeX-*` | nada (los repos se llaman `docencia` y `11 Book` en disco) |
 | `website` | la carpeta `04 index` | el hub |
 | `extra` | la lista `EXTRA_PROJECTS` | `03 writing` |
 

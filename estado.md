@@ -44,7 +44,7 @@ Prioritarios (seguridad y datos personales):
 Registro de repos de Git Studio:
 
 - 2026-10-04 · dueño: el autor · ¿se genera `repos-config.yml` desde `meta/workspace.yml` o se acepta como registro propio? Hoy es un inventario a mano que no recoge buena parte de los repos del workspace e incluye uno deprecado (`scripts_for_zotero`).
-- 2026-10-04 · dueño: el autor · N-03: un comentario en la misma línea rompe una entrada (`10 Class/contenido`): ni el `awk` de `script_git_sync_respos/lib/config.sh` ni `config_service.py` (repo `gui-suites`) lo quitan, y ese repo no se encuentra en `sync.sh`, `status.sh` ni la GUI.
+- 2026-10-04 · dueño: el autor · N-03: un comentario en la misma línea rompe una entrada (`docencia/contenido`): ni el `awk` de `script_git_sync_respos/lib/config.sh` ni `config_service.py` (repo `gui-suites`) lo quitan, y ese repo no se encuentra en `sync.sh`, `status.sh` ni la GUI.
 - 2026-10-04 · dueño: el autor · N-08: Git Studio reescribe `repos-config.yml` entero al guardar y cada alta deja un cambio en este repo; el pendiente vive en `gui-suites/estado.md` (es de la GUI).
 - 2026-10-04 · dueño: el autor · N-05: `install.sh` no produce una instalación que funcione (la copia en `~/bin` no encuentra `core/`, solo detecta repos de primer nivel, siempre elige bash y escribe alias en el rc del shell, terreno de `~/.dotfiles`).
 - 2026-10-04 · dueño: el autor · N-06: `sync.sh` no ve archivos nuevos sin seguimiento (`lib/git_ops.sh` usa `git diff-index HEAD`); Git Studio (repo `gui-suites`) sí los ve: las dos implementaciones divergen.

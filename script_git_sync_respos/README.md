@@ -131,7 +131,7 @@ Una entrada sin `branch` o sin `enabled` toma `main` y `true`.
   `sync.sh`, `status.sh` y la GUI, y la GUI lo reescribe entero al añadir un repo o registrar uno clonado,
   perdiendo los comentarios. Si debe generarse desde el manifiesto está por decidir: ver `estado.md`
   §Por hacer.
-- **Hoy una entrada lleva un comentario en su línea** («10 Class/contenido»), y por eso ni `sync.sh` ni
+- **Hoy una entrada lleva un comentario en su línea** («docencia/contenido»), y por eso ni `sync.sh` ni
   `status.sh` la encuentran (ver `estado.md` §Por hacer).
 - **`sync.sh` no ve archivos nuevos sin seguimiento**: detecta cambios con `git diff-index HEAD`, así que un
   repo cuyo único cambio es un archivo nuevo queda «sin cambios» y no se commitea. `status.sh` (con
