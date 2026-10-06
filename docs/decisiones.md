@@ -52,6 +52,13 @@ pasaron con su historia (`git subtree split` + `git subtree add` desde la ruta l
 `herramientas-personales`, privado y sin remoto, y aquí se retiraron con `git rm`. El historial de este
 repo sigue conservando un número de documento (`estado.md` §Por hacer).
 
+**1.8 Sin herramienta de respaldo propia** (2026-10-06, ola 4, L3). `script_backup_suite` sale del repo
+(`git rm`; el historial la conserva). La política de preservación tiene una sola herramienta:
+`meta/respaldos/bin/respaldar.sh` (copia 2 con papelera y verificación). `script_backup_suite` duplicaba
+`espejo` en otra carpeta del SSD y tenía el error `((failures++))` con `set -e` (P273/P275): el primer
+contador a cero cortaba el respaldo sin resumen. Nada vivo la usaba (ni unidades systemd, ni
+`~/.dotfiles`, ni otro proyecto). Las entradas 1.5, 3.3 y 3.4 que la citan quedan como historia.
+
 ## 2. Las dos GUI
 
 **2.1 Siete scripts sueltos pasan a ser backends de dos GUI PySide6** (Filesystem Studio el

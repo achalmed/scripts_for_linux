@@ -79,7 +79,7 @@ python3 core/archivos.py validar scripts_for_linux     # A01–A14 y D01–D12
 python3 core/suites.py validar                          # cada suite.yml contra el esquema
 python3 core/suites.py generar                          # ¿bloques de README desfasados? (simula)
 python3 core/docs.py verificar scripts_for_linux        # el índice de docs/ al día
-bash -n scripts_for_linux/script_backup_suite/main.sh   # sintaxis Bash; un archivo por invocación
+bash -n scripts_for_linux/script_video_downloader/main.sh   # sintaxis Bash; un archivo por invocación
 python3 -m py_compile scripts_for_linux/script_audio_converter/main.py
 scripts_for_linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
 python3 scripts_for_linux/scripts_filesystem_studio/main.py --smoke  # la GUI construye y sale
@@ -103,9 +103,8 @@ stdout, stderr, código de salida).
   repo (§15.8, D07; `docs/decisiones.md` §1.3). Se usa para la vista previa de la GUI, `--list`,
   `--stats` o formatos `md`/`json` fuera de git. Su `config.sh` fija por nombre los grupos de
   proyectos (`pub_*`, `scripts_*`, `CampusTeX-*`, `website-achalma`) y `EXTRA_PROJECTS`.
-- **`script_backup_suite/main.sh` necesita `TERM` incluso para `--help`**: empieza con `clear`
-  bajo `set -e`, y sin terminal sale 1. Su simulación es `--simulate`, no `--dry-run` (opción
-  desconocida: sale 2), y los perfiles son `home`, `docs`, `full` y `custom`.
+- **Aquí no hay herramienta de respaldo**: la preservación tiene una sola, `meta/respaldos/bin/respaldar.sh`
+  (`docs/decisiones.md` §1.8). No se añade otra.
 - **`script_hardlinks-creator` compara por SHA-256 y solo enlaza contenido idéntico**;
   `_extensions/` está excluida a propósito (los `_metadata.yml` de extensiones Quarto difieren por
   diseño). Su reporte lo consume `script_hardlinks-detector --report`.

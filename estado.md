@@ -20,6 +20,7 @@ Bitácora de la ola 4 (etiqueta previa: `antes-ola-04-2026-10-06`):
 - 2026-10-06 · L1a · `estado.md`; los pendientes de `docs/decisiones.md` pasan a §Por hacer y las citas a `§Pendientes` de los README apuntan aquí.
 - 2026-10-06 · L1b · `tests/test_simulacion.py` + `tests/run.sh`: las suites que escriben corren en simulación sobre un `HOME` temporal sin escribir nada (las de red, hardware o datos personales, solo `--help` o `skip`; `pruebas:` en su `suite.yml`); `git_download_respos -n` ya no crea la carpeta destino y `photo_metadata apply` sin `--execute` ya no reescribe el plan.
 - 2026-10-06 · L2 · `script_dni_a_copia` y `script_firma_digital` pasan con su historia a `herramientas-personales` (privado, sin remoto; `git subtree`) y salen de aquí con `git rm` (decisiones §1.7); ramas temporales del split borradas.
+- 2026-10-06 · L3 · `script_backup_suite` sale del repo (`git rm`): la política de preservación tiene una sola herramienta, `meta/respaldos/bin/respaldar.sh` (copia 2 con papelera y verificación); `backup_suite` duplicaba `espejo` en otra carpeta del SSD y tenía el error `((failures++))` con `set -e` (P273/P275). Nada vivo la usaba (decisiones §1.8).
 
 ## En curso
 
@@ -51,8 +52,7 @@ Herramientas:
 - 2026-10-04 · dueño: el autor · N-10: listas con nombres de carpeta que ya no existen: los grupos `pub_*` y `CampusTeX-*` de `script_proyect_tree/config.sh` (los pubs viven en `04 index/_pubs`), las exclusiones `website-achalma` de `script_hardlinks-creator/config.py` y la lista por defecto de `script_create_folders_batch/config.sh`.
 - 2026-10-04 · dueño: el autor · N-11: en `scripts_photo_metadata_suite` no todo se deshace: `embed-date` y `sync-digikam` escriben con `-overwrite_original` sin registro; `fix-names` no tiene `undo`.
 - 2026-10-04 · dueño: el autor · `script_sync_usb` pide la clave aun con `--dry-run`, y en simulación anuncia PDF «apartados» que no mueve.
-- 2026-10-04 · dueño: el autor · `script_backup_suite` se detiene con el primer contador a cero: bajo `set -e`, `(( x++ ))` con valor 0 devuelve 1 (`lib/validator.sh`, `lib/processor.sh`); además `lib/analyzer.sh` corta en el espacio las rutas de los archivos modificados, y el perfil `custom` exige igualmente el disco de `DISK_LABEL`.
-- 2026-10-04 · dueño: el autor · N-12: las copias de `script_backup_suite` llevan `|| true` sin distinguir el código de salida de rsync; `script_video_downloader` crea su carpeta de archivo aun con `--simulate`.
+- 2026-10-04 · dueño: el autor · N-12: `script_video_downloader` crea su carpeta de archivo aun con `--simulate`.
 - 2026-10-04 · dueño: el autor · N-16: en Filesystem Studio el reporte de Hardlinks se genera en el hilo de la interfaz, y la preferencia «hilos» se guarda sin que nada la use.
 - 2026-10-04 · dueño: el autor · `script_hardlinks-creator` toma las exclusiones como rutas relativas a la raíz de búsqueda (`_extensions/`, `_site/` y `.git/` solo se excluyen en el primer nivel; la GUI hereda lo mismo) y su confirmación por lote acepta por defecto y sin preguntar si la entrada se cierra.
 - 2026-10-04 · dueño: el autor · `script_hardlinks-detector`: `DEFAULT_FORMAT` de `config.sh` no tiene efecto (la CLI fija `tree`), CSV y JSON no escapan las rutas, los mensajes salen por la salida estándar y el conteo de enlaces lo da `stat` para todo el disco, no solo para el árbol.

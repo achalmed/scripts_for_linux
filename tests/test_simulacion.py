@@ -201,11 +201,6 @@ def test_proyect_tree_dry_run(entorno):
                              "-f", formato, "--no-color"], home.parent, trabajo / "proyecto", env)
 
 
-@pytest.mark.skip(reason="hardware: --simulate exige montado el disco externo de DISK_LABEL")
-def test_backup_suite_simulate():
-    pass
-
-
 def test_sync_usb_dry_run(entorno):
     """Dos carpetas temporales hacen de laptop y de USB; la clave es de prueba y llega por el entorno."""
     home, trabajo, env = entorno

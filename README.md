@@ -5,12 +5,11 @@ estado: activo
 # scripts_for_linux/ — utilidades Linux del workspace: herramientas CLI y dos GUI PySide6
 
 <!-- suites:inicio -->
-Suites de esta carpeta (15); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+Suites de esta carpeta (14); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
 | `audio_converter` | [scripts_for_linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
-| `backup_suite` | [scripts_for_linux/script_backup_suite](script_backup_suite/) | sistema | archivos | no |  | activo | `MCL` |
 | `sync_usb` | [scripts_for_linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
 | `video_downloader` | [scripts_for_linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
 | `whisper_transcriber` | [scripts_for_linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
@@ -31,9 +30,8 @@ Suites de esta carpeta (15); índice global en `meta/INDICE_SCRIPTS.md`. Patrón
 ## Qué es
 
 Suites independientes, en Bash y Python 3, para las tareas de escritorio que no tienen una
-herramienta gráfica cómoda o que se repiten demasiado como para hacerlas a mano: respaldar el home
-a un disco externo (`script_backup_suite`), descargar video o audio y recortar tramos
-(`script_video_downloader`), transcribir con Whisper (`script_whisper_transcriber`), convertir las
+herramienta gráfica cómoda o que se repiten demasiado como para hacerlas a mano: descargar video o
+audio y recortar tramos (`script_video_downloader`), transcribir con Whisper (`script_whisper_transcriber`), convertir las
 notas de voz de WhatsApp a MP3 (`script_audio_converter`), sincronizar una carpeta por un USB que va y viene (`script_sync_usb`) y poner en orden fechas y
 nombres de fotos de cámara (`scripts_photo_metadata_suite`).
 
@@ -56,8 +54,6 @@ GitHub se llama igual que la carpeta (`scripts_for_linux`) y es público.
 # GUI; --smoke construye la UI y sale
 python3 scripts_filesystem_studio/main.py
 python3 scripts_git_studio/main.py
-# respaldo rsync por perfiles (home, docs, full, custom; --profile list los muestra)
-script_backup_suite/main.sh --simulate --verbose
 # yt-dlp + ffmpeg; -m audio, --batch lista.txt, --clip INI-FIN
 script_video_downloader/main.sh --simulate <url>
 # transcribe o traduce en local; --language es
@@ -81,7 +77,6 @@ cada una, y cada herramienta tiene `--help`.
 | carpeta | qué es | dueño / generador |
 |---|---|---|
 | `script_audio_converter/` | Python: `.opus` y otros → `.mp3` por lotes con ffmpeg | a mano |
-| `script_backup_suite/` | Bash: rsync del home a un disco externo por perfiles, con exclusiones y resumen | a mano |
 | `script_sync_usb/` | Python: sincronización bidireccional carpeta ↔ USB con papelera y conflictos (sin `config`/`lib`, patrón `M··`) | a mano |
 | `script_video_downloader/` | Bash: descarga por URL o lote, recorte exacto con ffmpeg | a mano |
 | `script_whisper_transcriber/` | Python: transcripción y traducción local con Whisper, subtítulos | a mano |
@@ -117,7 +112,7 @@ una corrida no se versionan.
 ## Límite honesto
 
 - **La única prueba automática es la de simulación** (`tests/run.sh`): cada suite que escribe corre en
-  simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red o hardware
+  simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red
   se prueban solo con `--help` o se saltan, y las GUI no se prueban. No hay lint ni build: el resto es
   `bash -n`, `py_compile` y `python3 main.py --smoke` en las GUI.
 - **Dependen de binarios del sistema** que no se instalan desde aquí: ffmpeg, yt-dlp, rsync,
