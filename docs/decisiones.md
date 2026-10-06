@@ -59,11 +59,12 @@ repo sigue conservando un número de documento (`estado.md` §Por hacer).
 contador a cero cortaba el respaldo sin resumen. Nada vivo la usaba (ni unidades systemd, ni
 `~/.dotfiles`, ni otro proyecto). Las entradas 1.5, 3.3 y 3.4 que la citan quedan como historia.
 
-## 2. Las dos GUI
+## 2. Las dos GUI (desde la ola 4, en el repo `studios`)
 
 **2.1 Siete scripts sueltos pasan a ser backends de dos GUI PySide6** (Filesystem Studio el
-2026-07-13, `756aa73`; Git Studio el mismo día, `5ad12ec`). Los scripts se conservan intactos en
-`backend/` de cada GUI, con su `suite.yml` y su README, y siguen siendo CLI.
+2026-07-13, `756aa73`; Git Studio el mismo día, `5ad12ec`). Los scripts se conservaron intactos en
+la carpeta `backend/` de cada GUI, con su `suite.yml` y su README, y siguieron siendo CLI (desde la ola 4, §2.5,
+son suites de primer nivel).
 
 **2.2 La GUI porta, no envuelve** (2026-07-13). Para tener progreso, cancelación y datos
 estructurados, los servicios de la carpeta app/services/ de cada GUI reescriben en Python la lógica
@@ -73,8 +74,9 @@ de los backends. Hay dos excepciones en Filesystem Studio: la creación de hard 
 servicio que lo porta.
 
 **2.3 Un registro de repos propio de Git Studio** (2026-07-13; precisada el 2026-10-04). `repos-config.yml`
-de `scripts_git_studio/backend/script_git_sync_respos/` lo leen `sync.sh`, `status.sh` y la GUI
-(`scripts_git_studio/app/services/config_service.py`), y la GUI lo reescribe entero al añadir o clonar. Es
+de `script_git_sync_respos/` lo leen `sync.sh`, `status.sh` y la GUI
+(`studios/git/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
+reescribe entero al añadir o clonar. Es
 un inventario escrito a mano, paralelo a `meta/workspace.yml` (el manifiesto del workspace), y no
 coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` se sustituyeron por `10 Class/docencia` el
 2026-09-15 (`e7ce35b`, M6).
@@ -82,10 +84,19 @@ coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` 
 **2.4 Cada GUI lleva su propia infraestructura** (2026-10-04, al retirar las visiones). Las visiones
 proponían un núcleo común a todas las GUI; no se hizo. Filesystem Studio y Git Studio llevan copias
 idénticas del cargador de `.ui`, los temas, el formato, los *workers* y la consola integrada
-(`scripts_filesystem_studio/app/utils/`, `scripts_filesystem_studio/app/workers/`,
-`scripts_filesystem_studio/app/widgets/` y sus pares en `scripts_git_studio/app/`), y su
+(las carpetas `utils/`, `workers/` y `widgets/` del paquete `app` de cada una), y su
 controller base casi igual. Consecuencia: un
-arreglo en esa infraestructura se hace en las dos.
+arreglo en esa infraestructura se hacía en las dos. Superada por §2.5: lo duplicado pasó a `comun/` del repo
+`studios`.
+
+**2.5 Las GUI salen a `studios`; los backends se quedan como suites** (2026-10-06, ola 4, fase B). Filesystem
+Studio y Git Studio pasan con su historia (`git subtree`) al repo privado `studios` (`filesystem/`, `git/`), junto a
+Quarto Studio; los siete backends dejan la carpeta `backend/` de su GUI y son suites de primer nivel de este repo
+(`git mv`), con su `suite.yml`, su README y su prueba de simulación. Las GUI encuentran los backends por
+`SCRIPTS_LINUX` de `core/env.py`, no por ruta relativa, y Git Studio sigue leyendo y escribiendo el mismo
+`script_git_sync_respos/repos-config.yml`. Motivo: un repo público de herramientas CLI no tiene por qué cargar con
+tres copias de la misma infraestructura Qt (`meta/programa/06-olas/ola-04-reingenieria.md` §3). Etiqueta previa:
+`antes-ola-04-studios-2026-10-06`.
 
 ## 3. Herramientas concretas
 

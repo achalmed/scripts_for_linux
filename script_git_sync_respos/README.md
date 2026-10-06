@@ -45,7 +45,7 @@ No simula por defecto. `sync.sh --check` es la vista previa: no hace `pull`, `co
 cambios pendientes y, si no hay cambios locales, hace `fetch` y avisa de los commits remotos pendientes.
 
 Es el backend de las páginas Sincronizar, Repositorios y Reportes de Git Studio, que lo portan a
-`git/git_app/services/` (repo `studios`) y comparten con él este mismo `repos-config.yml`.
+`studios/git/git_app/services/` y comparten con él este mismo `repos-config.yml`.
 
 ## Uso
 

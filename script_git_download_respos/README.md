@@ -32,7 +32,7 @@ Clona repos de una cuenta de GitHub en tres modos: **todos** los de la cuenta (`
 consulta la API), una **lista** (`-m list`) o **uno** (`-m single`). Controla la profundidad del historial
 (último commit, los N últimos o completo), el protocolo (SSH o HTTPS), la rama, las exclusiones y los forks,
 y puede dejar una copia sin `.git` (snapshot). Es el backend de la página Clonar de Git Studio, que lo porta a
-`git/git_app/services/clone_service.py` (repo `studios`) y `git/git_app/services/github_service.py` (repo `studios`); desde la terminal funciona por
+`studios/git/git_app/services/clone_service.py` y `studios/git/git_app/services/github_service.py`; desde la terminal funciona por
 su cuenta.
 
 Qué escribe y dónde: crea la carpeta destino (`-o`, por defecto la actual) y dentro una subcarpeta por repo con

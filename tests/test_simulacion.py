@@ -256,6 +256,6 @@ def test_git_download_respos_dry_run(entorno):
 
 # --------------------------------------------------------------------------- GUI
 
-@pytest.mark.skip(reason="GUI (PySide6): filesystem_studio y git_studio escriben por sus backends, probados arriba")
+@pytest.mark.skip(reason="las GUI (filesystem_studio, git_studio) viven en el repo studios y se prueban allí (tests/run.sh)")
 def test_gui_studios():
     pass

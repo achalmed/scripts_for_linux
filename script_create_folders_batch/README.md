@@ -37,7 +37,7 @@ y no deja log ni reporte. **No simula por defecto**: la simulación se pide con 
 interactiva se salta con `-y`/`--yes`.
 
 Es el backend de la página Carpetas de Filesystem Studio (`filesystem/` del repo `studios`), que lo porta a
-`filesystem/fs_app/services/folder_service.py` (repo `studios`) y le añade importación CSV y Markdown y deshacer.
+`studios/filesystem/fs_app/services/folder_service.py` y le añade importación CSV y Markdown y deshacer.
 
 Formato del archivo de lista: un nombre por línea; se ignoran las líneas vacías y las que empiezan por `#`; se quitan
 los `\r` de archivos de Windows y los espacios al principio y al final (los internos se conservan). Se rechazan las

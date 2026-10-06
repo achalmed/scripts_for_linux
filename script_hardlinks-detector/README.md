@@ -39,7 +39,7 @@ sobrescribe) y, con `--report`, `reports/hardlinks-report.md` dentro de esta car
 corrida. `reports/` no se versiona. No tiene modo de simulación porque no lo necesita.
 
 Es el backend de las pestañas Detectar y Reportes de la página Hardlinks de Filesystem Studio (`filesystem/` del repo `studios`), que
-lo porta a `filesystem/fs_app/services/hardlink_service.py` (repo `studios`). Para crear los enlaces, use
+lo porta a `studios/filesystem/fs_app/services/hardlink_service.py`. Para crear los enlaces, use
 [`script_hardlinks-creator`](../script_hardlinks-creator/README.md).
 
 ## Uso

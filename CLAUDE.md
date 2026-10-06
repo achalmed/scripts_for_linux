@@ -6,8 +6,8 @@ estado: activo
 
 Guía para el asistente. En español, como todo el ecosistema. `AGENTS.md` es un enlace a este
 archivo. Léase antes: `README.md` (qué es, uso, estructura), el `suite.yml` y el README de la
-herramienta que se toque, `scripts_filesystem_studio/README.md` o `scripts_git_studio/README.md`
-si el cambio es en una GUI, `estado.md` (dónde está y qué queda pendiente) y `docs/decisiones.md`
+herramienta que se toque, el
+repo `studios` si el cambio toca lo que porta una GUI, `estado.md` (dónde está y qué queda pendiente) y `docs/decisiones.md`
 (por qué el repo es así).
 
 ## Reglas que no se negocian
@@ -39,28 +39,19 @@ si el cambio es en una GUI, `estado.md` (dónde está y qué queda pendiente) y 
   simulación **no es la misma en todas las suites**: compruébala en su `--help` o en su `suite.yml`
   antes de escribirla en un README. Un script nuevo de un solo archivo se lleva al patrón modular
   antes de ampliarlo; los bugs que esa migración corrija van al mensaje de commit, no al README.
-- **En las dos GUI (PySide6/Qt6) toda escritura y toda ejecución de un backend pasan por la carpeta
-  app/services/** de cada una, y las operaciones largas corren en un worker (`QThread`) con progreso
-  y cancelación. Hoy hay excepciones que no se amplían: algunos controllers abren archivos con
-  `xdg-open` y consultan el disco, y el reporte de Hardlinks se genera en el hilo de la interfaz. Las
-  vistas son `.ui` de Qt Designer cargadas con `QUiLoader` (sin compilar). Se ejecutan con `python3 scripts_filesystem_studio/main.py` y
-  `python3 scripts_git_studio/main.py`; `--smoke` construye la UI y sale.
-- **Los backends de las GUI son suites completas** (`suite.yml`, README, `main.*` + `config` +
-  `lib/`) y siguen siendo CLI desde su carpeta: `scripts_filesystem_studio/backend/` y
-  `scripts_git_studio/backend/`. Un cambio de comportamiento se hace en el backend y en el
-  servicio de la GUI que lo porta (`docs/decisiones.md` §2.2).
-- **`scripts_git_studio/backend/script_git_sync_respos/repos-config.yml` es el inventario propio de
-  Git Studio**: lo leen `sync.sh`, `status.sh` y la GUI
-  (`scripts_git_studio/app/services/config_service.py`), y la GUI lo reescribe entero al añadir o
-  clonar. Es paralelo a `meta/workspace.yml`, que es el manifiesto del workspace: no lo presentes como
-  registro de repos del ecosistema (`docs/decisiones.md` §2.3 y `estado.md` §Por hacer).
-- **`scripts_git_studio/app/services/git_service.py` es la única implementación de comandos git**
-  de Git Studio: sync, estado, clonado y reportes la reutilizan.
+- **Las GUI no viven aquí**: Filesystem Studio y Git Studio están en el repo `studios` (ola 4, fase B,
+  `docs/decisiones.md` §2.5) y encuentran sus backends por `SCRIPTS_LINUX` de `core/env.py`. Sus siete
+  backends son suites de primer nivel de este repo (`script_proyect_tree`, `script_count_files_by_extension`,
+  `script_create_folders_batch`, `script_hardlinks-{creator,detector}`, `script_git_{sync,download}_respos`): no
+  se mueven ni se renombran sin tocar `studios/comun/rutas.py`. Un cambio de comportamiento se hace en el backend
+  y en el servicio de `studios` que lo porta (`docs/decisiones.md` §2.2).
+- **`script_git_sync_respos/repos-config.yml` es el inventario propio de Git Studio**: lo leen `sync.sh`,
+  `status.sh` y la GUI (repo `studios`), que lo reescribe entero al añadir o clonar. Es paralelo a
+  `meta/workspace.yml`, el manifiesto del workspace: no lo presentes como registro de repos del ecosistema
+  (`docs/decisiones.md` §2.3 y `estado.md` §Por hacer).
 - **Lo generado no se edita**: los bloques `<!-- suite:inicio -->`/`<!-- suites:inicio -->` de los
   README salen de los `suite.yml` (`core/suites.py generar --aplicar`); el índice de
-  `docs/README.md`, de `core/docs.py indice`; `resources_rc.py` lo escribe
-  `scripts_filesystem_studio/tools/build_resources.sh`; `reports/` y `estructura.txt` no se
-  versionan.
+  `docs/README.md`, de `core/docs.py indice`; `reports/` y `estructura.txt` no se versionan.
 - **Dónde va cada cosa nueva** (NORMATIVA §15.11, concretada aquí): el uso o una opción de una
   herramienta, a su README (`Qué es`, `Uso`, `Estructura`, `Límite honesto`; sin versión en el H1,
   `docs/decisiones.md` §1.6); el porqué, a `docs/decisiones.md`; un fallo o una tarea, a
@@ -82,22 +73,20 @@ python3 core/docs.py verificar scripts_for_linux        # el índice de docs/ al
 bash -n scripts_for_linux/script_video_downloader/main.sh   # sintaxis Bash; un archivo por invocación
 python3 -m py_compile scripts_for_linux/script_audio_converter/main.py
 scripts_for_linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
-python3 scripts_for_linux/scripts_filesystem_studio/main.py --smoke  # la GUI construye y sale
-python3 scripts_for_linux/scripts_git_studio/main.py --smoke
-scripts_for_linux/scripts_git_studio/backend/script_git_sync_respos/status.sh  # registro de la GUI
+scripts_for_linux/script_git_sync_respos/status.sh   # el registro que comparte con Git Studio
+studios/tests/run.sh                                  # las GUI (repo studios) abren y encuentran estos backends
 meta/doctor/main.sh --breve
 ```
 
 La prueba automática es `tests/run.sh` (pytest; `-k <suite>` para una): cada suite que escribe corre en
 simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva que escriba entra ahí y declara
-`pruebas:`. Lo demás se prueba con `--help`, con la simulación sobre una carpeta de prueba y, si es de una GUI, abriéndola y mirando la Consola integrada (comando,
-stdout, stderr, código de salida).
+`pruebas:`. Lo demás se prueba con `--help` y con la simulación sobre una carpeta de prueba.
 
 ## Detalles que cuesta redescubrir
 
-- **Nombres que despistan**: la GUI de archivos es `scripts_filesystem_studio/`, el árbol es
+- **Nombres que despistan**: la GUI de archivos es `studios/filesystem/`, el árbol es
   `script_proyect_tree` (con esa grafía), las herramientas de hard links son
-  `scripts_filesystem_studio/backend/script_hardlinks-{creator,detector}/`, y el PDF vive en
+  `script_hardlinks-{creator,detector}/` (la GUI importa la `lib/` del creador), y el PDF vive en
   `scripts_document_studio/backends/` (`docs/decisiones.md` §1.2).
 - **`script_proyect_tree` escribe `estructura.txt`**, derivado que la normativa no admite en un
   repo (§15.8, D07; `docs/decisiones.md` §1.3). Se usa para la vista previa de la GUI, `--list`,
@@ -133,10 +122,9 @@ stdout, stderr, código de salida).
 | qué suites hay, cómo se invocan, qué escribe cada una | `README.md` y el bloque generado `suites:` |
 | dónde está el repo; qué queda pendiente | `estado.md` |
 | por qué el repo es así | `docs/decisiones.md` (mapa por lector en `docs/README.md`) |
-| de dónde salieron las dos GUI y qué no se construyó | `docs/decisiones.md` §1.5 y §2.4 |
+| de dónde salieron las dos GUI y adónde fueron | `docs/decisiones.md` §1.5, §2.4 y §2.5 |
 | quién usa estas herramientas desde otros proyectos | `docs/README.md` §Consumidores |
-| módulos y cómo extender cada GUI | `scripts_filesystem_studio/README.md`, `scripts_git_studio/README.md` |
-| manual de una herramienta absorbida | `scripts_*_studio/backend/<herramienta>/README.md` |
+| módulos y cómo extender cada GUI | `studios/filesystem/README.md`, `studios/git/README.md` (repo `studios`) |
 | manual de una suite de primer nivel | `<suite>/README.md` |
 | el contrato de suite, el patrón y los bloques generados | `core/suite.schema.yml`, `core/README.md` |
 | las suites de este repo entre las del workspace | `meta/INDICE_SCRIPTS.md` (generado) |

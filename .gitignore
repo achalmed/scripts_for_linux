@@ -1,5 +1,5 @@
 # scripts_for_linux/.gitignore — comentado por clase (NORMATIVA §5 y §15.8): lo interno no convive con lo listado.
-# Cubre también las dos GUI y sus backends: los patrones sin barra inicial valen en cualquier carpeta.
+# Los patrones sin barra inicial valen en cualquier carpeta (las GUI viven en el repo studios desde la ola 4).
 
 # --- temporal: bytecode y cachés de herramientas Python ---------------------
 __pycache__/
@@ -12,10 +12,6 @@ __pycache__/
 .venv/
 venv/
 .env
-
-# --- artefacto de construcción: recursos Qt compilados ----------------------
-# lo regenera scripts_filesystem_studio/tools/build_resources.sh
-resources_rc.py
 
 # --- temporal: informes de ejecución y logs (rotan en cada corrida) ---------
 reports/
