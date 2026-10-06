@@ -5,23 +5,21 @@ estado: activo
 # scripts_for_linux/ — utilidades Linux del workspace: herramientas CLI (sus GUI viven en studios)
 
 <!-- suites:inicio -->
-Suites de esta carpeta (14); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+Suites de esta carpeta (12); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
 | `audio_converter` | [scripts_for_linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
+| `count_files_by_extension` | [scripts_for_linux/script_count_files_by_extension](script_count_files_by_extension/) | sistema | ninguno | no |  | activo | `MCL` |
+| `create_folders_batch` | [scripts_for_linux/script_create_folders_batch](script_create_folders_batch/) | sistema | archivos | no |  | activo | `MCL` |
+| `git_download_respos` | [scripts_for_linux/script_git_download_respos](script_git_download_respos/) | sistema | git | no |  | activo | `MCL` |
+| `git_sync_respos` | [scripts_for_linux/script_git_sync_respos](script_git_sync_respos/) | sistema | git | no |  | activo | `··L` |
+| `hardlinks_creator` | [scripts_for_linux/script_hardlinks-creator](script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
+| `hardlinks_detector` | [scripts_for_linux/script_hardlinks-detector](script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
+| `proyect_tree` | [scripts_for_linux/script_proyect_tree](script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
 | `sync_usb` | [scripts_for_linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
 | `video_downloader` | [scripts_for_linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
 | `whisper_transcriber` | [scripts_for_linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
-| `count_files_by_extension` | [scripts_for_linux/scripts_filesystem_studio/backend/script_count_files_by_extension](scripts_filesystem_studio/backend/script_count_files_by_extension/) | sistema | ninguno | no |  | activo | `MCL` |
-| `create_folders_batch` | [scripts_for_linux/scripts_filesystem_studio/backend/script_create_folders_batch](scripts_filesystem_studio/backend/script_create_folders_batch/) | sistema | archivos | no |  | activo | `MCL` |
-| `hardlinks_creator` | [scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-creator](scripts_filesystem_studio/backend/script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
-| `hardlinks_detector` | [scripts_for_linux/scripts_filesystem_studio/backend/script_hardlinks-detector](scripts_filesystem_studio/backend/script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
-| `proyect_tree` | [scripts_for_linux/scripts_filesystem_studio/backend/script_proyect_tree](scripts_filesystem_studio/backend/script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
-| `filesystem_studio` | [scripts_for_linux/scripts_filesystem_studio](scripts_filesystem_studio/) | sistema | archivos | no |  | activo | `MCL` |
-| `git_download_respos` | [scripts_for_linux/scripts_git_studio/backend/script_git_download_respos](scripts_git_studio/backend/script_git_download_respos/) | sistema | git | no |  | activo | `MCL` |
-| `git_sync_respos` | [scripts_for_linux/scripts_git_studio/backend/script_git_sync_respos](scripts_git_studio/backend/script_git_sync_respos/) | sistema | git | no |  | activo | `··L` |
-| `git_studio` | [scripts_for_linux/scripts_git_studio](scripts_git_studio/) | sistema | git | no |  | activo | `MCL` |
 | `photo_metadata_suite` | [scripts_for_linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
 <sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-06); no se edita a mano.</sub>
@@ -39,8 +37,8 @@ Las herramientas de archivos (árbol de proyectos `script_proyect_tree`, conteo 
 `script_count_files_by_extension`, carpetas por lote `script_create_folders_batch`, hard links
 `script_hardlinks-creator` y `script_hardlinks-detector`) y las de git (`script_git_sync_respos`, con su registro
 `repos-config.yml`, y `script_git_download_respos`) son suites de primer nivel. Sus interfaces gráficas,
-**Filesystem Studio** y **Git Studio**, viven desde la ola 4 en el repo `studios` (`studios/filesystem`,
-`studios/git`), que las encuentra por `SCRIPTS_LINUX` de `core/env.py`. La tabla de arriba es la lista completa;
+**Filesystem Studio** y **Git Studio**, viven desde la ola 4 en el repo `gui-suites` (`gui-suites/filesystem`,
+`gui-suites/git`), que las encuentra por `SCRIPTS_LINUX` de `core/env.py`. La tabla de arriba es la lista completa;
 `python3 core/suites.py listar` la da para todo el workspace.
 
 **No es** una biblioteca: cada suite es autónoma (`main.*` + `config.*` + `lib/`, `suite.yml`,
@@ -65,8 +63,8 @@ python3 scripts_photo_metadata_suite/main.py analyze <carpeta>
 script_proyect_tree/main.sh --list
 script_git_sync_respos/sync.sh --check
 # las GUI, desde el repo studios
-python3 ../studios/filesystem/main.py
-python3 ../studios/git/main.py
+python3 ../gui-suites/filesystem/main.py
+python3 ../gui-suites/git/main.py
 ```
 
 Regla de oro: simular antes de aplicar. La forma cambia según la suite (`--simulate`,
@@ -82,7 +80,7 @@ cada una, y cada herramienta tiene `--help`.
 | `script_video_downloader/` | Bash: descarga por URL o lote, recorte exacto con ffmpeg | a mano |
 | `script_whisper_transcriber/` | Python: transcripción y traducción local con Whisper, subtítulos | a mano |
 | `scripts_photo_metadata_suite/` | Python: fechas y nombres de fotos y videos de cámara, OCR de la marca, digiKam | a mano |
-| `script_proyect_tree/` · `script_count_files_by_extension/` · `script_create_folders_batch/` | Bash: árbol de proyectos, conteo por extensión, carpetas por lote (backends de Filesystem Studio, repo `studios`) | a mano |
+| `script_proyect_tree/` · `script_count_files_by_extension/` · `script_create_folders_batch/` | Bash: árbol de proyectos, conteo por extensión, carpetas por lote (backends de Filesystem Studio, repo `gui-suites`) | a mano |
 | `script_hardlinks-creator/` · `script_hardlinks-detector/` | Python y Bash: crear y detectar hard links (backends de Filesystem Studio; la GUI importa la `lib/` del creador) | a mano |
 | `script_git_sync_respos/` · `script_git_download_respos/` | Bash: sincronizar y ver el estado de los repos, clonar desde GitHub (backends de Git Studio); `script_git_sync_respos/repos-config.yml` es el inventario de repos que comparten la CLI y la GUI, escrito a mano y paralelo a `meta/workspace.yml` | a mano |
 | `estado.md` | dónde está el repo: hecho (con la bitácora de cada ola), en curso, por hacer (con fecha y dueño) y futuro | a mano; primero que se lee y último que se escribe |
@@ -101,7 +99,7 @@ La versión de cada herramienta es una constante de su código y la imprime `--v
 | documento | para qué leerlo |
 |---|---|
 | `script_*/README.md` · `scripts_photo_metadata_suite/README.md` | manual de cada suite de primer nivel: uso, opciones, arquitectura, límites |
-| `studios/filesystem/README.md` · `studios/git/README.md` | las GUI (repo `studios`): módulos, arquitectura `ui → controllers → services`, cómo extender |
+| `gui-suites/filesystem/README.md` · `gui-suites/git/README.md` | las GUI (repo `gui-suites`): módulos, arquitectura `ui → controllers → services`, cómo extender |
 | `docs/README.md` | mapa por lector de lo transversal y §Consumidores (quién invoca estas herramientas) |
 | `estado.md` | dónde está el repo y qué queda pendiente (§Por hacer) |
 | `docs/decisiones.md` | por qué el repo es como es |
@@ -113,7 +111,7 @@ La versión de cada herramienta es una constante de su código y la imprime `--v
 
 - **La única prueba automática es la de simulación** (`tests/run.sh`): cada suite que escribe corre en
   simulación sobre un `HOME` temporal y no debe escribir nada; las que piden red
-  se prueban solo con `--help` o se saltan. Las GUI se prueban en su repo, `studios` (`tests/run.sh`). No hay lint
+  se prueban solo con `--help` o se saltan. Las GUI se prueban en su repo, `gui-suites` (`tests/run.sh`). No hay lint
   ni build: el resto es `bash -n` y `py_compile`.
 - **Dependen de binarios del sistema** que no se instalan desde aquí: ffmpeg, yt-dlp, rsync,
   whisper, exiftool, tree, potrace, opencv (cada README dice cuáles). Las herramientas

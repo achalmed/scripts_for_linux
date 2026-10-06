@@ -14,7 +14,7 @@ estas herramientas desde otros proyectos.
 |---|---|
 | **quien usa** una herramienta | `../README.md` (§Uso) → el `README.md` de la herramienta |
 | **quien amplía** una suite | `../CLAUDE.md` → el `README.md` de la suite → [decisiones.md](decisiones.md) |
-| **quien amplía** una GUI | el repo `studios` (`studios/filesystem/README.md`, `studios/git/README.md`) → [decisiones.md](decisiones.md) §2 |
+| **quien amplía** una GUI | el repo `gui-suites` (`gui-suites/filesystem/README.md`, `gui-suites/git/README.md`) → [decisiones.md](decisiones.md) §2 |
 | **quien mantiene** el repo | `../estado.md` (§Por hacer) → [decisiones.md](decisiones.md) → `core/README.md` y `core/suite.schema.yml` |
 | quien quiere saber **de dónde** salieron las GUI y adónde fueron | [decisiones.md](decisiones.md) §1.5, §2.4 y §2.5 |
 | **otro proyecto** que invoca una herramienta | §Consumidores, abajo |
@@ -47,6 +47,6 @@ bandera de simulación); los consumidores la citan, no la copian.
 | quién | qué usa | dónde lo cita |
 |---|---|---|
 | la cadena de prompts del programa de radio | `script_whisper_transcriber` (transcribir), `script_audio_converter` (a MP3), `script_video_downloader` (audio de terceros) | `prompts/08 radio/` (pasos 01, 04, 05 y 08) y `prompts/docs/dominios/radio.md` |
-| las GUI del repo `studios` (Filesystem Studio y Git Studio) | los backends de archivos y de git y `script_git_sync_respos/repos-config.yml` (Git Studio lo lee y lo reescribe) | `studios/comun/rutas.py` (`BACKENDS`, por `SCRIPTS_LINUX`) |
+| las GUI del repo `gui-suites` (Filesystem Studio y Git Studio) | los backends de archivos y de git y `script_git_sync_respos/repos-config.yml` (Git Studio lo lee y lo reescribe) | `gui-suites/comun/rutas.py` (`BACKENDS`, por `SCRIPTS_LINUX`) |
 | el índice de suites del workspace | los `suite.yml` de este repo (generado) | `meta/INDICE_SCRIPTS.md` |
 | las notas de proyecto del vault | el origen de las dos GUI y del respaldo | `01 notes/proyecto-backup-studio.md`, `01 notes/proyecto-filesystem-studio.md`, `01 notes/proyecto-git-studio.md` → [decisiones.md](decisiones.md) §1.5 |

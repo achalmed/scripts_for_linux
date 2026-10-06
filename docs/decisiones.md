@@ -59,7 +59,7 @@ repo sigue conservando un número de documento (`estado.md` §Por hacer).
 contador a cero cortaba el respaldo sin resumen. Nada vivo la usaba (ni unidades systemd, ni
 `~/.dotfiles`, ni otro proyecto). Las entradas 1.5, 3.3 y 3.4 que la citan quedan como historia.
 
-## 2. Las dos GUI (desde la ola 4, en el repo `studios`)
+## 2. Las dos GUI (desde la ola 4, en el repo `gui-suites`)
 
 **2.1 Siete scripts sueltos pasan a ser backends de dos GUI PySide6** (Filesystem Studio el
 2026-07-13, `756aa73`; Git Studio el mismo día, `5ad12ec`). Los scripts se conservaron intactos en
@@ -75,7 +75,7 @@ servicio que lo porta.
 
 **2.3 Un registro de repos propio de Git Studio** (2026-07-13; precisada el 2026-10-04). `repos-config.yml`
 de `script_git_sync_respos/` lo leen `sync.sh`, `status.sh` y la GUI
-(`studios/git/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
+(`gui-suites/git/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
 reescribe entero al añadir o clonar. Es
 un inventario escrito a mano, paralelo a `meta/workspace.yml` (el manifiesto del workspace), y no
 coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` se sustituyeron por `10 Class/docencia` el
@@ -87,10 +87,10 @@ idénticas del cargador de `.ui`, los temas, el formato, los *workers* y la cons
 (las carpetas `utils/`, `workers/` y `widgets/` del paquete `app` de cada una), y su
 controller base casi igual. Consecuencia: un
 arreglo en esa infraestructura se hacía en las dos. Superada por §2.5: lo duplicado pasó a `comun/` del repo
-`studios`.
+`gui-suites`.
 
-**2.5 Las GUI salen a `studios`; los backends se quedan como suites** (2026-10-06, ola 4, fase B). Filesystem
-Studio y Git Studio pasan con su historia (`git subtree`) al repo privado `studios` (`filesystem/`, `git/`), junto a
+**2.5 Las GUI salen a `gui-suites`; los backends se quedan como suites** (2026-10-06, ola 4, fase B). Filesystem
+Studio y Git Studio pasan con su historia (`git subtree`) al repo privado `gui-suites` (`filesystem/`, `git/`), junto a
 Quarto Studio; los siete backends dejan la carpeta `backend/` de su GUI y son suites de primer nivel de este repo
 (`git mv`), con su `suite.yml`, su README y su prueba de simulación. Las GUI encuentran los backends por
 `SCRIPTS_LINUX` de `core/env.py`, no por ruta relativa, y Git Studio sigue leyendo y escribiendo el mismo

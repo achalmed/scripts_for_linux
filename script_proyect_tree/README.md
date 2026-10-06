@@ -51,7 +51,7 @@ Qué escribe: el archivo de estructura de cada proyecto elegido, que se sobrescr
 `.estructura_tmp.*` del mismo proyecto y luego lo mueve). No deja log. **No simula por defecto**: la simulación se
 pide con `--dry-run`; `--list` y `--stats` tampoco escriben.
 
-Es el backend del modo «Proyectos» de la página Árbol de Filesystem Studio (`filesystem/` del repo `studios`), que ejecuta este
+Es el backend del modo «Proyectos» de la página Árbol de Filesystem Studio (`filesystem/` del repo `gui-suites`), que ejecuta este
 `main.sh` (con la simulación marcada por defecto); la vista previa y la exportación de un árbol suelto las hace la GUI
 por su cuenta.
 

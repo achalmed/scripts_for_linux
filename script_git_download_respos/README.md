@@ -12,7 +12,7 @@ Clona uno, varios o todos los repos de una cuenta de GitHub con la profundidad d
 - Escribe en: git · simula por defecto: no
 - Entrada: la API de GitHub (users/<usuario>/repos) o una lista de repos
 - Depende de: bash >= 4.3, git, curl y jq (solo en modo all)
-- Nota: Backend de Git Studio (página Clonar; la GUI lo porta a app/services/clone_service.py y github_service.py); sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t autentican las llamadas a la API de GitHub.
+- Nota: Backend de Git Studio (página Clonar; la GUI, en el repo studios, lo porta a git/git_app/services/clone_service.py y github_service.py); sigue siendo utilizable desde la terminal. GITHUB_TOKEN o -t autentican las llamadas a la API de GitHub.
 
 Comandos:
 
@@ -23,7 +23,7 @@ main.sh -u <usuario> -o <carpeta> -s
 main.sh -h
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-04); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-06); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es
@@ -32,7 +32,7 @@ Clona repos de una cuenta de GitHub en tres modos: **todos** los de la cuenta (`
 consulta la API), una **lista** (`-m list`) o **uno** (`-m single`). Controla la profundidad del historial
 (último commit, los N últimos o completo), el protocolo (SSH o HTTPS), la rama, las exclusiones y los forks,
 y puede dejar una copia sin `.git` (snapshot). Es el backend de la página Clonar de Git Studio, que lo porta a
-`studios/git/git_app/services/clone_service.py` y `studios/git/git_app/services/github_service.py`; desde la terminal funciona por
+`gui-suites/git/git_app/services/clone_service.py` y `gui-suites/git/git_app/services/github_service.py`; desde la terminal funciona por
 su cuenta.
 
 Qué escribe y dónde: crea la carpeta destino (`-o`, por defecto la actual) y dentro una subcarpeta por repo con

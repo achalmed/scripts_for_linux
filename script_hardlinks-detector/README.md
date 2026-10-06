@@ -38,8 +38,8 @@ No crea, borra ni modifica enlaces: solo lee. Escribe únicamente lo que se le p
 sobrescribe) y, con `--report`, `reports/hardlinks-report.md` dentro de esta carpeta, que se sobrescribe en cada
 corrida. `reports/` no se versiona. No tiene modo de simulación porque no lo necesita.
 
-Es el backend de las pestañas Detectar y Reportes de la página Hardlinks de Filesystem Studio (`filesystem/` del repo `studios`), que
-lo porta a `studios/filesystem/fs_app/services/hardlink_service.py`. Para crear los enlaces, use
+Es el backend de las pestañas Detectar y Reportes de la página Hardlinks de Filesystem Studio (`filesystem/` del repo `gui-suites`), que
+lo porta a `gui-suites/filesystem/fs_app/services/hardlink_service.py`. Para crear los enlaces, use
 [`script_hardlinks-creator`](../script_hardlinks-creator/README.md).
 
 ## Uso

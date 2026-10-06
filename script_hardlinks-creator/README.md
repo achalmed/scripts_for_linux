@@ -40,7 +40,7 @@ enlace falla, restaura el original.
 Qué escribe: solo reemplaza archivos del árbol por hard links, y un reporte JSON si se pide con `--report-json`
 (crea las carpetas que falten). No deja log. **No simula por defecto**: la simulación se pide con `--dry-run`.
 
-Es el backend de la pestaña Crear de la página Hardlinks de Filesystem Studio (`filesystem/` del repo `studios`), que importa
+Es el backend de la pestaña Crear de la página Hardlinks de Filesystem Studio (`filesystem/` del repo `gui-suites`), que importa
 directamente su `lib/`. Para solo auditar qué hard links existen ya, use
 [`script_hardlinks-detector`](../script_hardlinks-detector/README.md).
 

@@ -36,8 +36,8 @@ Las extensiones se normalizan a minúsculas (`.PDF` y `.pdf` cuentan juntas); lo
 como `.bashrc` se agrupan bajo `sin_extension`.
 
 No escribe nada en disco ni tiene modo de simulación (solo lee). Para guardar el resultado, redirija la salida con
-`--no-color`. Es el backend de la página Estadísticas de Filesystem Studio (`filesystem/` del repo `studios`), que lo porta a
-`studios/filesystem/fs_app/services/scanner_service.py`.
+`--no-color`. Es el backend de la página Estadísticas de Filesystem Studio (`filesystem/` del repo `gui-suites`), que lo porta a
+`gui-suites/filesystem/fs_app/services/scanner_service.py`.
 
 ## Uso
 

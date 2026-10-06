@@ -7,7 +7,7 @@ estado: activo
 Guía para el asistente. En español, como todo el ecosistema. `AGENTS.md` es un enlace a este
 archivo. Léase antes: `README.md` (qué es, uso, estructura), el `suite.yml` y el README de la
 herramienta que se toque, el
-repo `studios` si el cambio toca lo que porta una GUI, `estado.md` (dónde está y qué queda pendiente) y `docs/decisiones.md`
+repo `gui-suites` si el cambio toca lo que porta una GUI, `estado.md` (dónde está y qué queda pendiente) y `docs/decisiones.md`
 (por qué el repo es así).
 
 ## Reglas que no se negocian
@@ -39,14 +39,14 @@ repo `studios` si el cambio toca lo que porta una GUI, `estado.md` (dónde está
   simulación **no es la misma en todas las suites**: compruébala en su `--help` o en su `suite.yml`
   antes de escribirla en un README. Un script nuevo de un solo archivo se lleva al patrón modular
   antes de ampliarlo; los bugs que esa migración corrija van al mensaje de commit, no al README.
-- **Las GUI no viven aquí**: Filesystem Studio y Git Studio están en el repo `studios` (ola 4, fase B,
+- **Las GUI no viven aquí**: Filesystem Studio y Git Studio están en el repo `gui-suites` (ola 4, fase B,
   `docs/decisiones.md` §2.5) y encuentran sus backends por `SCRIPTS_LINUX` de `core/env.py`. Sus siete
   backends son suites de primer nivel de este repo (`script_proyect_tree`, `script_count_files_by_extension`,
   `script_create_folders_batch`, `script_hardlinks-{creator,detector}`, `script_git_{sync,download}_respos`): no
-  se mueven ni se renombran sin tocar `studios/comun/rutas.py`. Un cambio de comportamiento se hace en el backend
-  y en el servicio de `studios` que lo porta (`docs/decisiones.md` §2.2).
+  se mueven ni se renombran sin tocar `gui-suites/comun/rutas.py`. Un cambio de comportamiento se hace en el backend
+  y en el servicio de `gui-suites` que lo porta (`docs/decisiones.md` §2.2).
 - **`script_git_sync_respos/repos-config.yml` es el inventario propio de Git Studio**: lo leen `sync.sh`,
-  `status.sh` y la GUI (repo `studios`), que lo reescribe entero al añadir o clonar. Es paralelo a
+  `status.sh` y la GUI (repo `gui-suites`), que lo reescribe entero al añadir o clonar. Es paralelo a
   `meta/workspace.yml`, el manifiesto del workspace: no lo presentes como registro de repos del ecosistema
   (`docs/decisiones.md` §2.3 y `estado.md` §Por hacer).
 - **Lo generado no se edita**: los bloques `<!-- suite:inicio -->`/`<!-- suites:inicio -->` de los
@@ -74,7 +74,7 @@ bash -n scripts_for_linux/script_video_downloader/main.sh   # sintaxis Bash; un 
 python3 -m py_compile scripts_for_linux/script_audio_converter/main.py
 scripts_for_linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
 scripts_for_linux/script_git_sync_respos/status.sh   # el registro que comparte con Git Studio
-studios/tests/run.sh                                  # las GUI (repo studios) abren y encuentran estos backends
+gui-suites/tests/run.sh                                  # las GUI (repo studios) abren y encuentran estos backends
 meta/doctor/main.sh --breve
 ```
 
@@ -84,7 +84,7 @@ simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva qu
 
 ## Detalles que cuesta redescubrir
 
-- **Nombres que despistan**: la GUI de archivos es `studios/filesystem/`, el árbol es
+- **Nombres que despistan**: la GUI de archivos es `gui-suites/filesystem/`, el árbol es
   `script_proyect_tree` (con esa grafía), las herramientas de hard links son
   `script_hardlinks-{creator,detector}/` (la GUI importa la `lib/` del creador), y el PDF vive en
   `scripts_document_studio/backends/` (`docs/decisiones.md` §1.2).
@@ -124,7 +124,7 @@ simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva qu
 | por qué el repo es así | `docs/decisiones.md` (mapa por lector en `docs/README.md`) |
 | de dónde salieron las dos GUI y adónde fueron | `docs/decisiones.md` §1.5, §2.4 y §2.5 |
 | quién usa estas herramientas desde otros proyectos | `docs/README.md` §Consumidores |
-| módulos y cómo extender cada GUI | `studios/filesystem/README.md`, `studios/git/README.md` (repo `studios`) |
+| módulos y cómo extender cada GUI | `gui-suites/filesystem/README.md`, `gui-suites/git/README.md` (repo `gui-suites`) |
 | manual de una suite de primer nivel | `<suite>/README.md` |
 | el contrato de suite, el patrón y los bloques generados | `core/suite.schema.yml`, `core/README.md` |
 | las suites de este repo entre las del workspace | `meta/INDICE_SCRIPTS.md` (generado) |
