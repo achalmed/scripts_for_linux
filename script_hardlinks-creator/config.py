@@ -37,39 +37,14 @@ DEFAULT_EXCLUDED_DIRS = [
     "_site",
     "_freeze",
     "_extensions",
-    "_partials",
     ".quarto",
     # Python / Node caches
     "node_modules",
     "__pycache__",
     ".pytest_cache",
-    # Per-site build exclusions (prevents cross-site linking of rendered assets)
-    "pub_aequilibria/_site/",
-    "pub_pecunia-fluxus/_site/",
-    "pub_numerus-scriptum/_site/",
-    "pub_epsilon-y-beta/_site/",
-    "pub_optimums/_site/",
-    "pub_methodica/_site/",
-    "pub_chaska/_site/",
-    "pub_axiomata/_site/",
-    "pub_actus-mercator/_site/",
-    "pub_res-publica/_site/",
-    "pub_dialectica-y-mercado/_site/",
-    "website-achalma/_site/",
-    # Per-site extension exclusions
-    "pub_aequilibria/_extensions/",
-    "pub_pecunia-fluxus/_extensions/",
-    "pub_numerus-scriptum/_extensions/",
-    "pub_epsilon-y-beta/_extensions/",
-    "pub_optimums/_extensions/",
-    "pub_methodica/_extensions/",
-    "pub_chaska/_extensions/",
-    "pub_axiomata/_extensions/",
-    "pub_actus-mercator/_extensions/",
-    "pub_res-publica/_extensions/",
-    "pub_website-achalma/_extensions/",
-    "pub_dialectica-y-mercado/_extensions/",
-    "website-achalma/_extensions/",
+    # Un nombre suelto excluye la carpeta a cualquier profundidad (lib/scanner.py), así que `_site` y
+    # `_extensions` cubren también los pubs anidados en `04 index/_pubs/`. `_partials` no se excluye: el hub y
+    # los pubs comparten sus parciales por hardlink (decisión del autor, 2026-10-08).
 ]
 
 # ==============================================================================

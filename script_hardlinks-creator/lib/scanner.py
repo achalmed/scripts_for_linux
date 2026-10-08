@@ -19,22 +19,26 @@ logger = logging.getLogger("hardlinks-creator")
 
 def build_exclusion_set(search_dir: str, raw_exclusions: List[str]) -> Set[str]:
     """
-    Normalizes the exclusion list into a set of absolute paths.
+    Normaliza las exclusiones.
 
-    Using absolute normalized paths avoids false matches from
-    directory names that happen to appear in unrelated path segments.
+    Un nombre suelto (sin «/», p. ej. «_site») excluye toda carpeta con ese nombre a cualquier profundidad: así
+    los pubs anidados (`04 index/_pubs/<pub>/_site`) quedan fuera aunque la búsqueda empiece en el hub. Una entrada
+    con «/» es una ruta relativa a la raíz de búsqueda y excluye solo esa carpeta (ruta absoluta normalizada).
 
     Args:
         search_dir:     The root directory being scanned.
         raw_exclusions: Relative or partial paths to exclude.
 
     Returns:
-        Set of absolute, normalized path strings.
+        Conjunto con los nombres sueltos tal cual y las rutas como rutas absolutas normalizadas.
     """
-    return {
-        os.path.normpath(os.path.join(search_dir, entry))
-        for entry in raw_exclusions
-    }
+    salida: Set[str] = set()
+    for entry in raw_exclusions:
+        limpio = entry.strip().rstrip("/")
+        if not limpio:
+            continue
+        salida.add(limpio if "/" not in limpio else os.path.normpath(os.path.join(search_dir, limpio)))
+    return salida
 
 
 def compute_sha256(filepath: str) -> str | None:
@@ -111,7 +115,7 @@ def scan_files(
         # Prune excluded dirs in-place so os.walk won't descend into them
         dirs[:] = [
             d for d in dirs
-            if os.path.normpath(os.path.join(root, d)) not in exclusion_set
+            if d not in exclusion_set and os.path.normpath(os.path.join(root, d)) not in exclusion_set
         ]
 
         if filename not in files:
