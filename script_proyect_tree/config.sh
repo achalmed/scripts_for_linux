@@ -24,7 +24,6 @@ readonly OUTPUT_FILENAME="estructura.txt"
 # Groups: each key maps to a glob pattern used by find.
 # Add new groups here — collect_target_paths() picks them up automatically.
 declare -A PROJECT_GROUPS=(
-    [pub]="pub_*"
     [scripts]="scripts_*"
     [campustex]="CampusTeX-*"
     [website]="${INDEX_DIR#"$DOCS_ROOT"/}"
