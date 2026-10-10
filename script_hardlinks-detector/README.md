@@ -46,7 +46,7 @@ lo porta a `gui-suites/filesystem/fs_app/services/hardlink_service.py`. Para cre
 
 ```bash
 ./main.sh                                              # analiza el directorio actual
-./main.sh "$HOME/Documents/04 index"                   # el directorio va siempre primero
+./main.sh "$HOME/Documents/web"                   # el directorio va siempre primero
 ./main.sh ~/Documents -f json -o salida.json           # JSON a pantalla y a archivo
 ./main.sh ~/Documents -f csv -o enlaces.csv --no-color
 ./main.sh ~/Documents --min-links 5                    # solo inodos con cinco nombres o más

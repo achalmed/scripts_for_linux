@@ -48,7 +48,7 @@ directamente su `lib/`. Para solo auditar qué hard links existen ya, use
 
 ```bash
 python3 main.py _metadata.yml --dry-run                       # simula sobre el directorio por defecto
-python3 main.py _quarto.yml -d "$HOME/Documents/04 index"     # otro directorio raíz
+python3 main.py _quarto.yml -d "$HOME/Documents/web"     # otro directorio raíz
 python3 main.py --batch archivos.txt --dry-run                # varios nombres, simulado
 python3 main.py .editorconfig --exclude build dist --auto     # sin confirmación por grupo
 python3 main.py _metadata.yml --report-json /tmp/reporte.json
@@ -100,7 +100,7 @@ Requisitos: Python 3.10 o superior (solo biblioteca estándar) y `core/py-common
 ## Límite honesto
 
 - **Las exclusiones son rutas relativas a la raíz de búsqueda, no nombres**: `.git`, `_site` o `_extensions` solo se
-  excluyen justo debajo del directorio indicado con `-d`; las de un nivel más hondo (`04 index/_site`, una
+  excluyen justo debajo del directorio indicado con `-d`; las de un nivel más hondo (`web/_site`, una
   `_extensions/` dentro de un sitio) se recorren. Para excluir una carpeta profunda, pásela relativa a la raíz con
   `--exclude`.
 - **La lista de exclusiones por sitio de `config.py` está desfasada**: nombra `pub_*/` y `website-achalma/` en la raíz,

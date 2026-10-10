@@ -43,7 +43,7 @@ DEFAULT_EXCLUDED_DIRS = [
     "__pycache__",
     ".pytest_cache",
     # Un nombre suelto excluye la carpeta a cualquier profundidad (lib/scanner.py), así que `_site` y
-    # `_extensions` cubren también los pubs anidados en `04 index/_pubs/`. `_partials` no se excluye: el hub y
+    # `_extensions` cubren también los pubs anidados en `web/_pubs/`. `_partials` no se excluye: el hub y
     # los pubs comparten sus parciales por hardlink (decisión del autor, 2026-10-08).
 ]
 

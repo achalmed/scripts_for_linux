@@ -18,51 +18,51 @@ base_directory: ~/Documents
 # Lista de repositorios a gestionar
 repositories:
 
-  - name: 04 index/_pubs/actus-mercator
+  - name: web/_pubs/actus-mercator
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/aequilibria
+  - name: web/_pubs/aequilibria
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/axiomata
+  - name: web/_pubs/axiomata
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/chaska
+  - name: web/_pubs/chaska
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/dialectica-y-mercado
+  - name: web/_pubs/dialectica-y-mercado
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/epsilon-y-beta
+  - name: web/_pubs/epsilon-y-beta
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/methodica
+  - name: web/_pubs/methodica
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/numerus-scriptum
+  - name: web/_pubs/numerus-scriptum
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/optimums
+  - name: web/_pubs/optimums
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pecunia-fluxus
+  - name: web/_pubs/pecunia-fluxus
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/res-publica
+  - name: web/_pubs/res-publica
     branch: main
     enabled: true
 
-  - name: 04 index
+  - name: web
     branch: main
     enabled: true
 

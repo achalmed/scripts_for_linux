@@ -38,10 +38,10 @@ Los proyectos se eligen por grupos que se buscan en el primer nivel de `~/Docume
 
 | grupo | qué busca | qué encuentra hoy |
 |---|---|---|
-| `pub` | carpetas `pub_*` | nada (los blogs viven en `04 index/_pubs/`) |
+| `pub` | carpetas `pub_*` | nada (los blogs viven en `web/_pubs/`) |
 | `scripts` | carpetas `scripts_*` | los repos de scripts del espacio de trabajo |
 | `campustex` | carpetas `CampusTeX-*` | nada (los repos se llaman `docencia` y `11 Book` en disco) |
-| `website` | la carpeta `04 index` | el hub |
+| `website` | la carpeta `web` | el hub |
 | `extra` | la lista `EXTRA_PROJECTS` | `escritura` |
 
 `all` es la unión de todos. Sin `--target`, trabaja sobre la carpeta actual, salvo si se ejecuta desde `~/Documents`
@@ -110,7 +110,7 @@ Requisitos: bash 5 (lo declara `main.sh`), `tree`, `find`, `du`, `date`, y
 ## Límite honesto
 
 - **Los grupos `pub` y `campustex` ya no encuentran nada**: buscan `pub_*` y `CampusTeX-*` en el primer nivel de
-  `~/Documents`, y esas carpetas ya no están ahí. `--target all` solo cubre los `scripts_*`, `04 index` y
+  `~/Documents`, y esas carpetas ya no están ahí. `--target all` solo cubre los `scripts_*`, `web` y
   `escritura` (ver `../estado.md` §Por hacer).
 - **La raíz de proyectos está escrita en `config.sh`** (`$HOME/Documents`) y no pasa por `core/env.sh`.
 - **Escribe dentro de los repos.** `estructura.txt` no se versiona: lo ignoran el `.gitignore` de varios repos (este

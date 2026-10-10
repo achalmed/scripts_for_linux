@@ -55,7 +55,7 @@ Herramientas:
 
 - 2026-10-04 · dueño: el autor · N-04: `sincronizar_usb.bat` llama a un archivo que no existe; debe invocar `main.py`.
 - 2026-10-04 · dueño: el autor · N-09: rutas que no pasan por `core/env.sh` / `core/env.py`: `script_count_files_by_extension/config.sh`, `script_proyect_tree/config.sh`, `script_hardlinks-creator/config.py`, y `repos-config.yml` (`base_directory`). La GUI de Git Studio ya resuelve sus rutas por `core/env.py` (repo `gui-suites`).
-- 2026-10-04 · dueño: el autor · N-10: listas con nombres de carpeta que ya no existen: los grupos `pub_*` y `CampusTeX-*` de `script_proyect_tree/config.sh` (los pubs viven en `04 index/_pubs`), las exclusiones `website-achalma` de `script_hardlinks-creator/config.py` y la lista por defecto de `script_create_folders_batch/config.sh`.
+- 2026-10-04 · dueño: el autor · N-10: listas con nombres de carpeta que ya no existen: los grupos `pub_*` y `CampusTeX-*` de `script_proyect_tree/config.sh` (los pubs viven en `web/_pubs`), las exclusiones `website-achalma` de `script_hardlinks-creator/config.py` y la lista por defecto de `script_create_folders_batch/config.sh`.
 - 2026-10-04 · dueño: el autor · N-11: en `scripts_photo_metadata_suite` no todo se deshace: `embed-date` y `sync-digikam` escriben con `-overwrite_original` sin registro; `fix-names` no tiene `undo`.
 - 2026-10-04 · dueño: el autor · `script_sync_usb` pide la clave aun con `--dry-run`, y en simulación anuncia PDF «apartados» que no mueve.
 - 2026-10-04 · dueño: el autor · N-12: `script_video_downloader` crea su carpeta de archivo aun con `--simulate`.

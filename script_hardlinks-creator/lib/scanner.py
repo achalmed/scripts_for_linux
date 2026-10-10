@@ -22,7 +22,7 @@ def build_exclusion_set(search_dir: str, raw_exclusions: List[str]) -> Set[str]:
     Normaliza las exclusiones.
 
     Un nombre suelto (sin «/», p. ej. «_site») excluye toda carpeta con ese nombre a cualquier profundidad: así
-    los pubs anidados (`04 index/_pubs/<pub>/_site`) quedan fuera aunque la búsqueda empiece en el hub. Una entrada
+    los pubs anidados (`web/_pubs/<pub>/_site`) quedan fuera aunque la búsqueda empiece en el hub. Una entrada
     con «/» es una ruta relativa a la raíz de búsqueda y excluye solo esa carpeta (ruta absoluta normalizada).
 
     Args:
