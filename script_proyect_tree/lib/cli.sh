@@ -60,10 +60,10 @@ ${CLR_BOLD}Ejemplos:${CLR_RESET}
   ${SCRIPT_NAME} --target pub
 
   # Actualizar un proyecto específico
-  ${SCRIPT_NAME} --target pub_numerus-scriptum
+  ${SCRIPT_NAME} --target numerus-scriptum
 
   # Ver estructura sin guardar nada
-  ${SCRIPT_NAME} --target pub_numerus-scriptum --dry-run --verbose
+  ${SCRIPT_NAME} --target numerus-scriptum --dry-run --verbose
 
   # Formato Markdown con profundidad 4
   ${SCRIPT_NAME} --target website --format md --depth 4

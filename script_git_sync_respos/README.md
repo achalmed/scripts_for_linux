@@ -54,7 +54,7 @@ Es el backend de las páginas Sincronizar, Repositorios y Reportes de Git Studio
 ./status.sh --days 30                         # con la actividad del último mes
 ./sync.sh --check                             # vista previa: qué se sincronizaría
 ./sync.sh -m "docs: actualizar índices"       # sincroniza todos los habilitados
-./sync.sh -r "04 index,04 index/_pubs/pub_axiomata" -m "docs: tema común"
+./sync.sh -r "04 index,04 index/_pubs/axiomata" -m "docs: tema común"
 ./sync.sh -n -m "docs: cambio rápido"         # sin pull previo
 ./sync.sh --config "<otro registro>.yml" --check
 ```
@@ -92,7 +92,7 @@ base_directory: ~/Documents
 
 repositories:
 
-  - name: 04 index/_pubs/pub_axiomata
+  - name: 04 index/_pubs/axiomata
     branch: main
     enabled: true
 

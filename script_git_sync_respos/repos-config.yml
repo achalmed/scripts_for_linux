@@ -12,53 +12,53 @@
 
 # Directorio base donde están todos los repositorios (una carpeta por repo)
 base_directory: ~/Documents
-# Los pub_* son submódulos del hub (website-achalma/_pubs/pub_*) desde 2026-09-06;
+# Los pub_* son submódulos del hub (website-achalma/_pubs/*) desde 2026-09-06;
 # el nombre es la ruta relativa a base_directory.
 
 # Lista de repositorios a gestionar
 repositories:
 
-  - name: 04 index/_pubs/pub_actus-mercator
+  - name: 04 index/_pubs/actus-mercator
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_aequilibria
+  - name: 04 index/_pubs/aequilibria
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_axiomata
+  - name: 04 index/_pubs/axiomata
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_chaska
+  - name: 04 index/_pubs/chaska
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_dialectica-y-mercado
+  - name: 04 index/_pubs/dialectica-y-mercado
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_epsilon-y-beta
+  - name: 04 index/_pubs/epsilon-y-beta
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_methodica
+  - name: 04 index/_pubs/methodica
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_numerus-scriptum
+  - name: 04 index/_pubs/numerus-scriptum
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_optimums
+  - name: 04 index/_pubs/optimums
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_pecunia-fluxus
+  - name: 04 index/_pubs/pecunia-fluxus
     branch: main
     enabled: true
 
-  - name: 04 index/_pubs/pub_res-publica
+  - name: 04 index/_pubs/res-publica
     branch: main
     enabled: true
 
