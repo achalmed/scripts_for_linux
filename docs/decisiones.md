@@ -38,7 +38,7 @@ versionado, cifrado, restauración y destinos remotos; un administrador de archi
 reglas y modo vigilancia, y un gestor de repositorios con analítica, doctor y publicación de versiones.
 Nada de eso se construyó ni tiene dueño: lo construido es un respaldo rsync por perfiles
 (`script_backup_suite/`) y las dos GUI que describen sus README. Las notas del vault
-(`01 notes/proyecto-*-studio.md`) remiten a esta entrada.
+(`notas/proyecto-*-studio.md`) remiten a esta entrada.
 
 **1.6 Forma única del README de una herramienta** (2026-10-04, DOC10). Cada suite, GUI o backend tiene
 un README con `Qué es`, `Uso` (opciones sacadas del parser), `Estructura` y `Límite honesto`, y el

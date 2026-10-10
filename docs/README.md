@@ -49,4 +49,4 @@ bandera de simulación); los consumidores la citan, no la copian.
 | la cadena de prompts del programa de radio | `script_whisper_transcriber` (transcribir), `script_audio_converter` (a MP3), `script_video_downloader` (audio de terceros) | `prompts/08 radio/` (pasos 01, 04, 05 y 08) y `prompts/docs/dominios/radio.md` |
 | las GUI del repo `gui-suites` (Filesystem Studio y Git Studio) | los backends de archivos y de git y `script_git_sync_respos/repos-config.yml` (Git Studio lo lee y lo reescribe) | `gui-suites/comun/rutas.py` (`BACKENDS`, por `SCRIPTS_LINUX`) |
 | el índice de suites del workspace | los `suite.yml` de este repo (generado) | `meta/INDICE_SCRIPTS.md` |
-| las notas de proyecto del vault | el origen de las dos GUI y del respaldo | `01 notes/proyecto-backup-studio.md`, `01 notes/proyecto-filesystem-studio.md`, `01 notes/proyecto-git-studio.md` → [decisiones.md](decisiones.md) §1.5 |
+| las notas de proyecto del vault | el origen de las dos GUI y del respaldo | `notas/proyecto-backup-studio.md`, `notas/proyecto-filesystem-studio.md`, `notas/proyecto-git-studio.md` → [decisiones.md](decisiones.md) §1.5 |
