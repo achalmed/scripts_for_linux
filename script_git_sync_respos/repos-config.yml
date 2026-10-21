@@ -58,6 +58,14 @@ repositories:
     branch: main
     enabled: true
 
+  - name: web/_pubs/propaedeutica
+    branch: main
+    enabled: true
+
+  - name: simuladores
+    branch: main
+    enabled: true
+
   - name: web/_pubs/res-publica
     branch: main
     enabled: true
