@@ -66,14 +66,14 @@ repo `gui-suites` si el cambio toca lo que porta una GUI, `estado.md` (dónde es
 
 ```bash
 # desde ~/Documents
-python3 core/archivos.py validar scripts_for_linux     # A01–A14 y D01–D12
+python3 core/archivos.py validar scripts-linux     # A01–A14 y D01–D12
 python3 core/suites.py validar                          # cada suite.yml contra el esquema
 python3 core/suites.py generar                          # ¿bloques de README desfasados? (simula)
-python3 core/docs.py verificar scripts_for_linux        # el índice de docs/ al día
-bash -n scripts_for_linux/script_video_downloader/main.sh   # sintaxis Bash; un archivo por invocación
-python3 -m py_compile scripts_for_linux/script_audio_converter/main.py
-scripts_for_linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
-scripts_for_linux/script_git_sync_respos/status.sh   # el registro que comparte con Git Studio
+python3 core/docs.py verificar scripts-linux        # el índice de docs/ al día
+bash -n scripts-linux/script_video_downloader/main.sh   # sintaxis Bash; un archivo por invocación
+python3 -m py_compile scripts-linux/script_audio_converter/main.py
+scripts-linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
+scripts-linux/script_git_sync_respos/status.sh   # el registro que comparte con Git Studio
 gui-suites/tests/run.sh                                  # las GUI (repo studios) abren y encuentran estos backends
 meta/doctor/main.sh --breve
 ```
