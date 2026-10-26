@@ -5,7 +5,7 @@ estado: activo
 # scripts-linux/ — utilidades Linux del workspace: herramientas CLI (sus GUI viven en studios)
 
 <!-- suites:inicio -->
-Suites de esta carpeta (12); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+Suites de esta carpeta (13); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
@@ -17,12 +17,13 @@ Suites de esta carpeta (12); índice global en `meta/INDICE_SCRIPTS.md`. Patrón
 | `hardlinks_creator` | [scripts-linux/script_hardlinks-creator](script_hardlinks-creator/) | sistema | archivos | no |  | activo | `MCL` |
 | `hardlinks_detector` | [scripts-linux/script_hardlinks-detector](script_hardlinks-detector/) | sistema | archivos | no |  | activo | `MCL` |
 | `proyect_tree` | [scripts-linux/script_proyect_tree](script_proyect_tree/) | sistema | archivos | no |  | activo | `MCL` |
+| `registro_tiempo` | [scripts-linux/script_registro_tiempo](script_registro_tiempo/) | personal | vault, archivos, sistema | sí | registro-tiempo.timer | borrador | `MCL` |
 | `sync_usb` | [scripts-linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
 | `video_downloader` | [scripts-linux/script_video_downloader](script_video_downloader/) | multimedia | archivos | no |  | activo | `MCL` |
 | `whisper_transcriber` | [scripts-linux/script_whisper_transcriber](script_whisper_transcriber/) | multimedia | archivos | no |  | activo | `MCL` |
 | `photo_metadata_suite` | [scripts-linux/scripts_photo_metadata_suite](scripts_photo_metadata_suite/) | multimedia | archivos | sí |  | activo | `MCL` |
 
-<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-06); no se edita a mano.</sub>
+<sub>Bloque generado desde los `suite.yml` por `core/suites.py generar` (2026-10-25); no se edita a mano.</sub>
 <!-- suites:fin -->
 
 ## Qué es

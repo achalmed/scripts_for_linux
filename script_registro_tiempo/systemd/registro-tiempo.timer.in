@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer: registro de tiempo cada hora (Zotero solo se mide por diferencia entre pasadas)
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

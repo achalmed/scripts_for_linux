@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Registro de tiempo</title>
+    <style>
+      /* La UI Kit de Super Productivity da la base (cuerpo, botones, tipografía); aquí solo la disposición. */
+      body { padding: var(--s3, 16px); background: transparent; }
+      .bloque { margin-bottom: var(--s3, 16px); }
+      .pista { color: var(--text-color-muted, #888); font-size: 0.9em; }
+      .botones { display: flex; gap: var(--s, 8px); flex-wrap: wrap; margin-top: var(--s, 8px); }
+      ul { margin: 4px 0 0 18px; padding: 0; }
+      #estado { white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <div class="bloque">
+      <h2>Registro de tiempo</h2>
+      <p class="pista">
+        Escribe en el proyecto «Registro automático» el tiempo medido fuera de Super Productivity (lectura en KOReader
+        y Zotero, redes y otras categorías de ActivityWatch). Lo prepara <code>script_registro_tiempo</code>; se importa
+        solo cada diez minutos.
+      </p>
+      <div class="botones">
+        <button id="btn-importar">Importar ahora</button>
+      </div>
+      <p id="estado" class="pista"></p>
+    </div>
+
+    <div class="bloque">
+      <h3>Estructura propuesta</h3>
+      <p class="pista">Lo que propone <code>tareas/registro-tiempo.yml</code> (<code>estructura_sp</code>). Primero mira;
+        aplicar solo crea lo que falta y archiva (no borra: un proyecto archivado se recupera en Ajustes).</p>
+      <div class="botones">
+        <button id="btn-vista">Ver cambios</button>
+        <button id="btn-aplicar" disabled>Aplicar estos cambios</button>
+      </div>
+      <div id="vista"></div>
+    </div>
+
+    <script>
+      function enviar(message) {
+        return new Promise((resolve, reject) => {
+          const messageId = Date.now().toString() + Math.random().toString(16).slice(2);
+          const espera = setTimeout(() => { window.removeEventListener('message', manejador); reject(new Error('sin respuesta del plugin')); }, 20000);
+          const manejador = (event) => {
+            if (event.data && event.data.messageId === messageId) {
+              clearTimeout(espera);
+              window.removeEventListener('message', manejador);
+              resolve(event.data.response || event.data);
+            }
+          };
+          window.addEventListener('message', manejador);
+          window.parent.postMessage({ type: 'PLUGIN_MESSAGE', message, messageId }, '*');
+        });
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const lista = (titulo, elementos) => elementos.length
+        ? `<p><strong>${titulo}</strong></p><ul>${elementos.map((e) => `<li>${e}</li>`).join('')}</ul>` : '';
+      const escapar = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+      async function mostrarEstado() {
+        const r = await enviar({ type: 'estado' });
+        $('estado').textContent = r.ultimaImportacion
+          ? `Última importación: ${new Date(r.ultimaImportacion).toLocaleString()} · datos del ${r.generado ? new Date(r.generado).toLocaleString() : '—'} · ${r.tareas} tareas`
+          : 'Todavía no se importó nada.';
+      }
+
+      $('btn-importar').onclick = async () => {
+        $('estado').textContent = 'Importando…';
+        const r = await enviar({ type: 'importar' });
+        if (!r.ok) { $('estado').textContent = r.mensaje; return; }
+        await mostrarEstado();
+      };
+
+      $('btn-vista').onclick = async () => {
+        const r = await enviar({ type: 'vistaEstructura' });
+        if (!r.ok) { $('vista').textContent = r.mensaje; return; }
+        const html = lista('Proyectos que se renombran', r.renombrar.map((p) => `${escapar(p.de)} → ${escapar(p.a)}`))
+          + lista('Proyectos que se crean', r.crearProyectos.map((p) => escapar(p.titulo)))
+          + lista('Etiquetas que se crean', r.crearEtiquetas.map((t) => escapar(t.titulo)))
+          + lista('Proyectos que se archivan', r.archivar.map((p) => `${escapar(p.titulo)} (${p.tareas} tareas)`))
+          + lista('Nombres a archivar que no existen (revisa la ortografía)', r.noEncontrados.map(escapar));
+        $('vista').innerHTML = html || '<p class="pista">Nada que cambiar: SP ya tiene la estructura propuesta.</p>';
+        $('btn-aplicar').disabled = !(r.renombrar.length || r.crearProyectos.length || r.crearEtiquetas.length || r.archivar.length);
+      };
+
+      $('btn-aplicar').onclick = async () => {
+        $('btn-aplicar').disabled = true;
+        const r = await enviar({ type: 'aplicarEstructura' });
+        $('vista').innerHTML = r.ok
+          ? `<p>Hecho: ${r.renombrados} renombrados, ${r.proyectos} proyectos y ${r.etiquetas} etiquetas creados, ${r.archivados} proyectos archivados.</p>`
+          : `<p>${escapar(r.mensaje)}</p>`;
+      };
+
+      mostrarEstado().catch(() => {});
+    </script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+[Unit]
+Description=Registro de tiempo: KOReader, Zotero, ActivityWatch y Super Productivity hacia el vault
+
+[Service]
+Type=oneshot
+# PATH mínimo: la suite corre con el Python del sistema (CORE_PYTHON de core/env), sin anaconda.
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+ExecStart=/usr/bin/python3 @SUITE@/main.py recoger --desde-timer
+Nice=10

@@ -1,0 +1,33 @@
+# script_registro_tiempo/suite.yml — suite registro_tiempo: Reúne el tiempo de KOReader, Zotero, ActivityWatch y Super Productivity en el vault y lo lleva a Super Productivity.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+esquema_version: 2
+id: registro_tiempo
+objetivo: personal
+resumen: Reúne el tiempo de KOReader, Zotero, ActivityWatch y Super Productivity en el vault y lo lleva a Super Productivity.
+escribe_en:
+- vault
+- archivos
+- sistema
+simula_por_defecto: true
+comandos:
+- main.py recoger
+- main.py recoger --aplicar
+- main.py planificar <plan.txt> --aplicar
+- main.py plugin --aplicar
+- main.py timer --aplicar
+estado: borrador
+creado: 2026-10-25
+entrada: tareas/registro-tiempo.yml (categorías, metas y estructura propuesta)
+lee_de:
+- tareas
+- koreader-respaldo
+- zotero
+depende_de:
+- python3 (con PyYAML)
+- core/env.py
+- core/py-common/logger.py
+- Super Productivity 18 con la API REST local activada (opcional)
+- ActivityWatch o awatcher (opcional)
+timer: registro-tiempo.timer
+pruebas: tests/run.sh -k registro_tiempo   # desde la raíz del repo; fuentes sintéticas y el plugin con node
+nota: El plugin de plugin-sp/ se sube a mano en Super Productivity (Ajustes → Plugins); la suite solo lo empaqueta.

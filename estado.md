@@ -41,6 +41,12 @@ Prioritarios (seguridad y datos personales):
 - 2026-10-04 · dueño: el autor · N-01: `script_sync_usb/main.py` lleva en comentarios y mensajes nombres de personas del despacho (regla 8 de la guía raíz; el doctor D12 no lo detecta): retirarlos del código y, si se quiere, de la historia.
 - 2026-10-04 · dueño: el autor · N-15: correo del autor como constante en `script_hardlinks-creator/config.py` y `script_hardlinks-detector/config.sh`; no es secreto, pero no hace falta en el código.
 
+Registro de tiempo (`script_registro_tiempo`, borrador desde el 2026-10-25):
+
+- 2026-10-25 · dueño: el autor · **primera prueba real del plugin dentro de Super Productivity**: las pruebas lo corren contra un PluginAPI simulado (`tests/plugin_registro_tiempo.test.mjs`) y la API REST se leyó en el código de SP 18.10, pero no se ejercitó con la aplicación abierta. Con SP abierto: `main.py plugin --aplicar`, subir el .zip, `main.py recoger --aplicar` y comprobar en el panel que «Importar ahora» crea las tareas de «Registro automático»; si algo falla, el mensaje del panel o de la consola de SP va aquí.
+- 2026-10-25 · dueño: el autor · instalar ActivityWatch con `awatcher` (KDE Wayland) y aw-watcher-web en Zen: sin ellos no hay tiempo de pantalla (Zen borra su historial al cerrar). Instalar `main.py timer --aplicar` después.
+- 2026-10-25 · dueño: el autor · `planificar` no crea etiquetas ni proyectos (la API REST no puede): si se quiere, que el plugin los cree al recibir un plan; hoy los crea solo desde `estructura_sp`.
+
 Registro de repos de Git Studio:
 
 - 2026-10-04 · dueño: el autor · ¿se genera `repos-config.yml` desde `meta/workspace.yml` o se acepta como registro propio? Hoy es un inventario a mano que no recoge buena parte de los repos del workspace e incluye uno deprecado (`scripts_for_zotero`).
