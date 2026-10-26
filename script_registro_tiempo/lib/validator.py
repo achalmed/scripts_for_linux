@@ -6,7 +6,7 @@ from pathlib import Path
 import yaml
 
 CLAVES = ("categorias", "fuentes_a_sp", "metas_semanales_horas", "limites_semanales_horas", "estructura_sp",
-          "navegadores_regex")
+          "navegadores_regex", "rutina", "notas_a_sp", "cursos")
 
 
 def cargar_usuario(ruta: Path) -> tuple[dict, list[str]]:

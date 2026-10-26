@@ -33,7 +33,7 @@
         aplicar solo crea lo que falta y archiva (no borra: un proyecto archivado se recupera en Ajustes).</p>
       <div class="botones">
         <button id="btn-vista">Ver cambios</button>
-        <button id="btn-aplicar" disabled>Aplicar estos cambios</button>
+        <button id="btn-aplicar">Aplicar estos cambios</button>
       </div>
       <div id="vista"></div>
     </div>
@@ -62,9 +62,9 @@
 
       async function mostrarEstado() {
         const r = await enviar({ type: 'estado' });
-        $('estado').textContent = r.ultimaImportacion
+        $('estado').textContent = `Versión ${r.version || '1.0'} · ` + (r.ultimaImportacion
           ? `Última importación: ${new Date(r.ultimaImportacion).toLocaleString()} · datos del ${r.generado ? new Date(r.generado).toLocaleString() : '—'} · ${r.tareas} tareas`
-          : 'Todavía no se importó nada.';
+          : 'Todavía no se importó nada.');
       }
 
       $('btn-importar').onclick = async () => {
@@ -77,20 +77,20 @@
       $('btn-vista').onclick = async () => {
         const r = await enviar({ type: 'vistaEstructura' });
         if (!r.ok) { $('vista').textContent = r.mensaje; return; }
-        const html = lista('Proyectos que se renombran', r.renombrar.map((p) => `${escapar(p.de)} → ${escapar(p.a)}`))
+        const html = lista('Proyectos que se restauran', r.restaurar.map((p) => escapar(p.titulo)))
+          + lista('Proyectos que se renombran', r.renombrar.map((p) => `${escapar(p.de)} → ${escapar(p.a)}`))
           + lista('Proyectos que se crean', r.crearProyectos.map((p) => escapar(p.titulo)))
           + lista('Etiquetas que se crean', r.crearEtiquetas.map((t) => escapar(t.titulo)))
           + lista('Proyectos que se archivan', r.archivar.map((p) => `${escapar(p.titulo)} (${p.tareas} tareas)`))
-          + lista('Nombres a archivar que no existen (revisa la ortografía)', r.noEncontrados.map(escapar));
+          + lista('Nombres a archivar que no existen (revisa la ortografía)', r.noEncontrados.map(escapar))
+          + lista('Nombres a restaurar que no se hallaron', (r.sinHallar || []).map(escapar));
         $('vista').innerHTML = html || '<p class="pista">Nada que cambiar: SP ya tiene la estructura propuesta.</p>';
-        $('btn-aplicar').disabled = !(r.renombrar.length || r.crearProyectos.length || r.crearEtiquetas.length || r.archivar.length);
       };
 
       $('btn-aplicar').onclick = async () => {
-        $('btn-aplicar').disabled = true;
         const r = await enviar({ type: 'aplicarEstructura' });
         $('vista').innerHTML = r.ok
-          ? `<p>Hecho: ${r.renombrados} renombrados, ${r.proyectos} proyectos y ${r.etiquetas} etiquetas creados, ${r.archivados} proyectos archivados.</p>`
+          ? `<p>Hecho: ${r.restaurados} restaurados, ${r.renombrados} renombrados, ${r.proyectos} proyectos y ${r.etiquetas} etiquetas creados, ${r.archivados} proyectos archivados.</p>`
           : `<p>${escapar(r.mensaje)}</p>`;
       };
 

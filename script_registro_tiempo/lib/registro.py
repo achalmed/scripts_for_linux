@@ -7,6 +7,7 @@ los demás. `para-sp.json` (estado, fuera de ~/Documents) se deriva del historia
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -83,6 +84,9 @@ def para_sp(hist: dict[str, dict], usuario: dict) -> dict:
             regla = categorias.get(cat, {})
             if regla.get("a_sp"):
                 sumar(regla.get("tarea_sp") or cat, dia, minutos)
+    estructura = usuario.get("estructura_sp", {})
+    huella = hashlib.sha1(json.dumps(estructura, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:12]
     return {"version": VERSION, "generado": datetime.now().astimezone().isoformat(timespec="seconds"),
-            "proyecto": config.PROYECTO_SP, "tareas": tareas,
-            "estructura": usuario.get("estructura_sp", {})}
+            "proyecto": config.PROYECTO_SP, "tareas": tareas, "estructura": estructura,
+            # el plugin aplica sola una estructura con `aplicar: true`, una vez por huella (si cambia, otra vez)
+            "estructura_id": huella, "aplicar_estructura": bool(estructura.get("aplicar"))}

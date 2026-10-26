@@ -1,12 +1,13 @@
 {
   "id": "registro-tiempo",
   "name": "Registro de tiempo",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "manifestVersion": 1,
   "minSupVersion": "18.0.0",
   "description": "Escribe el tiempo de lectura (KOReader, Zotero) y de pantalla (ActivityWatch) que mide la suite script_registro_tiempo, y aplica la estructura de proyectos propuesta.",
   "author": "Edison Achalma",
   "permissions": [
+    "getAppState",
     "getTasks",
     "getArchivedTasks",
     "addTask",

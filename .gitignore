@@ -25,3 +25,6 @@ script_hardlinks-creator/archivos.txt
 
 # --- ajustes locales del asistente ------------------------------------------
 .claude/
+
+# --- derivado: el .zip del plugin de Super Productivity (main.py plugin --aplicar lo arma desde plugin-sp/) ---
+script_registro_tiempo/dist/

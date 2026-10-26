@@ -89,6 +89,9 @@ def semana(inicio: date, hist: dict[str, dict], usuario: dict, fuentes: dict[str
         """Un proyecto de SP, «Lectura» (KOReader + Zotero) o una categoría (por su clave o su tarea_sp)."""
         if nombre in por_proyecto:
             return por_proyecto[nombre]
+        carril = next((c for c in (usuario.get("cursos") or {}).get("carriles", []) if c.get("nombre") == nombre), None)
+        if carril:   # un carril de cursos suma el tiempo de sus proyectos
+            return sum(por_proyecto.get(p["proyecto"], 0) for p in carril.get("proyectos", []))
         if nombre.lower() == "lectura":
             return sum(libros.values())
         for cat, regla in categorias.items():

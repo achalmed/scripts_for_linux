@@ -84,4 +84,27 @@ assert.equal((await enviar('vistaEstructura')).crearProyectos.length, 0);
 
 // 5. El estado guardado lo lee el panel.
 assert.ok((await enviar('estado')).ultimaImportacion);
-console.log('plugin: 5 escenarios correctos');
+
+// 6. Con `aplicar_estructura`, la importación aplica la estructura sola, una vez por huella.
+const portadora = s.tareas.find((t) => t.id === 'portadora');
+const nueva = { ...datos, estructura_id: 'h1', aplicar_estructura: true,
+  estructura: { proyectos: [{ titulo: 'Cursos CAF' }], etiquetas: [], archivar: [] } };
+portadora.notes = '```json\n' + JSON.stringify(nueva) + '\n```';
+r = await enviar('importar');
+assert.equal(r.estructura.proyectos, 1);
+assert.ok(s.proyectos.some((p) => p.title === 'Cursos CAF'));
+r = await enviar('importar');
+assert.equal(r.estructura, null, 'la misma huella no se aplica otra vez');
+
+// 7. Restaurar: los archivados no salen en getAllProjects; se encuentran por getAppState y vuelven a activos.
+s.proyectos.find((p) => p.id === 'B').isArchived = true;
+api.getAllProjects = async () => s.proyectos.filter((p) => !p.isArchived).map((p) => ({ ...p }));
+// la forma real de SP 18.10: {tasks, projects, tags, ...}, cada uno {id: entidad}
+api.getAppState = async () => ({ tasks: {}, projects: Object.fromEntries(s.proyectos.map((p) => [p.id, { ...p }])), tags: {} });
+portadora.notes = '```json\n' + JSON.stringify({ ...nueva, estructura_id: 'h2',
+  estructura: { restaurar: ['Bloomberg'], archivar: [], proyectos: [{ titulo: 'Bloomberg' }] } }) + '\n```';
+r = await enviar('importar');
+assert.equal(r.estructura.restaurados, 1);
+assert.equal(r.estructura.proyectos, 0, 'lo que se restaura no se crea de nuevo');
+assert.equal(s.proyectos.find((p) => p.id === 'B').isArchived, false);
+console.log('plugin: 7 escenarios correctos');

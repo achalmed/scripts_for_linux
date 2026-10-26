@@ -16,7 +16,10 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+from lib.minka import MARCA as MARCA_MINKA
+
 RE_PREFIJO = re.compile(r"^pf_([A-Z0-9]*)__")
+TAREA_MINKA = "(tarea del despacho)"
 
 
 class Cifrado(ValueError):
@@ -64,7 +67,9 @@ def leer(ruta: Path, desde: str, excluir_proyecto: str) -> dict[str, dict]:
         if t.get("isDone") and t.get("doneOn"):
             dia_hecha = datetime.fromtimestamp(t["doneOn"] / 1000).date().isoformat()
             if dia_hecha >= desde:
-                dias[dia_hecha]["hechas"].append(t.get("title", ""))
+                # Las del despacho (traídas de Minka) cuentan, pero su título no entra al vault (regla 7 del CLAUDE.md raíz).
+                es_minka = MARCA_MINKA in (t.get("notes") or "")
+                dias[dia_hecha]["hechas"].append(TAREA_MINKA if es_minka else t.get("title", ""))
         if t.get("subTaskIds"):
             continue
         for dia, ms in (t.get("timeSpentOnDay") or {}).items():

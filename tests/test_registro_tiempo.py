@@ -245,11 +245,15 @@ def test_recoger_simula_sin_escribir_y_aplica(entorno):
 
 def test_plugin_zip_y_timer_simulan(entorno):
     raiz, _, env = entorno
-    assert _correr(env, "plugin").returncode == 0 and not (raiz / "estado").exists()
+    zip_ = SUITE / "dist" / "registro-tiempo-sp.zip"
+    previo = zip_.read_bytes() if zip_.exists() else None
+    if previo is None:
+        r = _correr(env, "plugin")
+        assert r.returncode == 0 and not zip_.exists(), "simular no escribe el .zip"
     r = _correr(env, "plugin", "--aplicar")
     assert r.returncode == 0
     import zipfile
-    with zipfile.ZipFile(raiz / "estado" / "registro-tiempo" / "registro-tiempo-sp.zip") as z:
+    with zipfile.ZipFile(zip_) as z:
         assert sorted(z.namelist()) == ["icon.svg", "index.html", "manifest.json", "plugin.js"]
     r = _correr(env, "timer")
     assert r.returncode == 0 and not (raiz / "config").exists()
@@ -282,7 +286,11 @@ def sp_falso():
             if ruta == "/health":
                 return self._responder(200, {"server": "up", "rendererReady": True})
             if ruta == "/tasks":
-                return self._responder(200, estado["tareas"])
+                from urllib.parse import parse_qs, urlsplit
+                pid = parse_qs(urlsplit(self.path).query).get("projectId", [None])[0]
+                return self._responder(200, [t for t in estado["tareas"] if not pid or t.get("projectId") == pid
+                                             or any(m.get("id") == t.get("parentId") and m.get("projectId") == pid
+                                                    for m in estado["tareas"])])
             if ruta == "/projects":
                 return self._responder(200, estado["proyectos"])
             if ruta == "/tags":
@@ -331,8 +339,119 @@ def test_entrega_a_sp_y_planificar(entorno, sp_falso):
     assert hija["parentId"] == madre["id"] and "projectId" not in hija and hija["timeEstimate"] == 900000
 
 
+def test_rutina_dias_horas_y_pasado():
+    from lib import rutina
+    cfg = [{"dias": "laborables", "hora": 390, "min": 60, "titulo": "Tesis", "proyecto": "Tesis"},
+           {"dias": ["sab"], "hora": "9:00", "min": 30, "titulo": "Lectura"},
+           {"dias": "todos", "hora": "07:30", "min": 10, "titulo": "Plan", "subtareas": ["a", "b"]}]
+    lunes = [(t.titulo, t.hora) for t in rutina.bloques(cfg, date(2026, 10, 26))]
+    sabado = [(t.titulo, t.hora) for t in rutina.bloques(cfg, date(2026, 10, 31))]
+    assert lunes == [("Tesis", "06:30"), ("Plan", "07:30")]
+    assert sabado == [("Plan", "07:30"), ("Lectura", "09:00")]
+    t = rutina.bloques(cfg, date(2026, 10, 26))[0]
+    assert rutina.ya_paso(t, datetime(2026, 10, 26, 7, 31)) and not rutina.ya_paso(t, datetime(2026, 10, 26, 7, 29))
+    assert [s.titulo for s in rutina.bloques(cfg, date(2026, 10, 26))[1].subtareas] == ["a", "b"]
+
+
+def test_rutina_crea_una_vez_y_respeta_proyectos(entorno, sp_falso):
+    raiz, tareas, env = entorno
+    url, estado = sp_falso
+    import yaml
+    usuario = dict(USUARIO, rutina=[
+        {"dias": "todos", "hora": "23:58", "min": 1, "titulo": "Tesis: bloque", "proyecto": "Tesis", "etiquetas": ["escritura"]},
+        {"dias": "todos", "hora": "23:58", "min": 1, "titulo": "Sin proyecto aún", "proyecto": "Inexistente"}])
+    (tareas / "registro-tiempo.yml").write_text(yaml.safe_dump(usuario, allow_unicode=True), encoding="utf-8")
+    env = dict(env, SP_REST_URL=url)
+    r = _correr(env, "rutina", "--dias", "2", "--aplicar")
+    assert r.returncode == 0, r.stderr
+    creadas = [t for t in estado["tareas"] if t["title"] == "Tesis: bloque"]
+    esperado = 2 if datetime.now() < datetime.combine(date.today(), datetime.min.time()).replace(hour=23, minute=59) else 1
+    assert len(creadas) == esperado and all(t["projectId"] == "PT" and "dueWithTime" in t for t in creadas)
+    assert "falta el proyecto «Inexistente»" in r.stderr
+    _correr(env, "rutina", "--dias", "2", "--aplicar")
+    assert len([t for t in estado["tareas"] if t["title"] == "Tesis: bloque"]) == esperado, "no se repite"
+
+
+def test_notas_a_sp(entorno, sp_falso, monkeypatch):
+    raiz, tareas, env = entorno
+    url, estado = sp_falso
+    estado["proyectos"].append({"id": "PL", "title": "Lectura de notas"})
+    base = raiz / "vault" / "notas" / "guias" / "07-grupo"
+    base.mkdir(parents=True)
+    (base / "README.md").write_text('---\ntipo: readme\ntitulo: "07 Grupo con tilde: índice"\n---\n', encoding="utf-8")
+    (base / "larga.md").write_text("---\ntipo: referencia\ntitulo: Nota larga\n---\n" + "palabra " * 2000, encoding="utf-8")
+    (base / "puntero.md").write_text("---\ntipo: referencia\ntitulo: Puntero\ncalibre_id: 42\n---\nVer Calibre.\n",
+                                     encoding="utf-8")
+    import yaml
+    (tareas / "registro-tiempo.yml").write_text(yaml.safe_dump(dict(USUARIO, notas_a_sp={"carpetas": ["notas/guias"]}),
+                                                               allow_unicode=True), encoding="utf-8")
+    shutil.copytree(REPO.parent / "core", raiz / "vault" / "core", ignore=shutil.ignore_patterns("tests", "__pycache__"))
+    env = dict(env, SP_REST_URL=url, DOCS_ROOT=str(raiz / "vault"))
+    r = _correr(env, "notas", "--aplicar")
+    assert r.returncode == 0, r.stderr
+    madre = next(t for t in estado["tareas"] if t["title"] == "07 Grupo con tilde")
+    hijas = {t["title"]: t for t in estado["tareas"] if t.get("parentId") == madre["id"]}
+    assert set(hijas) == {"Nota larga", "Puntero"}
+    assert hijas["Nota larga"]["timeEstimate"] == 10 * 60000
+    assert "timeEstimate" not in hijas["Puntero"] or not hijas["Puntero"]["timeEstimate"]
+    assert "Calibre (id 42)" in hijas["Puntero"]["notes"] and "obsidian://open?vault=Documents" in hijas["Puntero"]["notes"]
+    antes = len(estado["tareas"])
+    assert _correr(env, "notas", "--aplicar").returncode == 0 and len(estado["tareas"]) == antes, "no se repite"
+
+
 @pytest.mark.skipif(shutil.which("node") is None, reason="falta node para probar el plugin")
 def test_plugin_contra_api_simulada():
     r = subprocess.run(["node", str(Path(__file__).with_name("plugin_registro_tiempo.test.mjs"))],
                        capture_output=True, text=True, timeout=60)
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+# --------------------------------------------------------------------------- cursos
+
+def _tema(i, titulo, curso="micro-i"):
+    from lib import cursos
+    return cursos.Tema(curso=curso, titulo_curso="Micro I", id=i, titulo=titulo)
+
+
+def test_cursos_emparejar_respeta_el_orden_del_autor_e_intercala_lo_que_falta():
+    from lib import cursos
+    temas_ = [_tema("1.1", "Teoría del consumidor"), _tema("1.2", "Teoría del productor y costos"),
+              _tema("1.3", "Decisiones intertemporales"), _tema("2.1", "Equilibrio parcial competitivo")]
+    tareas = [{"id": "a", "title": "Teoría del consumidor I"}, {"id": "b", "title": "Teoría del consumidor II"},
+              {"id": "c", "title": "Equilibrio parcial y competitivo"}, {"id": "d", "title": "Repaso libre"}]
+    seq = cursos.emparejar(temas_, tareas)
+    nombres = [x["id"] if isinstance(x, dict) else x.id for x, _ in seq]
+    assert nombres == ["a", "b", "1.2", "1.3", "c", "d"]
+    assert seq[0][1].id == "1.1" and seq[1][1].id == "1.1" and seq[5][1] is None
+
+
+def test_cursos_ordenar_por_numero_si_casi_todas_lo_llevan():
+    from lib import cursos
+    t = [{"title": "1.12. Perturbaciones"}, {"title": "1.01. Modelo clásico"}, {"title": "1.2 Otro"}]
+    assert [x["title"][:4] for x in cursos.ordenar(t)] == ["1.01", "1.2 ", "1.12"]
+    sin = [{"title": "Teoría"}, {"title": "Práctica"}]
+    assert cursos.ordenar(sin) == sin
+
+
+def test_cursos_planear_fechas_moviles_y_cambios(tmp_path):
+    from lib import cursos
+    (tmp_path / "micro-i").mkdir()
+    (tmp_path / "micro-i" / "curso.yml").write_text(
+        "titulo: Micro I\nunidades:\n- id: 1\n  temas:\n  - {id: '1.1', titulo: Teoría del consumidor}\n"
+        "  - {id: '1.2', titulo: Teoría del productor}\n", encoding="utf-8")
+    tareas = {"Micro": [{"id": "a", "title": "Teoría del consumidor I", "timeEstimate": 7200000, "tagIds": ["viejo"],
+                         "dueDay": "2025-01-01"},
+                        {"id": "h", "title": "Teoría del consumidor II", "isDone": True}]}
+    carril = {"dias": ["lun", "jue"], "etiquetas": ["estudio"], "proyectos": [{"proyecto": "Micro", "curriculo": ["micro-i"]}]}
+    pasos = cursos.planear(carril, tareas, tmp_path, {"estudio": "TE"}, date(2026, 10, 26), 60, 2)
+    a = next(p for p in pasos if p.tarea and p.tarea["id"] == "a")
+    nuevo = next(p for p in pasos if p.tarea is None)
+    assert a.dia == "2026-10-29"           # 2 h = dos sesiones: lunes 26 y jueves 29
+    assert a.cambios["tagIds"] == ["TE"] and a.cambios["dueDay"] == "2026-10-29" and a.cambios["dueWithTime"] is None
+    assert "tema 1.1 «Teoría del consumidor»" in a.cambios["notes"]
+    assert nuevo.tema.id == "1.2" and nuevo.dia == "2026-11-05"
+    assert not any(p.tarea and p.tarea["id"] == "h" for p in pasos), "lo hecho no se reprograma"
+    c = cursos.cuerpo_nuevo(nuevo, "P1", ["TE"])
+    assert c["title"] == "Micro I · 1.2 Teoría del productor" and c["dueDay"] == "2026-11-05"
+    lejos = cursos.planear(carril, tareas, tmp_path, {"estudio": "TE"}, date(2026, 10, 26), 60, 0)
+    assert all(not p.dia for p in lejos if p.tarea is None), "fuera del horizonte, sin fecha"

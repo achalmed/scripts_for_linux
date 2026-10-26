@@ -6,4 +6,10 @@ Type=oneshot
 # PATH mínimo: la suite corre con el Python del sistema (CORE_PYTHON de core/env), sin anaconda.
 Environment="PATH=/usr/local/bin:/usr/bin:/bin"
 ExecStart=/usr/bin/python3 @SUITE@/main.py recoger --desde-timer
+# La rutina de hoy y mañana: no repite lo ya creado y calla si Super Productivity está cerrado.
+ExecStart=/usr/bin/python3 @SUITE@/main.py rutina --desde-timer
+# Las tareas del despacho (Minka): calla si falta su dirección, si Minka no responde o si SP está cerrado.
+ExecStart=/usr/bin/python3 @SUITE@/main.py minka --desde-timer
+# Los cursos: plan móvil de ocho semanas; no crea dos veces y solo cambia fechas cuando el autor avanza o se atrasa.
+ExecStart=/usr/bin/python3 @SUITE@/main.py cursos --desde-timer
 Nice=10

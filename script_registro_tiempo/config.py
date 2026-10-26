@@ -24,6 +24,13 @@ SYNC_SP = "sync-data.json"                     # la sincronización por archivo 
 # --- Estado derivado, fuera de ~/Documents: se regenera del historial en cada pasada ---
 CARPETA_ESTADO = "registro-tiempo"             # bajo $XDG_STATE_HOME (por defecto ~/.local/state)
 ARCHIVO_PARA_SP = "para-sp.json"               # lo que lee el plugin de Super Productivity
+ARCHIVO_RUTINA = "rutina-creadas.json"         # qué bloques de la rutina ya se crearon (para no repetirlos)
+DIAS_RUTINA = 2                                # la rutina se crea para hoy y mañana
+
+# --- Notas del vault como tareas de lectura (valores por defecto de `notas_a_sp`) ---
+NOTAS_CARPETAS = ["notas/60-guias-y-referencias"]
+NOTAS_PROYECTO = "Lectura de notas"
+NOTAS_VAULT = "Documents"                      # el nombre del vault de Obsidian (la carpeta ~/Documents)
 NOMBRE_ZIP_PLUGIN = "registro-tiempo-sp.zip"
 
 # --- Recolección ---
@@ -36,5 +43,6 @@ TOP_INFORME = 8                                # filas por tabla en el informe s
 
 # --- Super Productivity ---
 PROYECTO_SP = "Registro automático"            # proyecto donde el plugin escribe el tiempo de fuera de SP
+PROYECTO_MINKA = "Trabajo"                     # proyecto donde `minka` deja las tareas del despacho (lib/minka.py)
 
 USE_COLOR = None                               # None = automático según la terminal (core/py-common/logger.py)

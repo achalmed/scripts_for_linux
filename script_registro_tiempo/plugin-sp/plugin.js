@@ -9,6 +9,7 @@
 // REST no escribe tiempo por día; los dos juntos sí, cada uno con su API oficial. Escribir es idempotente: el tiempo
 // de un día se fija (no se suma) y un día que ya está en una tarea archivada no se vuelve a escribir.
 
+const VERSION = '1.1.1';
 const PROYECTO = 'Registro automático';
 const PORTADORA = 'Datos del registro de tiempo';
 const CADA_MS = 10 * 60 * 1000;
@@ -74,27 +75,56 @@ async function importar() {
       actualizadas += 1;
     }
   }
-  const resumen = { ok: true, generado: datos.generado, tareas: Object.keys(datos.tareas).length, creadas, actualizadas };
-  await PluginAPI.persistDataSynced(JSON.stringify({ ultimaImportacion: new Date().toISOString(), ...resumen }));
+  const guardado = JSON.parse((await PluginAPI.loadSyncedData()) || '{}');
+  let estructura = null;
+  if (datos.aplicar_estructura && datos.estructura_id && guardado.estructuraAplicada !== datos.estructura_id) {
+    estructura = await aplicarEstructura();   // el autor la pidió con `aplicar: true` en registro-tiempo.yml
+  }
+  const resumen = { ok: true, generado: datos.generado, tareas: Object.keys(datos.tareas).length, creadas, actualizadas, estructura };
+  await PluginAPI.persistDataSynced(JSON.stringify({
+    ...guardado, ultimaImportacion: new Date().toISOString(), ...resumen,
+    ...(estructura && estructura.ok ? { estructuraAplicada: datos.estructura_id } : {}),
+  }));
   return resumen;
 }
 
-// Lo que falta crear y lo que se archivaría según la estructura propuesta (sin escribir).
+// getAllProjects no devuelve los archivados; el estado completo sí (para poder restaurarlos). En SP 18.10,
+// getAppState devuelve {tasks, projects, tags, notes, taskRepeatCfgs, simpleCounters, globalConfig}, cada uno {id: entidad}.
+async function todosLosProyectos() {
+  try {
+    const estado = await PluginAPI.getAppState();
+    const entidades = estado && (estado.projects || (estado.project && estado.project.entities));
+    if (entidades) return Object.values(entidades);
+  } catch (error) {
+    // sin getAppState (otra versión de SP): solo los activos
+  }
+  return PluginAPI.getAllProjects();
+}
+
+// Lo que falta crear, lo que se restaura y lo que se archivaría según la estructura propuesta (sin escribir).
 async function vistaEstructura() {
   const portadora = (await PluginAPI.getTasks()).find((t) => igual(t.title, PORTADORA));
   if (!portadora) return { ok: false, mensaje: 'aún no hay datos de la suite' };
   const e = leerPortadora(portadora).estructura || {};
-  const proyectos = await PluginAPI.getAllProjects();
+  const todos = await todosLosProyectos();
+  const restaurar = todos.filter((p) => p.isArchived && (e.restaurar || []).some((r) => igual(r, p.title)))
+    .map((p) => ({ id: p.id, titulo: p.title }));
+  const proyectos = todos.filter((p) => !p.isArchived);
   const etiquetas = await PluginAPI.getAllTags();
   const renombrar = Object.entries(e.renombrar || {})
     .map(([de, a]) => ({ p: proyectos.find((x) => igual(x.title, de) && !x.isArchived), de, a }))
     .filter((r) => r.p && !proyectos.some((x) => igual(x.title, r.a) && !x.isArchived))
     .map((r) => ({ id: r.p.id, de: r.de, a: r.a }));
   const nombresTrasRenombrar = proyectos.map((x) => renombrar.find((r) => r.id === x.id)?.a || x.title);
+  const vivos = [...nombresTrasRenombrar, ...restaurar.map((r) => r.titulo)];
+  const sinHallar = (e.restaurar || []).filter((r) => !todos.some((p) => igual(p.title, r)));
   return {
     ok: true,
+    version: VERSION,
+    sinHallar,
+    restaurar,
     renombrar,
-    crearProyectos: (e.proyectos || []).filter((p) => !proyectos.some((x, i) => igual(nombresTrasRenombrar[i], p.titulo) && !x.isArchived)),
+    crearProyectos: (e.proyectos || []).filter((p) => !vivos.some((n) => igual(n, p.titulo))),
     crearEtiquetas: (e.etiquetas || []).filter((t) => !etiquetas.some((x) => igual(x.title, t.titulo))),
     archivar: proyectos.filter((p) => !p.isArchived && (e.archivar || []).some((a) => igual(a, p.title)))
       .map((p) => ({ id: p.id, titulo: p.title, tareas: (p.taskIds || []).length })),
@@ -105,11 +135,12 @@ async function vistaEstructura() {
 async function aplicarEstructura() {
   const vista = await vistaEstructura();
   if (!vista.ok) return vista;
+  for (const r of vista.restaurar) await PluginAPI.updateProject(r.id, { isArchived: false });
   for (const r of vista.renombrar) await PluginAPI.updateProject(r.id, { title: r.a });
   for (const p of vista.crearProyectos) await PluginAPI.addProject({ title: p.titulo });
   for (const t of vista.crearEtiquetas) await PluginAPI.addTag({ title: t.titulo, ...(t.color ? { color: t.color } : {}) });
   for (const p of vista.archivar) await PluginAPI.updateProject(p.id, { isArchived: true });
-  return { ok: true, renombrados: vista.renombrar.length, proyectos: vista.crearProyectos.length,
+  return { ok: true, restaurados: vista.restaurar.length, renombrados: vista.renombrar.length, proyectos: vista.crearProyectos.length,
     etiquetas: vista.crearEtiquetas.length, archivados: vista.archivar.length };
 }
 
@@ -118,8 +149,11 @@ async function importarAvisando(silencioso) {
     const r = await importar();
     if (!r.ok) {
       if (!silencioso) PluginAPI.showSnack({ msg: 'Registro de tiempo: ' + r.mensaje, type: 'CUSTOM' });
-    } else if (r.creadas || r.actualizadas || !silencioso) {
-      PluginAPI.showSnack({ msg: `Registro de tiempo: ${r.actualizadas} tareas al día (${r.creadas} nuevas)`, type: 'SUCCESS' });
+    } else if (r.creadas || r.actualizadas || r.estructura || !silencioso) {
+      const e = r.estructura && r.estructura.ok
+        ? ` · estructura: ${r.estructura.restaurados} restaurados, ${r.estructura.proyectos} proyectos y ${r.estructura.etiquetas} etiquetas creados, ${r.estructura.archivados} archivados`
+        : '';
+      PluginAPI.showSnack({ msg: `Registro de tiempo: ${r.actualizadas} tareas al día (${r.creadas} nuevas)${e}`, type: 'SUCCESS' });
     }
     return r;
   } catch (error) {
@@ -135,7 +169,7 @@ PluginAPI.onMessage(async (mensaje) => {
     case 'aplicarEstructura': return aplicarEstructura();
     case 'estado': {
       const guardado = await PluginAPI.loadSyncedData();
-      return { ok: true, ...(guardado ? JSON.parse(guardado) : {}) };
+      return { ok: true, ...(guardado ? JSON.parse(guardado) : {}), version: VERSION };
     }
     default: return { ok: false, mensaje: 'mensaje desconocido' };
   }

@@ -15,6 +15,10 @@ env = importlib.util.module_from_spec(_s)
 _s.loader.exec_module(env)
 
 
+def raiz() -> pathlib.Path:
+    return pathlib.Path(env.DOCS_ROOT)
+
+
 def tareas() -> pathlib.Path:
     return pathlib.Path(env.TASKS_DIR)
 

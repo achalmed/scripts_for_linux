@@ -55,11 +55,31 @@ def nombres() -> tuple[dict[str, str], dict[str, str]]:
     return proyectos, etiquetas
 
 
+def proyectos() -> list[dict]:
+    """Los proyectos activos completos (con `taskIds`, el orden en que el autor los ve)."""
+    return _pedir("GET", "/projects") or []
+
+
+def tareas(proyecto_id: str | None = None, todas: bool = False) -> list[dict]:
+    """Tareas activas (con `todas`, también hechas y archivadas), opcionalmente de un proyecto."""
+    q = {"includeDone": "true"}
+    if todas:
+        q["source"] = "all"
+    if proyecto_id:
+        q["projectId"] = proyecto_id
+    return _pedir("GET", "/tasks?" + urllib.parse.urlencode(q)) or []
+
+
 def crear(cuerpo: dict, padre: str | None = None) -> str:
     """Crea una tarea (o subtarea de `padre`, que hereda proyecto y etiquetas) y devuelve su id."""
     if padre:
         cuerpo = {k: v for k, v in cuerpo.items() if k not in ("projectId", "tagIds")} | {"parentId": padre}
     return _pedir("POST", "/tasks", cuerpo)["id"]
+
+
+def cambiar(tarea_id: str, campos: dict) -> None:
+    """Cambia campos permitidos por la API (título, notas, hecha, plazo…) de una tarea existente."""
+    _pedir("PATCH", f"/tasks/{urllib.parse.quote(tarea_id)}", campos)
 
 
 def entregar(datos: dict, proyecto: str) -> str:
