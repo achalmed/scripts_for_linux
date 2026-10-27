@@ -75,7 +75,7 @@ servicio que lo porta.
 
 **2.3 Un registro de repos propio de Git Studio** (2026-07-13; precisada el 2026-10-04). `repos-config.yml`
 de `script_git_sync_respos/` lo leen `sync.sh`, `status.sh` y la GUI
-(`gui-suites/git/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
+(`git-studio/studio/git_app/services/config_service.py`, que lo encuentra por `SCRIPTS_LINUX`), y la GUI lo
 reescribe entero al añadir o clonar. Es
 un inventario escrito a mano, paralelo a `meta/workspace.yml` (el manifiesto del workspace), y no
 coincide con él: ver `../estado.md` §Por hacer. Las áreas `Academic_Class-*` se sustituyeron por `docencia/contenido` el
@@ -94,7 +94,7 @@ Studio y Git Studio pasan con su historia (`git subtree`) al repo privado `gui-s
 Quarto Studio; los siete backends dejan la carpeta `backend/` de su GUI y son suites de primer nivel de este repo
 (`git mv`), con su `suite.yml`, su README y su prueba de simulación. Las GUI encuentran los backends por
 `SCRIPTS_LINUX` de `core/env.py`, no por ruta relativa, y Git Studio sigue leyendo y escribiendo el mismo
-`script_git_sync_respos/repos-config.yml`. Motivo: un repo público de herramientas CLI no tiene por qué cargar con
+`repos-config.yml` de esa suite. Motivo: un repo público de herramientas CLI no tiene por qué cargar con
 tres copias de la misma infraestructura Qt (`meta/programa/06-olas/ola-04-reingenieria.md` §3). Etiqueta previa:
 `antes-ola-04-studios-2026-10-06`. Superada por §2.6.
 
@@ -104,7 +104,7 @@ de la cola de la auditoría posterior). Las cinco herramientas de archivos (`scr
 `script_hardlinks-detector`) y las dos de git (`script_git_sync_respos`, con `repos-config.yml`, y
 `script_git_download_respos`) salen de aquí con `git rm` y viven, con su historia (`git filter-repo` de un clon), junto
 a su GUI en los repos `filesystem-studio` y `git-studio`; `gui-suites` se retira y lo común de los studios pasa a
-`core/py-common/gui_comun`. Este repo deja de tener consumidores por `SCRIPTS_LINUX`, que sale de `core/env`
+`core/py-common/gui_comun`. Este repo deja de tener consumidores por `SCRIPTS_LINUX`, que sale de `core/env.sh`
 (N 5.19). §1.3, §2.1–§2.5 y §3 quedan como historia de esas herramientas. Etiqueta previa:
 `antes-studios-independientes-2026-10-27`; propuesta en
 `meta/programa/08-mantenimiento/studios-independientes-2026-10-27.md`.
