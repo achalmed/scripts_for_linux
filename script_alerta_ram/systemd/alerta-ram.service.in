@@ -1,0 +1,14 @@
+[Unit]
+Description=Alerta de RAM: sonido creciente y notificación desde el 90% (scripts-linux/script_alerta_ram)
+After=graphical-session.target pipewire-pulse.service
+PartOf=graphical-session.target
+
+[Service]
+# PATH mínimo: la suite es Bash y solo usa binarios del sistema.
+Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+ExecStart=/usr/bin/bash @SUITE@/main.sh vigilar
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical-session.target

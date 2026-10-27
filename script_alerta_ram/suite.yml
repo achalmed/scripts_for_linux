@@ -1,0 +1,28 @@
+# script_alerta_ram/suite.yml — suite alerta_ram: Avisa con un sonido que crece en volumen e insistencia cuando la RAM usada pasa de un umbral, y en el nivel más alto muestra las apps abiertas para cerrarlas.
+# Contrato: core/suite.schema.yml; core/suites.py validar lo comprueba y generar escribe los índices y README.
+esquema_version: 2
+id: alerta_ram
+objetivo: sistema
+resumen: Avisa con un sonido que crece en volumen e insistencia cuando la RAM usada pasa de un umbral, y en el nivel más alto muestra las apps abiertas para cerrarlas.
+escribe_en:
+- sistema
+simula_por_defecto: true
+comandos:
+- main.sh estado
+- main.sh probar
+- main.sh cerrar
+- main.sh instalar --aplicar
+- main.sh desinstalar --aplicar
+- main.sh vigilar
+estado: activo
+creado: 2026-10-27
+depende_de:
+- paplay (PulseAudio o PipeWire)
+- notify-send
+- kdialog (la lista para cerrar apps; o busctl con MODO_CIERRE=ventanas)
+- systemd de usuario
+- core/env.sh
+- core/shell-lib/logger.sh
+timer: alerta-ram.service
+pruebas: tests/run.sh -k alerta_ram   # desde la raíz del repo; instalar y desinstalar sin --aplicar no escriben
+nota: Solo escribe la unidad de usuario (instalar/desinstalar con --aplicar); cerrar detiene las apps que se marcan en su ventana, y nada sin marcar. Umbrales, sonidos, volúmenes y modo de cierre en config.sh.

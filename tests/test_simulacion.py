@@ -99,6 +99,22 @@ def requiere_modulos(*modulos: str):
 PY = sys.executable
 
 
+# --------------------------------------------------------------------------- sistema
+
+@pytest.mark.parametrize("sub", ["instalar", "desinstalar", "estado"])
+def test_alerta_ram_sin_aplicar(entorno, sub):
+    """Sin ``--aplicar``, instalar y desinstalar solo informan; estado solo lee."""
+    home, trabajo, env = entorno
+    correr_sin_escribir(["bash", str(REPO / "script_alerta_ram" / "main.sh"), sub], home.parent, trabajo, env)
+
+
+def test_alerta_ram_aplicar_fuera_de_lugar(entorno):
+    """``--aplicar`` con un subcomando que no escribe es un error de argumentos (2), sin escribir."""
+    home, trabajo, env = entorno
+    correr_sin_escribir(["bash", str(REPO / "script_alerta_ram" / "main.sh"), "estado", "--aplicar"],
+                        home.parent, trabajo, env, rc_esperado=(2,))
+
+
 # --------------------------------------------------------------------------- multimedia
 
 @requiere("ffmpeg")

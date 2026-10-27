@@ -135,3 +135,14 @@ personal (`backup_suite.log`, `video_downloader.log`) aunque `--log` estuviera a
 contra la regla 5 del `CLAUDE.md` raíz. Ahora cargan `core/env.sh` y usan la carpeta madre de
 `DOCS_ROOT`, que `env.sh` resuelve por la ubicación del script y no por `$HOME`: con `sudo` sigue
 siendo el directorio personal de quien invoca. `USUARIO` cae en `id -un`.
+
+**3.5 `script_alerta_ram` es un servicio que no termina, no un timer** (2026-10-27). La alarma recuerda entre
+mediciones si ya avisó, cuándo repitió y qué notificación reemplazar (`notify-send -r`), y solo se rearma al bajar
+de `REARME` (histéresis: sin ella sonaría en bucle con la RAM oscilando en el umbral). Un timer arrancaría cada vez
+sin ese estado. Mide `MemTotal − MemAvailable`, no `MemFree`, que la caché de disco deja casi siempre baja. El
+volumen va en `paplay --volume` para no tocar el del sistema.
+El aviso escala con el porcentaje y con la insistencia (más volumen y más repeticiones en cada aviso ignorado), y usa
+el tema Ocean: los sonidos de `freedesktop` duran 0,1–0,5 s y no se oían. En Plasma la urgencia `low` no muestra
+ventana emergente, así que el nivel más bajo es `normal`. Las apps son las unidades `app-*` de `app.slice` (una por
+app lanzada desde Plasma, con todos sus procesos), no los nombres de proceso: así un navegador cuenta una vez, se
+cierra entero con `systemctl --user stop` y los contenedores o servicios del sistema nunca se ofrecen para cerrar.

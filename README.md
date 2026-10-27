@@ -5,10 +5,11 @@ estado: activo
 # scripts-linux/ — utilidades Linux del workspace: herramientas CLI (sus GUI viven en studios)
 
 <!-- suites:inicio -->
-Suites de esta carpeta (6); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
+Suites de esta carpeta (7); índice global en `meta/INDICE_SCRIPTS.md`. Patrón: M main · C config · L lib.
 
 | Suite | Carpeta | Objetivo | Escribe en | Simula | Timer | Estado | Patrón |
 |---|---|---|---|---|---|---|---|
+| `alerta_ram` | [scripts-linux/script_alerta_ram](script_alerta_ram/) | sistema | sistema | sí | alerta-ram.service | activo | `MCL` |
 | `audio_converter` | [scripts-linux/script_audio_converter](script_audio_converter/) | multimedia | archivos | no |  | activo | `MCL` |
 | `registro_tiempo` | [scripts-linux/script_registro_tiempo](script_registro_tiempo/) | personal | vault, archivos, sistema | sí | registro-tiempo.timer | borrador | `MCL` |
 | `sync_usb` | [scripts-linux/script_sync_usb](script_sync_usb/) | sistema | archivos | no |  | activo | `M··` |
