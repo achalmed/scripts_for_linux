@@ -45,7 +45,7 @@ Las herramientas de archivos (árbol de proyectos `script_proyect_tree`, conteo 
 **No es** una biblioteca: cada suite es autónoma (`main.*` + `config.*` + `lib/`, `suite.yml`,
 README) y solo comparte `core/` (raíz del workspace y logger). Nada del despacho debe vivir aquí; hoy
 `script_sync_usb` lo incumple en el código (`estado.md` §Por hacer).
-Tampoco es el lugar de PDF y ofimática: eso vive en `scripts_document_studio`. El remoto en
+Tampoco es el lugar de PDF y ofimática: eso vive en `raphi`. El remoto en
 GitHub se llama igual que la carpeta (`scripts-linux`) y es público.
 
 ## Uso
