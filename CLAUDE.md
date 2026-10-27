@@ -87,7 +87,7 @@ simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva qu
 - **Nombres que despistan**: la GUI de archivos es `gui-suites/filesystem/`, el árbol es
   `script_proyect_tree` (con esa grafía), las herramientas de hard links son
   `script_hardlinks-{creator,detector}/` (la GUI importa la `lib/` del creador), y el PDF vive en
-  `scripts_document_studio/backends/` (`docs/decisiones.md` §1.2).
+  `raphi/backends/` (`docs/decisiones.md` §1.2).
 - **`script_proyect_tree` escribe `estructura.txt`**, derivado que la normativa no admite en un
   repo (§15.8, D07; `docs/decisiones.md` §1.3). Se usa para la vista previa de la GUI, `--list`,
   `--stats` o formatos `md`/`json` fuera de git. Su `config.sh` fija por nombre los grupos de
