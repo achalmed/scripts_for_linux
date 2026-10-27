@@ -23,9 +23,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parent.parent
-# los backends de Filesystem Studio y Git Studio son suites de primer nivel desde la ola 4 (fase B)
-FS = REPO
-GIT = REPO
+# las herramientas de archivos y de git (y sus GUI) viven desde el 2026-10-27 en los repos filesystem-studio y git-studio
 
 # Carpetas que no forman parte del contenido que una suite podría tocar: el propio git y los
 # cachés que crea pytest al importar este archivo.
@@ -153,54 +151,7 @@ def test_photo_metadata_sync_digikam():
     pass
 
 
-# --------------------------------------------------------------------------- sistema de archivos
-
-def test_create_folders_batch_dry_run(entorno):
-    home, trabajo, env = entorno
-    (trabajo / "lista.txt").write_text("uno\ndos/tres\n# comentario\n", encoding="utf-8")
-    (trabajo / "base").mkdir()
-    correr_sin_escribir(["bash", str(FS / "script_create_folders_batch" / "main.sh"), "-d", "-y", "--no-color",
-                         "-f", "lista.txt", "-p", "base"], home.parent, trabajo, env)
-
-
-@pytest.mark.xfail(strict=True, reason="pendiente en estado.md: con -d y un -p inexistente, mkdir -p crea la base")
-def test_create_folders_batch_dry_run_base_inexistente(entorno):
-    home, trabajo, env = entorno
-    (trabajo / "lista.txt").write_text("uno\n", encoding="utf-8")
-    correr_sin_escribir(["bash", str(FS / "script_create_folders_batch" / "main.sh"), "-d", "-y", "--no-color",
-                         "-f", "lista.txt", "-p", "no-existe"], home.parent, trabajo, env)
-
-
-def test_hardlinks_creator_dry_run(entorno):
-    home, trabajo, env = entorno
-    for sitio in ("a", "b", "c"):
-        (trabajo / "arbol" / sitio).mkdir(parents=True)
-        (trabajo / "arbol" / sitio / "_metadata.yml").write_text("igual: sí\n", encoding="utf-8")
-    correr_sin_escribir([PY, str(FS / "script_hardlinks-creator" / "main.py"), "_metadata.yml",
-                         "-d", str(trabajo / "arbol"), "--auto", "--dry-run", "--no-color"],
-                        home.parent, trabajo, env)
-
-
-def test_hardlinks_detector_solo_lee(entorno):
-    """No tiene simulación: solo escribe lo que se le pide con ``-o`` o ``--report``; sin ellas, lee."""
-    home, trabajo, env = entorno
-    (trabajo / "arbol").mkdir()
-    (trabajo / "arbol" / "x.txt").write_text("x\n", encoding="utf-8")
-    os.link(trabajo / "arbol" / "x.txt", trabajo / "arbol" / "y.txt")
-    for formato in ("tree", "csv", "json"):
-        correr_sin_escribir(["bash", str(FS / "script_hardlinks-detector" / "main.sh"), "arbol", "-f", formato,
-                             "--no-color"], home.parent, trabajo, env)
-
-
-@requiere("tree")
-def test_proyect_tree_dry_run(entorno):
-    home, trabajo, env = entorno
-    (trabajo / "proyecto" / "src").mkdir(parents=True)
-    (trabajo / "proyecto" / "src" / "a.py").write_text("print(1)\n", encoding="utf-8")
-    for formato in ("txt", "md", "json"):
-        correr_sin_escribir(["bash", str(FS / "script_proyect_tree" / "main.sh"), "--dry-run", "-t", ".",
-                             "-f", formato, "--no-color"], home.parent, trabajo / "proyecto", env)
-
+# --------------------------------------------------------------------------- sincronización
 
 def test_sync_usb_dry_run(entorno):
     """Dos carpetas temporales hacen de laptop y de USB; la clave es de prueba y llega por el entorno."""
@@ -213,49 +164,3 @@ def test_sync_usb_dry_run(entorno):
     env = dict(env, SGDP_USB_CLAVE="clave-de-prueba", SGDP_USB_CLAVE_ESPERADA="clave-de-prueba")
     correr_sin_escribir([PY, str(REPO / "script_sync_usb" / "main.py"), "--local", str(local / "SGDP"),
                          "--usb", str(usb), "--dry-run"], home.parent, trabajo, env)
-
-
-# --------------------------------------------------------------------------- git
-
-def _repo_git(ruta: Path, env: dict) -> None:
-    ruta.mkdir(parents=True)
-    g = ["git", "-C", str(ruta), "-c", "user.name=prueba", "-c", "user.email=prueba@example.invalid"]
-    subprocess.run(["git", "init", "-q", "-b", "main", str(ruta)], check=True, env=env)
-    (ruta / "a.txt").write_text("uno\n", encoding="utf-8")
-    subprocess.run(g + ["add", "a.txt"], check=True, env=env)
-    subprocess.run(g + ["commit", "-q", "-m", "inicio"], check=True, env=env)
-    (ruta / "a.txt").write_text("dos\n", encoding="utf-8")            # cambio sin confirmar
-
-
-@requiere("git")
-def test_git_sync_respos_check(entorno):
-    """``sync.sh --check`` sobre un repo temporal sin remoto con un cambio sin confirmar: no commitea ni toca nada."""
-    home, trabajo, env = entorno
-    _repo_git(trabajo / "repos" / "uno", env)
-    config = trabajo / "repos-config.yml"
-    config.write_text(
-        f"base_directory: {trabajo / 'repos'}\n"
-        "default_commit_message: chore: prueba\n"
-        "repositories:\n"
-        "  - name: uno\n"
-        "    branch: main\n"
-        "    enabled: true\n",
-        encoding="utf-8")
-    r = correr_sin_escribir(["bash", str(GIT / "script_git_sync_respos" / "sync.sh"), "--check", "--config",
-                             str(config)], home.parent, trabajo, env)
-    assert "uno" in r.stdout + r.stderr
-
-
-@requiere("git")
-def test_git_download_respos_dry_run(entorno):
-    """``-n`` en modo ``list`` (sin API): ni clona ni crea la carpeta destino."""
-    home, trabajo, env = entorno
-    correr_sin_escribir(["bash", str(GIT / "script_git_download_respos" / "main.sh"), "-u", "prueba", "-m", "list",
-                         "-r", "uno,dos", "-n", "-o", str(trabajo / "destino")], home.parent, trabajo, env)
-
-
-# --------------------------------------------------------------------------- GUI
-
-@pytest.mark.skip(reason="las GUI (filesystem_studio, git_studio) viven en el repo studios y se prueban allí (tests/run.sh)")
-def test_gui_studios():
-    pass

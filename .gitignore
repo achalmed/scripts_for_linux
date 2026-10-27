@@ -17,11 +17,6 @@ venv/
 reports/
 *.log
 
-# --- derivado: árboles que escribe script_proyect_tree (D07) ----------------
-estructura.txt
-
-# --- temporal: lista de trabajo local de script_hardlinks-creator -----------
-script_hardlinks-creator/archivos.txt
 
 # --- ajustes locales del asistente ------------------------------------------
 .claude/

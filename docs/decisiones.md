@@ -59,7 +59,7 @@ repo sigue conservando un número de documento (`estado.md` §Por hacer).
 contador a cero cortaba el respaldo sin resumen. Nada vivo la usaba (ni unidades systemd, ni
 `~/.dotfiles`, ni otro proyecto). Las entradas 1.5, 3.3 y 3.4 que la citan quedan como historia.
 
-## 2. Las dos GUI (desde la ola 4, en el repo `gui-suites`)
+## 2. Las dos GUI y sus herramientas (desde el 2026-10-27, en `filesystem-studio` y `git-studio`)
 
 **2.1 Siete scripts sueltos pasan a ser backends de dos GUI PySide6** (Filesystem Studio el
 2026-07-13, `756aa73`; Git Studio el mismo día, `5ad12ec`). Los scripts se conservaron intactos en
@@ -96,7 +96,18 @@ Quarto Studio; los siete backends dejan la carpeta `backend/` de su GUI y son su
 `SCRIPTS_LINUX` de `core/env.py`, no por ruta relativa, y Git Studio sigue leyendo y escribiendo el mismo
 `script_git_sync_respos/repos-config.yml`. Motivo: un repo público de herramientas CLI no tiene por qué cargar con
 tres copias de la misma infraestructura Qt (`meta/programa/06-olas/ola-04-reingenieria.md` §3). Etiqueta previa:
-`antes-ola-04-studios-2026-10-06`.
+`antes-ola-04-studios-2026-10-06`. Superada por §2.6.
+
+**2.6 Cada studio, con sus herramientas, a un repo propio** (2026-10-27, pedido del autor del 2026-10-25; sesión 9
+de la cola de la auditoría posterior). Las cinco herramientas de archivos (`script_proyect_tree`,
+`script_count_files_by_extension`, `script_create_folders_batch`, `script_hardlinks-creator`,
+`script_hardlinks-detector`) y las dos de git (`script_git_sync_respos`, con `repos-config.yml`, y
+`script_git_download_respos`) salen de aquí con `git rm` y viven, con su historia (`git filter-repo` de un clon), junto
+a su GUI en los repos `filesystem-studio` y `git-studio`; `gui-suites` se retira y lo común de los studios pasa a
+`core/py-common/gui_comun`. Este repo deja de tener consumidores por `SCRIPTS_LINUX`, que sale de `core/env`
+(N 5.19). §1.3, §2.1–§2.5 y §3 quedan como historia de esas herramientas. Etiqueta previa:
+`antes-studios-independientes-2026-10-27`; propuesta en
+`meta/programa/08-mantenimiento/studios-independientes-2026-10-27.md`.
 
 ## 3. Herramientas concretas
 
