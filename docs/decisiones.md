@@ -18,8 +18,8 @@ contrato común 2026-09-07, FS1–FS3). Cada herramienta es autónoma y declara 
 `suites:` de los README los escribe `core/suites.py generar --aplicar` desde los `suite.yml`.
 
 **1.2 PDF y ofimática fuera de este repo** (2026-07-13, `756aa73`). `script_pdf-suite` y el
-contador de páginas salieron de aquí; hoy son `raphi/backends/pdf-suite/` y
-`raphi/backends/page-counter/`.
+contador de páginas salieron de aquí; desde el 2026-10-27 sus operaciones viven en el motor de `raphi`
+(`raphi/motor/`), que retiró los dos backends.
 
 **1.3 Sin derivados de árbol en git** (2026-09-20, DOC2). `estructura.txt`, que escribe
 `script_proyect_tree`, es un derivado que `meta/docs/historial/NORMATIVA_ARCHIVOS.md` §15.8 (D07) no admite
