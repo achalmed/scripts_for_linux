@@ -4,7 +4,7 @@
 # =============================================================================
 
 # Nivel elegido por elegir_nivel()
-NIVEL_SONIDO=""; NIVEL_URGENCIA=""; NIVEL_REPETIR=0; NIVEL_ACCION="-"
+NIVEL_DESDE=0; NIVEL_SONIDO=""; NIVEL_URGENCIA=""; NIVEL_REPETIR=0; NIVEL_ACCION="-"
 
 # --- elegir_nivel() --------------------------------------------------------
 # Arguments: $1 - % de RAM. Fija NIVEL_* con el primer nivel cuyo «desde» se
@@ -14,6 +14,7 @@ elegir_nivel() {
     for nivel in "${NIVELES[@]}"; do
         IFS='|' read -r desde NIVEL_SONIDO NIVEL_URGENCIA NIVEL_REPETIR NIVEL_ACCION <<<"$nivel"
         if [ "$pct" -ge "$desde" ]; then
+            NIVEL_DESDE="$desde"
             return 0
         fi
     done
@@ -70,23 +71,25 @@ notificar() {
 # «cerrar» abre la lista de apps una vez (y otra tras CIERRE_ESPERA si sigue
 # alta). Al bajar de REARME avisa «normal» y vuelve a quedar lista.
 vigilar() {
-    local pct ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 cierre_pid=0 cierre_ultimo=0 sonido_previo=""
+    local pct ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 cierre_pid=0 cierre_ultimo=0 desde_previo=0
     log_info "vigilando la RAM cada ${INTERVALO} s (aviso desde ${UMBRAL}%, rearme bajo ${REARME}%)"
     while true; do
         pct=$(ram_pct)
         ahora=$(date +%s)
         if elegir_nivel "$pct"; then
-            if [ "$activo" -eq 0 ] || [ $(( ahora - ultimo )) -ge "$NIVEL_REPETIR" ]; then
+            # al subir de nivel suena ya, sin esperar el NIVEL_REPETIR del nivel anterior
+            if [ "$activo" -eq 0 ] || [ "$NIVEL_DESDE" -gt "$desde_previo" ] \
+               || [ $(( ahora - ultimo )) -ge "$NIVEL_REPETIR" ]; then
                 vol=$(volumen_para "$pct" "$escalon")
                 veces=$(veces_para "$escalon")
                 sonar "$NIVEL_SONIDO" "$vol" "$veces"
                 cuerpo="Las que más usan:"$'\n'"$(top_apps)"
                 [ "$NIVEL_ACCION" = cerrar ] || cuerpo+=$'\n'"Al ${NIVELES[0]%%|*}% se abre la lista para cerrar apps."
                 id=$(notificar "$id" "$NIVEL_URGENCIA" dialog-warning "RAM al ${pct}%" "$cuerpo")
-                if [ "$activo" -eq 0 ] || [ "$NIVEL_SONIDO" != "$sonido_previo" ]; then
+                if [ "$activo" -eq 0 ] || [ "$NIVEL_DESDE" -ne "$desde_previo" ]; then
                     log_warn "RAM al ${pct}%: aviso ${NIVEL_URGENCIA} (${NIVEL_SONIDO})"
                 fi
-                sonido_previo="$NIVEL_SONIDO"
+                desde_previo="$NIVEL_DESDE"
                 log_debug "aviso ${escalon}: ${pct}% · ${NIVEL_SONIDO} ×${veces} · volumen ${vol}%"
                 activo=1; ultimo="$ahora"; escalon=$(( escalon + 1 ))
             fi
@@ -101,7 +104,7 @@ vigilar() {
         elif [ "$activo" -eq 1 ] && [ "$pct" -lt "$REARME" ]; then
             notificar "$id" normal dialog-information "RAM normal (${pct}%)" "Ya bajó del ${REARME}%." >/dev/null
             log_ok "RAM normal (${pct}%)"
-            activo=0; id=0; escalon=0; cierre_ultimo=0; sonido_previo=""
+            activo=0; id=0; escalon=0; cierre_ultimo=0; desde_previo=0
         fi
         sleep "${INTERVALO}"
     done
