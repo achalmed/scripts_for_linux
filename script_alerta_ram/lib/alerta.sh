@@ -70,7 +70,7 @@ notificar() {
 # «cerrar» abre la lista de apps una vez (y otra tras CIERRE_ESPERA si sigue
 # alta). Al bajar de REARME avisa «normal» y vuelve a quedar lista.
 vigilar() {
-    local pct ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 cierre_pid=0 cierre_ultimo=0
+    local pct ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 cierre_pid=0 cierre_ultimo=0 sonido_previo=""
     log_info "vigilando la RAM cada ${INTERVALO} s (aviso desde ${UMBRAL}%, rearme bajo ${REARME}%)"
     while true; do
         pct=$(ram_pct)
@@ -83,19 +83,25 @@ vigilar() {
                 cuerpo="Las que más usan:"$'\n'"$(top_apps)"
                 [ "$NIVEL_ACCION" = cerrar ] || cuerpo+=$'\n'"Al ${NIVELES[0]%%|*}% se abre la lista para cerrar apps."
                 id=$(notificar "$id" "$NIVEL_URGENCIA" dialog-warning "RAM al ${pct}%" "$cuerpo")
-                [ "$activo" -eq 0 ] && log_warn "RAM al ${pct}%: aviso ${NIVEL_URGENCIA}"
+                if [ "$activo" -eq 0 ] || [ "$NIVEL_SONIDO" != "$sonido_previo" ]; then
+                    log_warn "RAM al ${pct}%: aviso ${NIVEL_URGENCIA} (${NIVEL_SONIDO})"
+                fi
+                sonido_previo="$NIVEL_SONIDO"
                 log_debug "aviso ${escalon}: ${pct}% · ${NIVEL_SONIDO} ×${veces} · volumen ${vol}%"
                 activo=1; ultimo="$ahora"; escalon=$(( escalon + 1 ))
             fi
-            if [ "$NIVEL_ACCION" = cerrar ] && ! kill -0 "$cierre_pid" 2>/dev/null \
+            # cierre_pid=0 es «nunca se abrió»: kill -0 0 apunta al propio grupo de procesos y siempre acierta
+            if [ "$NIVEL_ACCION" = cerrar ] \
+               && { [ "$cierre_pid" -eq 0 ] || ! kill -0 "$cierre_pid" 2>/dev/null; } \
                && [ $(( ahora - cierre_ultimo )) -ge "${CIERRE_ESPERA}" ]; then
+                log_warn "RAM al ${pct}%: abro la lista para cerrar apps"
                 abrir_cierre "$pct" &
                 cierre_pid=$!; cierre_ultimo="$ahora"
             fi
         elif [ "$activo" -eq 1 ] && [ "$pct" -lt "$REARME" ]; then
             notificar "$id" normal dialog-information "RAM normal (${pct}%)" "Ya bajó del ${REARME}%." >/dev/null
             log_ok "RAM normal (${pct}%)"
-            activo=0; id=0; escalon=0; cierre_ultimo=0
+            activo=0; id=0; escalon=0; cierre_ultimo=0; sonido_previo=""
         fi
         sleep "${INTERVALO}"
     done
