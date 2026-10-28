@@ -65,17 +65,39 @@ notificar() {
     notify-send -p -r "$1" -a "${NOMBRE_APP}" -u "$2" "${duracion[@]}" -i "$3" "$4" "$5" 2>/dev/null || echo 0
 }
 
+# --- primer_nivel_cierre() -------------------------------------------------
+# Outputs: el % del nivel más bajo con acción «cerrar» (NIVELES va de mayor a menor).
+primer_nivel_cierre() {
+    local nivel desde accion primero=""
+    for nivel in "${NIVELES[@]}"; do
+        IFS='|' read -r desde _ _ _ accion <<<"$nivel"
+        if [ "$accion" = cerrar ]; then primero="$desde"; fi
+    done
+    echo "${primero:-100}"
+}
+
+# --- cierre_libre() ----------------------------------------------------------
+# Arguments: $1 - pid de la última lista. Returns: 0 si no hay una abierta.
+# 0 es «nunca se abrió»: kill -0 0 apunta al propio grupo de procesos y siempre acierta.
+cierre_libre() {
+    [ "$1" -eq 0 ] || ! kill -0 "$1" 2>/dev/null
+}
+
 # --- vigilar() -------------------------------------------------------------
 # Bucle del servicio. Avisa al cruzar UMBRAL; cada repetición sin que la RAM
-# baje sube un escalón (más volumen, más veces). Con un nivel de acción
-# «cerrar» abre la lista de apps una vez (y otra tras CIERRE_ESPERA si sigue
-# alta). Al bajar de REARME avisa «normal» y vuelve a quedar lista.
+# baje sube un escalón (más volumen, más veces) y al subir de nivel suena ya.
+# Abre la lista de apps al llegar a un nivel «cerrar» o si la RAM sube de golpe
+# (SUBIDA_RAPIDA); si la descartas, no la reabre hasta CIERRE_ESPERA salvo que
+# la RAM llegue a un nivel «cerrar» más alto. Al bajar de REARME avisa «normal».
 vigilar() {
-    local pct ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 cierre_pid=0 cierre_ultimo=0 desde_previo=0
-    log_info "vigilando la RAM cada ${INTERVALO} s (aviso desde ${UMBRAL}%, rearme bajo ${REARME}%)"
+    local pct previo=0 ahora vol veces cuerpo activo=0 ultimo=0 id=0 escalon=0 desde_previo=0
+    local motivo nivel_cierre sonido_rapido cierre_pid=0 cierre_ultimo=0 cierre_desde=0
+    IFS='|' read -r _ sonido_rapido _ _ _ <<<"${NIVELES[0]}"
+    log_info "vigilando la RAM cada ${INTERVALO} s (aviso desde ${UMBRAL}%, lista desde $(primer_nivel_cierre)% o si sube ${SUBIDA_RAPIDA} puntos de golpe, rearme bajo ${REARME}%)"
     while true; do
         pct=$(ram_pct)
         ahora=$(date +%s)
+        motivo=""; nivel_cierre=0
         if elegir_nivel "$pct"; then
             # al subir de nivel suena ya, sin esperar el NIVEL_REPETIR del nivel anterior
             if [ "$activo" -eq 0 ] || [ "$NIVEL_DESDE" -gt "$desde_previo" ] \
@@ -84,7 +106,7 @@ vigilar() {
                 veces=$(veces_para "$escalon")
                 sonar "$NIVEL_SONIDO" "$vol" "$veces"
                 cuerpo="Las que más usan:"$'\n'"$(top_apps)"
-                [ "$NIVEL_ACCION" = cerrar ] || cuerpo+=$'\n'"Al ${NIVELES[0]%%|*}% se abre la lista para cerrar apps."
+                [ "$NIVEL_ACCION" = cerrar ] || cuerpo+=$'\n'"Al $(primer_nivel_cierre)% se abre la lista para cerrar apps."
                 id=$(notificar "$id" "$NIVEL_URGENCIA" dialog-warning "RAM al ${pct}%" "$cuerpo")
                 if [ "$activo" -eq 0 ] || [ "$NIVEL_DESDE" -ne "$desde_previo" ]; then
                     log_warn "RAM al ${pct}%: aviso ${NIVEL_URGENCIA} (${NIVEL_SONIDO})"
@@ -93,19 +115,26 @@ vigilar() {
                 log_debug "aviso ${escalon}: ${pct}% · ${NIVEL_SONIDO} ×${veces} · volumen ${vol}%"
                 activo=1; ultimo="$ahora"; escalon=$(( escalon + 1 ))
             fi
-            # cierre_pid=0 es «nunca se abrió»: kill -0 0 apunta al propio grupo de procesos y siempre acierta
-            if [ "$NIVEL_ACCION" = cerrar ] \
-               && { [ "$cierre_pid" -eq 0 ] || ! kill -0 "$cierre_pid" 2>/dev/null; } \
-               && [ $(( ahora - cierre_ultimo )) -ge "${CIERRE_ESPERA}" ]; then
-                log_warn "RAM al ${pct}%: abro la lista para cerrar apps"
-                abrir_cierre "$pct" &
-                cierre_pid=$!; cierre_ultimo="$ahora"
+            if [ "$NIVEL_ACCION" = cerrar ]; then
+                motivo="RAM al ${pct}%"; nivel_cierre="$NIVEL_DESDE"
             fi
         elif [ "$activo" -eq 1 ] && [ "$pct" -lt "$REARME" ]; then
             notificar "$id" normal dialog-information "RAM normal (${pct}%)" "Ya bajó del ${REARME}%." >/dev/null
             log_ok "RAM normal (${pct}%)"
-            activo=0; id=0; escalon=0; cierre_ultimo=0; desde_previo=0
+            activo=0; id=0; escalon=0; desde_previo=0; cierre_ultimo=0; cierre_desde=0
         fi
+        if [ -z "$motivo" ] && [ "$previo" -gt 0 ] && [ "$pct" -ge "${SUBIDA_DESDE}" ] \
+           && [ $(( pct - previo )) -ge "${SUBIDA_RAPIDA}" ]; then
+            motivo="la RAM subió de ${previo}% a ${pct}% en ${INTERVALO} s"
+        fi
+        if [ -n "$motivo" ] && cierre_libre "$cierre_pid" \
+           && { [ $(( ahora - cierre_ultimo )) -ge "${CIERRE_ESPERA}" ] || [ "$nivel_cierre" -gt "$cierre_desde" ]; }; then
+            log_warn "${motivo}: abro la lista para cerrar apps"
+            if [ "$nivel_cierre" -eq 0 ]; then sonar "$sonido_rapido" "$VOL_MAX" 1; fi
+            abrir_cierre "$pct" &
+            cierre_pid=$!; cierre_ultimo="$ahora"; cierre_desde="$nivel_cierre"
+        fi
+        previo="$pct"
         sleep "${INTERVALO}"
     done
 }

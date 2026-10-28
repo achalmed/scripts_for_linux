@@ -26,6 +26,7 @@ source "${SCRIPT_DIR}/lib/validator.sh"
 source "${SCRIPT_DIR}/lib/cli.sh"
 source "${SCRIPT_DIR}/lib/memoria.sh"
 source "${SCRIPT_DIR}/lib/alerta.sh"
+source "${SCRIPT_DIR}/lib/ventana.sh"
 source "${SCRIPT_DIR}/lib/cierre.sh"
 source "${SCRIPT_DIR}/lib/servicio.sh"
 

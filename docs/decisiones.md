@@ -146,3 +146,9 @@ el tema Ocean: los sonidos de `freedesktop` duran 0,1–0,5 s y no se oían. En 
 ventana emergente, así que el nivel más bajo es `normal`. Las apps son las unidades `app-*` de `app.slice` (una por
 app lanzada desde Plasma, con todos sus procesos), no los nombres de proceso: así un navegador cuenta una vez, se
 cierra entero con `systemctl --user stop` y los contenedores o servicios del sistema nunca se ofrecen para cerrar.
+La ventana para cerrar se abre en el 92 % y no en el 95 %, y también ante una subida brusca (3 puntos entre dos
+mediciones, cada 2 s), porque en un equipo sin swap del 95 % al 100 % se pasa en un instante: el 2026-10-27 el
+*OOM killer* del kernel cerró `claude-desktop` antes de que diera tiempo a elegir. Para ponerla encima de las demás
+se carga en KWin un script por D-Bus solo mientras está abierta (kdialog no tiene «siempre encima» y en Wayland una
+app no puede ponerse delante sola); se prefirió a una regla de ventana en `kwinrulesrc` porque no deja
+configuración persistente que desinstalar.

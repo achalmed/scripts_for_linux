@@ -31,7 +31,7 @@ abrir_vista_general() {
 
 # --- abrir_lista_cierre() --------------------------------------------------
 abrir_lista_cierre() {
-    local pct="$1" unidades=() args=() mb unidad nombre i=0 elegidos sel cerradas=()
+    local pct="$1" unidades=() args=() mb unidad nombre i=0 elegidos sel cerradas=() rc=0
     while IFS='|' read -r mb unidad nombre; do
         [ -n "$mb" ] || continue
         i=$(( i + 1 ))
@@ -45,10 +45,16 @@ abrir_lista_cierre() {
         return 0
     fi
 
+    encima_activar "${NOMBRE_APP}:"
     elegidos="$(kdialog --title "${NOMBRE_APP}: RAM al ${pct}%" \
         --ok-label "Cerrar las marcadas" --cancel-label "Ahora no" --separate-output \
         --checklist "La RAM está al ${pct}%. Marca las apps que quieres cerrar:" \
-        "${args[@]}" 2>/dev/null)" || { log_info "lista de cierre descartada."; return 0; }
+        "${args[@]}" 2>/dev/null)" || rc=$?
+    encima_desactivar
+    if [ "$rc" -ne 0 ]; then
+        log_info "lista de cierre descartada."
+        return 0
+    fi
 
     while read -r sel; do
         [ -n "$sel" ] || continue

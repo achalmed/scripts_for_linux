@@ -18,7 +18,7 @@ source "$_d/core/env.sh"; unset _d
 # --- Umbrales (% de RAM usada) ---------------------------------------------
 UMBRAL=90          # desde aquí empieza a avisar
 REARME=87          # bajo esto se da por normal y la alarma vuelve a quedar lista (histéresis)
-INTERVALO=5        # segundos entre mediciones
+INTERVALO=2        # segundos entre mediciones (sin swap la RAM puede llenarse en segundos)
 
 # --- Niveles: "desde_%|sonido|urgencia|repetir_cada_s|acción", de mayor a menor
 # El último debe empezar en UMBRAL. Los sonidos se buscan en DIR_SONIDOS.
@@ -26,11 +26,20 @@ INTERVALO=5        # segundos entre mediciones
 # critical (se queda hasta que la cierras). En Plasma, «low» no muestra ventana
 # emergente: solo va al historial, por eso no se usa.
 # Acción: «cerrar» abre la lista de apps para cerrar (ver MODO_CIERRE); «-» nada.
+# La lista se abre en el primer nivel «cerrar» (92 %): al 95 % puede no dar
+# tiempo, porque de ahí al 100 % se llega en un instante y el kernel cierra una
+# app por su cuenta.
 NIVELES=(
     "95|dialog-error-critical.oga|critical|15|cerrar"
-    "93|battery-caution.oga|critical|30|-"
+    "92|battery-caution.oga|critical|30|cerrar"
     "${UMBRAL}|message-attention.oga|normal|60|-"
 )
+
+# --- Subida rápida ------------------------------------------------------------
+# Si entre dos mediciones la RAM sube SUBIDA_RAPIDA puntos o más y ya está en
+# SUBIDA_DESDE % o más, se abre la lista sin esperar a los niveles.
+SUBIDA_RAPIDA=3
+SUBIDA_DESDE=85
 DIR_SONIDOS="/usr/share/sounds/ocean/stereo"   # tema de sonidos de Plasma 6 (1–1,5 s cada uno)
 
 # --- Volumen (% del volumen del sistema, que no se toca) -------------------
@@ -54,6 +63,8 @@ NOTIF_DURACION_MS=15000        # cuánto dura en pantalla la de urgencia normal
 # ventanas — abre la Vista general de KWin (todas las ventanas; se cierran con la X)
 MODO_CIERRE="lista"
 CIERRE_ESPERA=300              # s antes de volver a abrir la lista si la descartaste y la RAM sigue alta
+                               # (si la RAM sube a un nivel «cerrar» más alto, se reabre sin esperar)
+VENTANA_ENCIMA=true            # la lista aparece encima de las demás ventanas y con el foco (KWin)
 APPS_MIN_MB=50                 # en la lista solo apps que usen al menos esto
 # Apps que nunca se ofrecen para cerrar (patrón de bash sobre el id de la app,
 # p. ej. org.kde.konsole o com.anthropic.Claude).

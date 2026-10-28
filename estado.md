@@ -13,6 +13,7 @@ ni del despacho en esta página.
 
 | fecha | qué | dónde se ve |
 |---|---|---|
+| 2026-10-27 | **`script_alerta_ram`**, ajuste: la ventana para cerrar apps se abre en el 92 % o ante una subida brusca, mide cada 2 s, aparece encima de las demás ventanas (script de KWin) y el sonido suena al subir de nivel | `script_alerta_ram/README.md`; `docs/decisiones.md` §3.5 |
 | 2026-10-27 | **`script_alerta_ram`**: aviso sonoro que escala en volumen e insistencia desde el 90 % de RAM y, desde el 95 %, ventana con las apps abiertas para cerrarlas; servicio systemd de usuario (`main.sh instalar --aplicar`) | `script_alerta_ram/README.md`; `docs/decisiones.md` §3.5; `tests/run.sh -k alerta_ram` (4) |
 | 2026-10-27 | **Las herramientas de archivos y de git salen con su GUI** (sesión 9 de la cola de la auditoría posterior): `git rm` de las siete, que viven con su historia en `filesystem-studio` y `git-studio`; sus pendientes (N-03, N-05–N-10, N-13, N-15 y los de cada herramienta) se fueron con ellas | `docs/decisiones.md` §2.6; `tests/run.sh` (44, 2 omitidas) |
 | 2026-10-06 | ola 4, fase A (agente «linux»): L1–L3, un commit por ítem | la bitácora de abajo; `meta/programa/06-olas/ola-04-reingenieria.md` §2 |
