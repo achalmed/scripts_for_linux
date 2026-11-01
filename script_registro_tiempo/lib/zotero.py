@@ -2,7 +2,7 @@
 
 El plugin Ethereal Style guarda, por ítem, el tiempo acumulado por página en una nota con
 `{"readingTime":{"page":N,"data":{"<página>":segundos}}}` (formato verificado en
-`scripts-biblioteca/lectura/lib/sync_zotero_lectura.py`, que lo lleva a Calibre). Es un acumulado sin fechas: el
+`biblioteca-studio/lectura/lib/sync_zotero_lectura.py`, que lo lleva a Calibre). Es un acumulado sin fechas: el
 tiempo de un día es lo que creció desde la instantánea anterior, y se atribuye al día en que se observa. Por eso
 la primera pasada solo fija la línea base, y conviene que el timer corra varias veces al día.
 """
