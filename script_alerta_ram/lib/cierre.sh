@@ -3,12 +3,16 @@
 #  lib/cierre.sh — Mostrar las apps abiertas para cerrarlas
 # =============================================================================
 #
-#  MODO_CIERRE=lista: una ventana (kdialog) con cada app y su RAM; las marcadas
-#  se cierran con «systemctl --user stop» de sus unidades, que manda SIGTERM a
-#  todos sus procesos a la vez (la app puede guardar antes de salir).
+#  MODO_CIERRE=lista: una ventana con cada app y su RAM; las marcadas se cierran
+#  con «systemctl --user stop» de sus unidades, que manda SIGTERM a todos sus
+#  procesos a la vez (la app puede guardar antes de salir). Con LISTA_VIVA la
+#  ventana es lib/lista_viva.py, que se actualiza sola y sigue abierta tras
+#  cerrar; sin ella (o sin PyQt6), kdialog con la foto del momento.
 #  MODO_CIERRE=ventanas: la Vista general de KWin, por D-Bus.
 #  Marcar en la ventana es la confirmación: no se cierra nada sin marcarlo.
 # =============================================================================
+
+CLASE_LISTA_VIVA="alerta-ram"   # id de la ventana viva en Wayland: kwin/encima.js.in la busca por él
 
 # --- abrir_cierre() --------------------------------------------------------
 # Arguments: $1 - % de RAM (para el texto). Bloquea hasta que se responde:
@@ -29,9 +33,44 @@ abrir_vista_general() {
     return 0
 }
 
+# --- lista_viva_disponible() -----------------------------------------------
+# Returns: 0 si LISTA_VIVA está activa y LISTA_PYTHON tiene PyQt6.
+lista_viva_disponible() {
+    [ "${LISTA_VIVA}" = true ] && "${LISTA_PYTHON}" -c 'import PyQt6.QtWidgets' &>/dev/null
+}
+
+# --- abrir_lista_viva() ----------------------------------------------------
+# La ventana escribe «unidades|nombre» por cada app que mandas cerrar, mientras
+# sigue abierta; aquí se detiene en el acto. Vuelve al cerrar la ventana.
+abrir_lista_viva() {
+    local unidades nombre cerradas=()
+    encima_activar "${NOMBRE_APP}:" "${CLASE_LISTA_VIVA}"
+    while IFS='|' read -r unidades nombre; do
+        [ -n "$unidades" ] || continue
+        # shellcheck disable=SC2086  # varias unidades de la misma app, separadas por espacio
+        if systemctl --user stop --no-block ${unidades} 2>/dev/null; then
+            log_ok "cerrando: ${nombre}"
+            cerradas+=("$nombre")
+        else
+            log_warn "no pude cerrar ${unidades}"
+        fi
+    done < <(exec "${LISTA_PYTHON}" "${SCRIPT_DIR}/lib/lista_viva.py" --titulo "${NOMBRE_APP}" \
+                --clase "${CLASE_LISTA_VIVA}" --umbral "${UMBRAL}" --cierre "$(primer_nivel_cierre)" \
+                --cada-apps "${LISTA_CADA_APPS}" -- /usr/bin/bash "${SCRIPT_DIR}/main.sh" apps)
+    encima_desactivar
+    if [ "${#cerradas[@]}" -eq 0 ]; then
+        log_info "lista de cierre cerrada sin cerrar apps."
+    fi
+    return 0
+}
+
 # --- abrir_lista_cierre() --------------------------------------------------
 abrir_lista_cierre() {
     local pct="$1" unidades=() args=() mb unidad nombre i=0 elegidos sel cerradas=() rc=0
+    if lista_viva_disponible; then
+        abrir_lista_viva
+        return 0
+    fi
     while IFS='|' read -r mb unidad nombre; do
         [ -n "$mb" ] || continue
         i=$(( i + 1 ))

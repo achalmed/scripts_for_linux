@@ -8,7 +8,7 @@
 #    2. Parsear argumentos CLI
 #    3. Inicializar logger
 #    4. Validar dependencias según el subcomando
-#    5. Ejecutar el subcomando (vigilar · estado · probar · cerrar · instalar · desinstalar)
+#    5. Ejecutar el subcomando (vigilar · estado · probar · cerrar · apps · instalar · desinstalar)
 #
 #  La lógica de negocio vive en lib/. main.sh no debería superar ~120 líneas.
 # =============================================================================
@@ -52,6 +52,7 @@ main() {
         estado)      mostrar_estado ;;
         probar)      probar_niveles ;;
         cerrar)      abrir_cierre "$(ram_pct)" ;;
+        apps)        apps_abiertas ;;
         instalar)    instalar_servicio "${OPT_APLICAR}" ;;
         desinstalar) desinstalar_servicio "${OPT_APLICAR}" ;;
     esac

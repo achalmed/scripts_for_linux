@@ -1,8 +1,9 @@
 // Script de KWin que lib/ventana.sh carga mientras la lista para cerrar apps está
-// abierta: a la ventana de kdialog cuyo título empieza por @TITULO@ la pone
-// encima de las demás y le da el foco. @TITULO@ lo sustituye lib/ventana.sh.
+// abierta: a la ventana de @CLASE@ cuyo título empieza por @TITULO@ la pone
+// encima de las demás y le da el foco. lib/ventana.sh sustituye @CLASE@
+// (org.kde.kdialog o la de lib/lista_viva.py) y @TITULO@.
 function fijar(ventana) {
-    if (ventana && ventana.resourceClass === "org.kde.kdialog"
+    if (ventana && ventana.resourceClass === "@CLASE@"
         && ventana.caption.indexOf("@TITULO@") === 0) {
         ventana.minimized = false;
         ventana.keepAbove = true;

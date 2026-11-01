@@ -14,22 +14,28 @@ ENCIMA_SCRIPT=""   # nombre con que se cargó en KWin ("" = no cargado)
 ENCIMA_ARCHIVO=""
 
 # --- encima_activar() ------------------------------------------------------
-# Arguments: $1 - prefijo del título de la ventana.
+# Arguments: $1 - prefijo del título de la ventana, $2 - su clase en KWin
+# (resourceClass: org.kde.kdialog, o el id que fija lib/lista_viva.py).
 encima_activar() {
-    local titulo="$1" id
+    local titulo="$1" clase="${2:-org.kde.kdialog}" id
     [ "${VENTANA_ENCIMA}" = true ] || return 0
     command -v busctl &>/dev/null || return 0
     ENCIMA_SCRIPT="alerta-ram-encima-${BASHPID}"
     ENCIMA_ARCHIVO="${XDG_RUNTIME_DIR:-/tmp}/${ENCIMA_SCRIPT}.js"
-    # el título va dentro de una cadena de JavaScript: sin comillas ni barras
-    sed "s|@TITULO@|${titulo//[\"\\|]/}|g" "${SCRIPT_DIR}/kwin/encima.js.in" > "$ENCIMA_ARCHIVO"
+    # van dentro de cadenas de JavaScript: sin comillas ni barras
+    sed -e "s|@TITULO@|${titulo//[\"\\|]/}|g" -e "s|@CLASE@|${clase//[\"\\|]/}|g" \
+        "${SCRIPT_DIR}/kwin/encima.js.in" > "$ENCIMA_ARCHIVO"
     id="$(busctl --user call org.kde.KWin /Scripting org.kde.kwin.Scripting \
         loadScript ss "$ENCIMA_ARCHIVO" "$ENCIMA_SCRIPT" 2>/dev/null | awk '{print $2}')"
     if [ -z "$id" ] || [ "$id" -lt 0 ] \
        || ! busctl --user call org.kde.KWin "/Scripting/Script${id}" org.kde.kwin.Script run &>/dev/null; then
         log_warn "no pude pedir a KWin que ponga la lista encima; se abre igual."
         encima_desactivar
+        return 0
     fi
+    # si matan la lista abierta (systemctl restart, Ctrl+C) el script no debe quedar cargado en KWin
+    trap 'encima_desactivar' EXIT
+    trap 'encima_desactivar; exit 143' TERM INT HUP
     return 0
 }
 
@@ -40,6 +46,7 @@ encima_desactivar() {
             unloadScript s "$ENCIMA_SCRIPT" &>/dev/null || true
         rm -f "$ENCIMA_ARCHIVO"
         ENCIMA_SCRIPT=""; ENCIMA_ARCHIVO=""
+        trap - EXIT TERM INT HUP
     fi
     return 0
 }

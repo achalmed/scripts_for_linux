@@ -62,6 +62,9 @@ NOTIF_DURACION_MS=15000        # cuánto dura en pantalla la de urgencia normal
 # lista    — ventana con tus apps abiertas y su RAM; marcas las que quieres cerrar
 # ventanas — abre la Vista general de KWin (todas las ventanas; se cierran con la X)
 MODO_CIERRE="lista"
+LISTA_VIVA=true                # la lista se actualiza sola (lib/lista_viva.py, PyQt6); false o sin PyQt6: kdialog fija
+LISTA_PYTHON="/usr/bin/python3"  # el del sistema: trae PyQt6 (python3-pyqt6), que la ventana viva necesita
+LISTA_CADA_APPS=2              # s entre lecturas de la RAM de cada app (la RAM total, cada segundo)
 CIERRE_ESPERA=300              # s antes de volver a abrir la lista si la descartaste y la RAM sigue alta
                                # (si la RAM sube a un nivel «cerrar» más alto, se reabre sin esperar)
 VENTANA_ENCIMA=true            # la lista aparece encima de las demás ventanas y con el foco (KWin)

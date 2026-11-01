@@ -11,6 +11,7 @@ comandos:
 - main.sh estado
 - main.sh probar
 - main.sh cerrar
+- main.sh apps
 - main.sh instalar --aplicar
 - main.sh desinstalar --aplicar
 - main.sh vigilar
@@ -19,7 +20,7 @@ creado: 2026-10-27
 depende_de:
 - paplay (PulseAudio o PipeWire)
 - notify-send
-- kdialog (la lista para cerrar apps; o busctl con MODO_CIERRE=ventanas)
+- python3-pyqt6 (la lista viva para cerrar apps; sin él, kdialog; o busctl con MODO_CIERRE=ventanas)
 - systemd de usuario
 - core/env.sh
 - core/shell-lib/logger.sh

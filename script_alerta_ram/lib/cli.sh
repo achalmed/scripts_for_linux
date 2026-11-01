@@ -24,6 +24,7 @@ Subcomandos:
   estado        Muestra la RAM, las apps que más usan y si el servicio está activo.
   probar        Hace sonar cada nivel y el escalamiento, y manda una notificación de muestra.
   cerrar        Abre ya la lista de apps abiertas para cerrar las que marques.
+  apps          Imprime tus apps y su RAM, una por línea (MB|unidades|nombre): lo que lee la lista viva.
   instalar      Escribe ~/.config/systemd/user/${UNIDAD} y lo activa (simula sin --aplicar).
   desinstalar   Lo detiene y borra la unidad (simula sin --aplicar).
 
@@ -44,7 +45,7 @@ parse_args() {
             -h|--help)    show_help; exit 0 ;;
             --aplicar)    OPT_APLICAR=true ;;
             -v|--verbose) OPT_VERBOSE=true ;;
-            vigilar|estado|probar|cerrar|instalar|desinstalar)
+            vigilar|estado|probar|cerrar|apps|instalar|desinstalar)
                 if [ -n "${OPT_SUBCOMANDO}" ]; then
                     echo "[ERROR] un solo subcomando por vez (ya hay «${OPT_SUBCOMANDO}»)" >&2; exit 2
                 fi

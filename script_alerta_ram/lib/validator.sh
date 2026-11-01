@@ -52,11 +52,15 @@ validate_plantilla_unidad() {
 }
 
 # --- validate_cierre() -----------------------------------------------------
-# MODO_CIERRE=lista necesita kdialog; ventanas, busctl. Si falta, avisa y
-# sigue: la alarma sonora no depende de esto.
+# MODO_CIERRE=lista necesita PyQt6 en LISTA_PYTHON (lista viva) o kdialog;
+# ventanas, busctl. Si falta, avisa y sigue: la alarma sonora no depende de esto.
 validate_cierre() {
     local bin=kdialog
     [ "${MODO_CIERRE}" = ventanas ] && bin=busctl
+    if [ "${MODO_CIERRE}" != ventanas ] && lista_viva_disponible; then return 0; fi
+    if [ "${MODO_CIERRE}" != ventanas ] && [ "${LISTA_VIVA}" = true ]; then
+        log_warn "${LISTA_PYTHON} no tiene PyQt6 (python3-pyqt6): la lista no se actualizará sola; uso kdialog."
+    fi
     if ! command -v "$bin" &>/dev/null; then
         log_warn "falta «${bin}»: sin él no se podrá mostrar la lista para cerrar apps (MODO_CIERRE=${MODO_CIERRE})."
     fi

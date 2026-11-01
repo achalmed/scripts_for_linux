@@ -10,7 +10,7 @@ estado: activo
 Avisa con un sonido que crece en volumen e insistencia cuando la RAM usada pasa de un umbral, y en el nivel más alto muestra las apps abiertas para cerrarlas.
 
 - Escribe en: sistema · simula por defecto: sí
-- Depende de: paplay (PulseAudio o PipeWire), notify-send, kdialog (la lista para cerrar apps; o busctl con MODO_CIERRE=ventanas), systemd de usuario, core/env.sh, core/shell-lib/logger.sh
+- Depende de: paplay (PulseAudio o PipeWire), notify-send, python3-pyqt6 (la lista viva para cerrar apps; sin él, kdialog; o busctl con MODO_CIERRE=ventanas), systemd de usuario, core/env.sh, core/shell-lib/logger.sh
 - Timer: `alerta-ram.service`
 - Nota: Solo escribe la unidad de usuario (instalar/desinstalar con --aplicar); cerrar detiene las apps que se marcan en su ventana, y nada sin marcar. Umbrales, sonidos, volúmenes y modo de cierre en config.sh.
 
@@ -20,12 +20,13 @@ Comandos:
 main.sh estado
 main.sh probar
 main.sh cerrar
+main.sh apps
 main.sh instalar --aplicar
 main.sh desinstalar --aplicar
 main.sh vigilar
 ```
 
-<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-27); no se edita a mano.</sub>
+<sub>Bloque generado desde `suite.yml` por `core/suites.py generar` (2026-10-31); no se edita a mano.</sub>
 <!-- suite:fin -->
 
 ## Qué es
@@ -52,10 +53,15 @@ El volumen parte del 50 % en el 90 % de RAM y llega al 100 % en el 98 %. Cada re
 1, 2, 2 y hasta 3 veces seguidas. Es relativo al volumen del sistema (`paplay --volume`), que no se toca. Al bajar del
 87 % llega «RAM normal» y todo vuelve a empezar: la histéresis evita que suene en bucle si el uso oscila en el umbral.
 
-**La ventana para cerrar** (`kdialog`) lista cada app con la RAM de todos sus procesos (Plasma lanza cada una en su
-propia unidad `app-*.scope`, con las pestañas de un navegador incluidas; un Flatpak suma su sandbox y su lanzador).
-Lo marcado se cierra con `systemctl --user stop`, que manda SIGTERM a todos sus procesos a la vez y deja que la app
-guarde antes de salir. Aparece encima de las demás ventanas y con el foco: mientras está abierta, la suite carga
+**La ventana para cerrar** lista cada app con la RAM de todos sus procesos (Plasma lanza cada una en su propia
+unidad `app-*.scope`, con las pestañas de un navegador incluidas; un Flatpak suma su sandbox y su lanzador). **Está
+viva**: cada segundo actualiza el porcentaje de RAM (en verde, naranja o rojo según el nivel), si sube o baja y la
+swap usada; cada 2 s, la RAM de cada app, su parte del total y cuánto creció desde que se abrió la ventana, con lo
+que queda «fuera de tus apps» al final. Marcas las apps (un clic en la fila basta), el botón dice cuánta RAM
+liberarías y, al pulsarlo, se cierran con `systemctl --user stop`, que manda SIGTERM a todos sus procesos a la vez
+y deja que la app guarde antes de salir. La ventana sigue abierta: ves desaparecer la app y bajar la RAM, y la
+cierras con «Listo» o Esc. Es `lib/lista_viva.py` (PyQt6 con el Python del sistema); sin PyQt6, o con
+`LISTA_VIVA=false`, se abre en su lugar `kdialog` con la foto del momento. Aparece encima de las demás ventanas y con el foco: mientras está abierta, la suite carga
 en KWin un script pequeño (`kwin/encima.js.in`) que la fija arriba, y lo descarga al cerrarla, sin tocar la
 configuración de KWin (`VENTANA_ENCIMA=false` lo desactiva). Si la descartas, no vuelve a abrirse hasta pasados
 5 minutos con la RAM aún alta, salvo que llegue al 95 %. Con
@@ -67,6 +73,7 @@ configuración de KWin (`VENTANA_ENCIMA=false` lo desactiva). Si la descartas, n
 main.sh estado                 # RAM, nivel, tus apps abiertas con su RAM y si el servicio corre
 main.sh probar                 # suena cada nivel y el escalamiento completo del más alto
 main.sh cerrar                 # abre ya la ventana para cerrar apps, sin esperar al 92 %
+main.sh apps                   # tus apps y su RAM, una por línea (MB|unidades|nombre): lo que lee la ventana
 main.sh instalar               # simula: muestra la unidad que escribiría
 main.sh instalar --aplicar     # escribe ~/.config/systemd/user/alerta-ram.service, la activa y la reinicia
 main.sh desinstalar --aplicar  # la detiene y la borra
@@ -90,7 +97,8 @@ script_alerta_ram/
 │   ├── validator.sh           # MemAvailable, paplay, notify-send, sonidos, plantilla
 │   ├── memoria.sh             # % de RAM y apps abiertas (unidades app-* de systemd) con su RAM
 │   ├── alerta.sh              # niveles, escalamiento, sonido, notificación, bucle vigilar
-│   ├── cierre.sh              # ventana de apps para cerrar (kdialog) o Vista general de KWin
+│   ├── cierre.sh              # abre la ventana para cerrar y detiene lo marcado (o la Vista general de KWin)
+│   ├── lista_viva.py          # la ventana viva (PyQt6): RAM y apps al día; escribe lo que se manda cerrar
 │   ├── ventana.sh             # carga y descarga en KWin el script que pone la ventana encima
 │   └── servicio.sh            # instalar y desinstalar la unidad de usuario
 ├── kwin/encima.js.in          # script de KWin: la ventana de cierre encima y con el foco
@@ -113,3 +121,5 @@ script_alerta_ram/
 - Probado en KDE Plasma (Wayland) con PipeWire; otros escritorios dependen de que su servidor de notificaciones
   respete `--replace-id` y la urgencia. Poner la ventana encima necesita KWin: en otro escritorio se abre como
   cualquier otra.
+- La ventana viva cuesta unos 40 MB propios (Qt ya está cargado por Plasma) y corre `main.sh apps` cada 2 s mientras
+  está abierta; con la RAM al límite tarda alrededor de un segundo en aparecer.

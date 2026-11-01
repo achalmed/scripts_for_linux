@@ -152,3 +152,10 @@ mediciones, cada 2 s), porque en un equipo sin swap del 95 % al 100 % se pasa en
 se carga en KWin un script por D-Bus solo mientras está abierta (kdialog no tiene «siempre encima» y en Wayland una
 app no puede ponerse delante sola); se prefirió a una regla de ventana en `kwinrulesrc` porque no deja
 configuración persistente que desinstalar.
+Desde el 2026-10-31 la lista es una ventana viva (`lib/lista_viva.py`) y no `kdialog`, que solo muestra la foto del
+momento en que se abrió: con la RAM cambiando de segundo en segundo hay que ver qué app crece y si lo cerrado la
+bajó, y para eso la ventana sigue abierta después de cerrar. Es PyQt6 con el Python del sistema (`python3-pyqt6`, lo
+trae Plasma; el servicio corre con `PATH=/usr/bin` y PySide6 no está allí) y cuesta unos 40 MB propios, porque las
+bibliotecas de Qt ya están cargadas. La ventana no decide qué es una app ni cierra nada: lee `main.sh apps` (la
+misma `apps_abiertas`, con sus exclusiones) y escribe en stdout lo que se manda cerrar, que `cierre.sh` detiene. Sin
+PyQt6, o con `LISTA_VIVA=false`, vuelve `kdialog`.
