@@ -109,6 +109,16 @@ a su GUI en los repos `filesystem-studio` y `git-studio`; `gui-suites` se retira
 `antes-studios-independientes-2026-10-27`; propuesta en
 `meta/programa/08-mantenimiento/studios-independientes-2026-10-27.md`.
 
+**2.7 Las herramientas de medios, a `raphi`; el conversor de audio se retira** (2026-10-31, propuesta aprobada por el
+autor: `meta/programa/08-mantenimiento/familia-studios-2026-10-31.md`). `script_video_downloader`,
+`script_whisper_transcriber` (con el cuaderno de `vendor/`) y `scripts_photo_metadata_suite` salen con `git rm` y
+viven, con su historia, en `raphi/backends/` (`video-downloader`, `whisper-transcriber`, `photo-metadata`), donde el
+motor de Raphi las expone como operaciones. `script_audio_converter` llegó también con su historia y se retiró allí
+mismo: `raphi convertir_audio` hace lo mismo (tasa fija con `--tasa`, etiquetas del original, carpetas con `-r`), y
+el autor pidió que no quedaran herramientas duplicadas. Aquí quedan las de sistema y de uso personal. §3.1 queda como
+historia del descargador. Etiqueta previa: `antes-medios-a-raphi-2026-10-31`; respaldo y `UNDO.sh` en
+`$RESPALDOS_DIR/renombres/2026-10-31-medios-a-raphi/`.
+
 ## 3. Herramientas concretas
 
 **3.1 `--clip` corta con ffmpeg, no con `--download-sections`** (2026-07-25, `90fb4ad`). La

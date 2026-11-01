@@ -13,6 +13,7 @@ ni del despacho en esta página.
 
 | fecha | qué | dónde se ve |
 |---|---|---|
+| 2026-10-31 | Las herramientas de medios (descarga de video, Whisper, fotos) pasan a `raphi` con su historia; el conversor de audio se retira (lo hace `raphi convertir_audio`) | `docs/decisiones.md` §2.7; `raphi/tests/test_backends_medios.py` |
 | 2026-10-31 | **`script_alerta_ram`**, lista viva: la ventana para cerrar apps (PyQt6, `lib/lista_viva.py`) actualiza cada segundo la RAM y su tendencia, y cada 2 s la RAM de cada app y cuánto creció; sigue abierta tras cerrar para ver bajar la RAM. Subcomando `apps`; `kdialog` queda de respaldo | `script_alerta_ram/README.md`; `docs/decisiones.md` §3.5; `tests/run.sh` (48, 2 omitidas) |
 | 2026-10-27 | **`script_alerta_ram`**, ajuste: la ventana para cerrar apps se abre en el 92 % o ante una subida brusca, mide cada 2 s, aparece encima de las demás ventanas (script de KWin) y el sonido suena al subir de nivel | `script_alerta_ram/README.md`; `docs/decisiones.md` §3.5 |
 | 2026-10-27 | **`script_alerta_ram`**: aviso sonoro que escala en volumen e insistencia desde el 90 % de RAM y, desde el 95 %, ventana con las apps abiertas para cerrarlas; servicio systemd de usuario (`main.sh instalar --aplicar`) | `script_alerta_ram/README.md`; `docs/decisiones.md` §3.5; `tests/run.sh -k alerta_ram` (4) |

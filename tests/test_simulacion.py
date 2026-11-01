@@ -117,54 +117,8 @@ def test_alerta_ram_aplicar_fuera_de_lugar(entorno):
 
 # --------------------------------------------------------------------------- multimedia
 
-@requiere("ffmpeg")
-def test_audio_converter_dry_run(entorno):
-    home, trabajo, env = entorno
-    (trabajo / "notas").mkdir()
-    (trabajo / "notas" / "PTT-prueba.opus").write_bytes(b"OggS" + b"\0" * 60)
-    correr_sin_escribir([PY, str(REPO / "script_audio_converter" / "main.py"), "notas", "-r", "--dry-run"],
-                        home.parent, trabajo, env)
-
-
-def test_whisper_transcriber_dry_run(entorno):
-    home, trabajo, env = entorno
-    (trabajo / "entrevista.mp3").write_bytes(b"ID3" + b"\0" * 60)
-    correr_sin_escribir([PY, str(REPO / "script_whisper_transcriber" / "main.py"), "entrevista.mp3",
-                         "-l", "es", "-m", "tiny", "--dry-run"], home.parent, trabajo, env)
-
-
-def test_video_downloader_help(entorno):
-    """La simulación (``--simulate <url>``) consulta la red con yt-dlp: aquí solo ``--help``."""
-    home, trabajo, env = entorno
-    correr_sin_escribir(["bash", str(REPO / "script_video_downloader" / "main.sh"), "--help"],
-                        home.parent, trabajo, env)
-
-
-@pytest.mark.skip(reason="red: --simulate <url> consulta el sitio con yt-dlp; ver test_video_downloader_help")
-def test_video_downloader_simulate():
-    pass
-
-
-@requiere("exiftool")
-@requiere_modulos("PIL", "numpy")
-@pytest.mark.parametrize("sub", ["apply", "undo", "fix-names", "embed-date"])
-def test_photo_metadata_sin_execute(entorno, sub):
-    """Los subcomandos que escriben simulan si no se les da ``--execute``."""
-    home, trabajo, env = entorno
-    fotos = trabajo / "fotos"
-    fotos.mkdir()
-    (fotos / "IMG_0001.jpg").write_bytes(b"\xff\xd8\xff\xd9")
-    (fotos / "VID_0001.mp4").write_bytes(b"\0" * 32)
-    (fotos / "20260101_120000.jpg").write_bytes(b"\xff\xd8\xff\xd9")
-    # registro de un renombrado anterior, para que `undo` tenga algo que revertir
-    (fotos / "_rename_log.csv").write_text("old,new\nTapo_0002.jpg,20260101_120000.jpg\n", encoding="utf-8")
-    correr_sin_escribir([PY, str(REPO / "scripts_photo_metadata_suite" / "main.py"), sub, "fotos"],
-                        home.parent, trabajo, env)
-
-
-@pytest.mark.skip(reason="datos externos: sync-digikam lee la base de digiKam del usuario (aun en copia)")
-def test_photo_metadata_sync_digikam():
-    pass
+# Las de audio, video, transcripción y fotos viven desde el 2026-10-31 en raphi (backends/ y su motor); su prueba de
+# simulación, en raphi/tests/test_backends_medios.py.
 
 
 # --------------------------------------------------------------------------- sincronización

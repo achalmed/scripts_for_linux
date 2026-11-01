@@ -61,9 +61,8 @@ python3 core/archivos.py validar scripts-linux     # A01–A14 y D01–D12
 python3 core/suites.py validar                          # cada suite.yml contra el esquema
 python3 core/suites.py generar                          # ¿bloques de README desfasados? (simula)
 python3 core/docs.py verificar scripts-linux        # el índice de docs/ al día
-bash -n scripts-linux/script_video_downloader/main.sh   # sintaxis Bash; un archivo por invocación
-python3 -m py_compile scripts-linux/script_audio_converter/main.py
-scripts-linux/script_video_downloader/main.sh --simulate <url>   # simulación de la suite tocada
+bash -n scripts-linux/script_alerta_ram/main.sh        # sintaxis Bash; un archivo por invocación
+python3 -m py_compile scripts-linux/script_sync_usb/main.py
 scripts-linux/tests/run.sh                              # cada suite que escribe, en simulación, no escribe nada
 meta/doctor/main.sh --breve
 ```
@@ -75,7 +74,8 @@ simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva qu
 ## Detalles que cuesta redescubrir
 
 - **Nombres que despistan**: el árbol, los hard links y Git Studio ya no están aquí (`filesystem-studio`,
-  `git-studio`; `docs/decisiones.md` §2.6), y el PDF vive en `raphi/backends/` (`docs/decisiones.md` §1.2).
+  `git-studio`; `docs/decisiones.md` §2.6); el PDF, la descarga de video, la transcripción y las fotos viven en
+  `raphi` (`docs/decisiones.md` §1.2 y §2.7). Una herramienta nueva de documentos, imágenes, audio o video va allí.
 - **Aquí no hay herramienta de respaldo**: la preservación tiene una sola, `meta/respaldos/bin/respaldar.sh`
   (`docs/decisiones.md` §1.8). No se añade otra.
 - **`script_sync_usb` está atada al archivo documental del SGDP** (`docs/decisiones.md` §3.2):
@@ -85,13 +85,6 @@ simulación sobre un `HOME` temporal y no debe escribir nada; una suite nueva qu
 - **Lo personal no entra aquí**: `script_dni_a_copia` y `script_firma_digital` viven en
   `herramientas-personales` (privado, sin remoto; `docs/decisiones.md` §1.7). Una herramienta nueva que
   trabaje con documentos o datos personales va allí, no a este repo público.
-- **`script_video_downloader --clip` no usa `--download-sections`** de yt-dlp (trunca DASH): corta
-  con ffmpeg desde las URL crudas y verifica con ffprobe (`docs/decisiones.md` §3.1). El modo audio
-  es `-m audio`, no `--audio`. En `script_video_downloader/lib/options.sh` las funciones terminan
-  con `return 0` y los contadores son `var=$((var + 1))` por `set -e`.
-- **`vendor/transcribir_whisper_jason_boog.py`** es el cuaderno Colab original (MIT) del
-  transcriptor: se conserva como referencia y no se edita.
-
 ## Dónde está cada cosa
 
 | pregunta | documento |
